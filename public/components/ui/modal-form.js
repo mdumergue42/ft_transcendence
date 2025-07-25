@@ -10,11 +10,11 @@ export class LoginModal extends HTMLElement {
         this.shadow.appendChild(link);
         const template = document.createElement('template');
         template.innerHTML = `
-		<div id="login-modal" class="modal-overlay">
-			<div class="modal-content p-6 rounded shadow-lg relative">
-				<button id="close-modal-button" class="absolute top-1 right-2 text-2xl hover:text-red-500 transition-all ease-in-out hover:scale-105">&times;</button>
-				<h2 class="text-xl font-bold mb-4">Login</h2>
-				<form id="auth-form" class="space-y-4">
+		<div id="login-modal" class="modal-overlay hidden">
+			<div class="modal-content p-6 rounded-2xl shadow-lg relative">
+				<button id="close-modal-button" class="absolute top-1.5 right-2.5 text-xl hover:text-red-500 transition-all ease-in-out hover:scale-105">&times;</button>
+				<h2 class="text-xl font-bold mb-6">Login</h2>
+				<form id="auth-form" class="space-y-4 mb-4">
 					<div class="form-group">
 						<label for="username" class="block">Username</label>
 						<input type="text" id="username" name="username" placeholder="Jdoe" required class="border p-2 w-full" />
@@ -28,10 +28,10 @@ export class LoginModal extends HTMLElement {
 						<input type="password" id="confirm-password" name="confirm-password" class="border p-2 w-full" />
 					</div>
 					<p id="error-message" class="error-message text-red-500 hidden"></p>
-					<button type="submit" id="form-submit-button" class="action-button text-white px-4 py-2 rounded">Log In</button>
+					<button type="submit" id="form-submit-button" class="action-button px-4 py-2 rounded">Log In</button>
 				</form>
-				<div id="login-toggle-text" class="toggle-form-text text-sm mt-2">No account? <a href="" id="show-register-link" class="text-blue-500 underline">Register here</a></div>
-				<div id="register-toggle-text" class="toggle-form-text text-sm mt-2 hidden">Already have an account? <a href="" id="show-login-link" class="text-blue-500 underline">Log in</a></div>
+				<div id="login-toggle-text" class="toggle-form-text text-sm mt-2">No account ? <a href="" id="show-register-link" class="text-blue-500 underline">Register here</a></div>
+				<div id="register-toggle-text" class="toggle-form-text text-sm mt-2 hidden">Already have an account ? <a href="" id="show-login-link" class="text-blue-500 underline">Log in</a></div>
 			</div>
 		</div>`;
         this.shadow.appendChild(template.content.cloneNode(true));

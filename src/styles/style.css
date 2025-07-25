@@ -156,9 +156,9 @@ body {
 
 #play-button:hover
 {
-
-    color: #ffffff;
+    color: #111827;
     border-color: #67e8f9;
+    background-color: #67e8f9;
     box-shadow: 0 0 20px rgba(56, 189, 248, 0.5);
 }
 
@@ -181,7 +181,7 @@ body {
 .modal-content
 {
     background-color: #1f2937;
-    padding: 30px 40px;
+    padding: 3vh 5vw;
     border-radius: 15px;
     border: 1px solid rgba(103, 232, 249, 0.3);
     box-shadow: 0 0 30px rgba(56, 189, 248, 0.3);
@@ -195,14 +195,13 @@ body {
     font-size: 2rem;
     color: #e5e7eb;
     margin-top: 0;
-    margin-bottom: 10px;
     text-shadow: 0 0 10px rgba(56, 189, 248, 0.4);
     font-family: 'Orbitron', sans-serif;
 }
 
 .modal-content p
 {
-    color: #d1d5db;
+    color: #e6e6e6;
     font-family: sans-serif;
     font-size: 1rem;
     margin-bottom: 25px;
@@ -213,24 +212,6 @@ body {
     display: flex;
     flex-direction: column;
     gap: 15px;
-}
-
-.action-button
-{
-    background: transparent;
-    color: #67e8f9;
-    border: 1px solid #67e8f9;
-    padding: 12px;
-    border-radius: 8px;
-    font-size: 1.1rem;
-    cursor: pointer;
-    transition: all 0.2s ease-in-out;
-}
-
-.action-button:hover
-{
-    background-color: rgba(56, 189, 248, 0.2);
-    box-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
 }
 
 .form-group
@@ -244,7 +225,6 @@ body {
     display: block;
     margin-bottom: 5px;
     font-size: 0.9rem;
-    color: #9ca3af;
 }
 
 .form-group input
@@ -254,9 +234,32 @@ body {
     background-color: #111827;
     border: 1px solid #374151;
     border-radius: 5px;
-    color: #e5e7eb;
+    color: #e6e6e6;
     font-family: sans-serif;
     box-sizing: border-box;
+    transition: all 0.3s ease;
+}
+
+.form-group input:focus
+{
+    border-color: #67e8f9;
+    outline: none;
+    box-shadow: 0 0 5px rgba(103, 232, 249, 0.5);
+}
+
+.action-button {
+    background: transparent;
+    color: #67e8f9;
+    border: 1px solid #67e8f9;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+.action-button:hover {
+    background-color: #67e8f9;
+    color: #111827;
+    box-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
 }
 
 .toggle-form-text

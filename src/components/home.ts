@@ -9,6 +9,7 @@ export class HomePage extends HTMLElement {
 		<main class="content-area">
 			<h1>Transcendence</h1>
 			<button id="play-button">PLAY</button>
+			<canvas id="pong-canvas" width="1200" height="800"></canvas>
 		</main>`;
 	}
 

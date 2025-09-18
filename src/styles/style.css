@@ -322,3 +322,14 @@ body {
     box-shadow: 0 0 15px rgba(103, 232, 249, 0.6);
     image-resolution: 300dpi;
 }
+
+canvas.pong-canvas {
+    margin-top: 15px;
+    margin-bottom: 15px;
+    background-color:white;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items:center;
+}
+

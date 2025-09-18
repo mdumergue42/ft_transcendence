@@ -330,6 +330,16 @@ body {
   image-resolution: 300dpi;
 }
 
+canvas.pong-canvas {
+  margin-top: 15px;
+  margin-bottom: 15px;
+  background-color:white;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items:center;
+}
+
 *, ::before, ::after {
   --tw-border-spacing-x: 0;
   --tw-border-spacing-y: 0;
@@ -916,6 +926,10 @@ video {
   .container {
     max-width: 1536px;
   }
+}
+
+.static {
+  position: static;
 }
 
 .absolute {

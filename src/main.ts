@@ -1,5 +1,6 @@
 // src/main.ts
 import './components/ui/modal-form.js';
+import  {Pong} from './components/game/game.js';
 
 document.addEventListener('DOMContentLoaded', () => {
 	const container = document.getElementById('app')!;
@@ -29,6 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
 			container.innerHTML = `<home-page></home-page>`;
 			window.location.hash = 'home';
 		}
+		Pong(); //TODO
 	}
 
 	// Handle hash change and initial load

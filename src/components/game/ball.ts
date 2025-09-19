@@ -1,4 +1,6 @@
 import {Vector2} from './vector2.js'
+import {Player} from './player.js'
+import {collision} from './collision.js'
 
 export class Ball
 {
@@ -36,8 +38,40 @@ export class Ball
 		this.speed.random(5)
 	}
 
-	move()
+	collide(p: Player)
 	{
+		return collision(this, p);
+	}
+
+	move(canvas: HTMLCanvasElement, p1: Player, p2: Player)
+	{
+		if (this.center.y >= canvas.height)
+		{
+			this.center.y -= (this.center.y - canvas.height);
+			this.speed.y *= -1;
+		}
+		if (this.center.y <= 0)
+		{
+			this.center.y -= (this.center.y);
+			this.speed.y *= -1;
+		}
+		if (this.center.x < canvas.width / 2)
+		{
+			if (this.collide(p1) == 0)
+			{
+				if (this.center.x <= 0)
+					return 1;
+			}
+		}
+		else
+		{
+			if (this.collide(p2) == 0)
+			{
+				if (this.center.x >= canvas.width)
+					return 2;
+			}
+		}
 		this.center.add(this.speed);
+		return 0;
 	}
 }

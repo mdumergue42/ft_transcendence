@@ -1,8 +1,8 @@
 export function draw(canvas, p1, p2, ball) {
     var context = canvas.getContext('2d');
-    context.fillStyle = "black";
+    context.fillStyle = "white";
     context.fillRect(0, 0, canvas.width, canvas.height);
-    context.strokeStyle = "white";
+    context.strokeStyle = "black";
     context.beginPath();
     context.moveTo(canvas.width / 2, 0);
     context.lineTo(canvas.width / 2, canvas.height);

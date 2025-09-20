@@ -6,6 +6,29 @@ import {draw} from './draw.js'
 var game : {p1: Player, p2: Player, ball: Ball};
 var canvas : HTMLCanvasElement;
 
+function inputDown(event: KeyboardEvent)
+{
+	if (event.code == "KeyW")
+		game.p1.keysPressed[0] = 1;
+	if (event.code == "KeyS")
+		game.p1.keysPressed[1] = 1;
+	if (event.code == "KeyO")
+		game.p2.keysPressed[0] = 1;
+	if (event.code == "KeyL")
+		game.p2.keysPressed[1] = 1;
+}
+function inputUp(event: KeyboardEvent)
+{
+	if (event.code == "KeyW")
+		game.p1.keysPressed[0] = 0;
+	if (event.code == "KeyS")
+		game.p1.keysPressed[1] = 0;
+	if (event.code == "KeyO")
+		game.p2.keysPressed[0] = 0;
+	if (event.code == "KeyL")
+		game.p2.keysPressed[1] = 0;
+}
+
 function play()
 {
 	draw(canvas, game.p1, game.p2, game.ball);
@@ -37,8 +60,9 @@ export function Pong()
 		p2: new Player(canvas.width, mid.y, 1),
 		ball: new Ball(mid)
 	};
-	game.p1.setObj(0);
-	game.p2.setObj(canvas.height);
+	document.addEventListener('keydown', inputDown);
+	document.addEventListener('keyup', inputUp);
+
 	console.log("PONG!!!");
 	play();
 }

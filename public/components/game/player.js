@@ -10,6 +10,8 @@ export class Player {
         this.init();
         this.normal = new Vector2(0, z);
         this.color = "red";
+        this.keysPressed = [0, 0];
+        this.ia = false;
     }
     init() {
         this.racket.copy(this.static);
@@ -23,10 +25,18 @@ export class Player {
         this.obj = y;
     }
     move() {
-        var v = new Vector2(0, this.obj - this.racket.y - RECT_HEIGHT / 2);
-        if (v.length() < RACKET_SPEED)
-            return;
-        v.setLength(RACKET_SPEED);
+        var v;
+        if (this.ia == true) {
+            v = new Vector2(0, this.obj - this.racket.y - RECT_HEIGHT / 2);
+            if (v.length() < RACKET_SPEED)
+                return;
+            v.setLength(RACKET_SPEED);
+        }
+        else {
+            var direction = this.keysPressed[1] - this.keysPressed[0];
+            v = new Vector2(0, RACKET_SPEED * direction);
+            console.log(v);
+        }
         this.racket.add(v);
         this.racket.y = Math.min(Math.max(0, this.racket.y), this.static.y * 2);
     }

@@ -20,21 +20,19 @@ function raytracingCollideRect(ball, player) {
         return (nearest_t);
     return (-1);
 }
-function moduloPi(phi) {
+export function moduloPi(phi) {
     let result = (phi + Math.PI) % (2 * Math.PI);
     if (result < 0)
         result += 2 * Math.PI;
     return result - Math.PI;
 }
-function getAngle(x) {
+export function getAngle(x) {
     return Math.PI / 5 * x - Math.PI / 10;
 }
 export function collision(ball, player) {
     var t = raytracingCollideRect(ball, player);
-    if (t <= 0) {
-        ball.center.add(ball.speed);
+    if (t <= 0)
         return 0;
-    }
     var len = ball.speed.length();
     if (t <= len) {
         var v = ball.speed.clone();
@@ -43,17 +41,15 @@ export function collision(ball, player) {
         impact.add(v);
         const normalMode = (phi, speed) => {
             speed.multiplyScalar(player.normal.y);
-            var theta = moduloPi(moduloPi(-speed.angle() * -player.normal.y) + phi);
-            return Math.min(Math.PI * 2 / 5, Math.max(moduloPi(theta + phi), -Math.PI * 2 / 5));
-        };
-        const nostaligiaMode = (phi, speed) => {
-            return 2 * phi;
+            var theta = (speed.angle() * player.normal.y);
+            var r = moduloPi(theta + 2 * phi);
+            return Math.min(Math.PI * 2 / 5, Math.max(-Math.PI * 2 / 5, r));
         };
         const phi = getAngle((impact.y - player.racket.y) / RECT_HEIGHT);
         const func = normalMode;
         const angle = func(phi, ball.speed);
-        if (Math.abs(ball.speed.x) < MAX_SPEED)
-            ball.speed.setLengthPhi(len * ball.speedUp, angle);
+        var new_speed = (Math.abs(ball.speed.x) < MAX_SPEED) ? len * ball.speedUp : len;
+        ball.speed.setLengthPhi(new_speed, angle);
         if (player.normal.y == 1)
             ball.speed.x *= -1;
         v.copy(ball.speed);
@@ -62,4 +58,8 @@ export function collision(ball, player) {
         ball.center.copy(impact);
         return 1;
     }
+}
+export function rtCollidePlane(center, speed, planePoint, planeVector) {
+    planePoint.sub(center);
+    return (planePoint.dot(planeVector) / speed.dot(planeVector));
 }

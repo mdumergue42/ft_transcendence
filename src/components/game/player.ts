@@ -3,31 +3,31 @@ import {RECT_HEIGHT, RECT_WIDTH, RACKET_SPEED} from "./global.js"
 
 export class Player
 {
-	static: Vector2
+	st: Vector2
 	racket: Vector2
 	normal: Vector2
 	obj: number
 	color: string
 	keysPressed: [number, number]
 	ia: boolean
-    constructor(x: number, y: number, z: number)
+    constructor(x: number, y: number, z: number, ia:boolean)
     {
 		if (x != 0)
 			x -= RECT_WIDTH;
-        this.static = new Vector2(x, y - RECT_HEIGHT / 2);
+        this.st = new Vector2(x, y - RECT_HEIGHT / 2);
 		this.racket = new Vector2();
 		this.obj = 0;
 		this.init();
 		this.normal = new Vector2(0, z);
 		this.color = "red";
 		this.keysPressed = [0, 0];
-		this.ia = false
+		this.ia = ia;
     }
 
 	init()
 	{
-		this.racket.copy(this.static);
-		this.obj = this.static.y + RECT_HEIGHT / 2;
+		this.racket.copy(this.st);
+		this.obj = this.st.y + RECT_HEIGHT / 2;
 	}
 
 	draw(context: CanvasRenderingContext2D)
@@ -48,17 +48,14 @@ export class Player
 		if (this.ia == true)
 		{
 			v = new Vector2(0, this.obj - this.racket.y - RECT_HEIGHT / 2);
-			if (v.length() < RACKET_SPEED)
-				return ;
-			v.setLength(RACKET_SPEED);
+			v.setLength(Math.min(RACKET_SPEED, v.length()));
 		}
 		else
 		{
 			var	direction = this.keysPressed[1] - this.keysPressed[0];
 			v = new Vector2(0, RACKET_SPEED * direction);
-			console.log(v);
 		}
 		this.racket.add(v);
-		this.racket.y = Math.min(Math.max(0, this.racket.y), this.static.y * 2);
+		this.racket.y = Math.min(Math.max(0, this.racket.y), this.st.y * 2);
 	}
 }

@@ -25,7 +25,7 @@ function raytracingCollideRect(ball: Ball, player : Player)
 	return (-1);
 }
 
-function moduloPi(phi: number)
+export function moduloPi(phi: number)
 {
 	let result = (phi + Math.PI) % (2 * Math.PI);
 	if (result < 0)
@@ -33,7 +33,7 @@ function moduloPi(phi: number)
 	return result - Math.PI;
 }
 
-function getAngle(x : number)
+export function getAngle(x : number)
 {
 	return Math.PI / 5 * x - Math.PI / 10;
 }
@@ -42,10 +42,7 @@ export function collision(ball: Ball, player: Player)
 {
 	var t = raytracingCollideRect(ball, player);
 	if (t <= 0)
-	{
-		ball.center.add(ball.speed);
 		return 0;
-	}
 	var len = ball.speed.length();
 	if ( t <= len)
 	{
@@ -57,19 +54,16 @@ export function collision(ball: Ball, player: Player)
 		const normalMode = (phi : number, speed : Vector2) =>
 		{
 			speed.multiplyScalar(player.normal.y);
-			var theta = moduloPi(moduloPi(- speed.angle() * - player.normal.y) + phi);
-			return Math.min(Math.PI * 2 / 5, Math.max(moduloPi(theta + phi), -Math.PI * 2 / 5));
-		};
-		const nostaligiaMode = (phi : number, speed : Vector2) =>
-		{
-			return 2 * phi;
+			var theta = (speed.angle() * player.normal.y);
+			var r = moduloPi(theta + 2 * phi);
+			return Math.min(Math.PI * 2 / 5, Math.max(-Math.PI * 2 / 5, r));
 		};
 
 		const phi = getAngle((impact.y - player.racket.y) / RECT_HEIGHT);
 		const func = normalMode;
 		const angle = func(phi, ball.speed);
-		if (Math.abs(ball.speed.x) < MAX_SPEED)
-			ball.speed.setLengthPhi(len * ball.speedUp, angle);
+		var new_speed = (Math.abs(ball.speed.x) < MAX_SPEED) ? len * ball.speedUp : len;
+		ball.speed.setLengthPhi(new_speed, angle);
 		if (player.normal.y == 1)
 			ball.speed.x *= -1;
 
@@ -81,4 +75,11 @@ export function collision(ball: Ball, player: Player)
 	}
 }
 
+
+export function rtCollidePlane(center: Vector2, speed: Vector2, planePoint: Vector2, planeVector: Vector2)
+{
+    planePoint.sub(center);
+
+    return (planePoint.dot(planeVector) / speed.dot(planeVector));
+}
 

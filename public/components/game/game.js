@@ -2,6 +2,7 @@ import { Player } from './player.js';
 import { Ball } from './ball.js';
 import { Vector2 } from './vector2.js';
 import { draw } from './draw.js';
+import { ia } from './ia.js';
 var game;
 var canvas;
 function inputDown(event) {
@@ -30,10 +31,14 @@ function play() {
     game.p2.move();
     const res = game.ball.move(canvas, game.p1, game.p2);
     if (res != 0) {
-        //goal so +1 score;
+        if (res == 2)
+            game.score.x += 1;
+        else
+            game.score.y += 1;
         game.ball.init();
         game.p1.init();
         game.p2.init();
+        console.log("SCORE: ", game.score);
     }
     var anim = requestAnimationFrame(play);
 }
@@ -45,12 +50,14 @@ export function Pong() {
     }
     var mid = new Vector2(canvas.width / 2, canvas.height / 2);
     game = {
-        p1: new Player(0, mid.y, -1),
-        p2: new Player(canvas.width, mid.y, 1),
-        ball: new Ball(mid)
+        p1: new Player(0, mid.y, -1, false),
+        p2: new Player(canvas.width, mid.y, 1, true),
+        ball: new Ball(mid),
+        score: new Vector2()
     };
     document.addEventListener('keydown', inputDown);
     document.addEventListener('keyup', inputUp);
-    console.log("PONG!!!");
+    if (game.p2.ia == true)
+        setInterval(ia, 100, game.ball, game.p2, canvas);
     play();
 }

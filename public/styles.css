@@ -928,10 +928,6 @@ video {
   }
 }
 
-.static {
-  position: static;
-}
-
 .absolute {
   position: absolute;
 }

@@ -8,7 +8,9 @@ export class HomePage extends HTMLElement {
 		<main class="content-area">
 			<h1>Transcendence</h1>
 			<button id="play-button">PLAY</button>
-			<canvas id="pong-canvas" width="1000" height="600"></canvas>
+			<canvas id="pong-canvas" width="1000" height="400"></canvas>
+			<div id="dashboard">Dashboard</div>
+			<canvas class="graph" id="line-graph" width="210" height="200"></canvas>
 		</main>`;
     }
     connectedCallback() {

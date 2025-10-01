@@ -1,6 +1,7 @@
 // src/main.ts
 import './components/ui/modal-form.js';
 import { Pong } from './components/game/game.js';
+import { DashBoard } from './components/game/dashboard.js';
 document.addEventListener('DOMContentLoaded', () => {
     const container = document.getElementById('app');
     let modal = document.querySelector('login-modal');
@@ -28,6 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
             window.location.hash = 'home';
         }
         Pong(); //TODO
+        DashBoard();
     }
     // Handle hash change and initial load
     function router() {

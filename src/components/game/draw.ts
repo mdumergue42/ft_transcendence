@@ -22,8 +22,8 @@ export function draw(
 
 	context.font='30px Verdana';
 	context.fillStyle = "black";
-	context.fillText(score.x, canvas.width * 0.25, canvas.height * 0.1);
-	context.fillText(score.y, canvas.width * 0.75, canvas.height * 0.1);
+	context.fillText(score.x.toString(), canvas.width * 0.25, canvas.height * 0.1);
+	context.fillText(score.y.toString(), canvas.width * 0.75, canvas.height * 0.1);
 
 	p1.draw(context);
 	p2.draw(context);

@@ -26,7 +26,7 @@ function inputUp(event) {
         game.p2.keysPressed[1] = 0;
 }
 function play() {
-    draw(canvas, game.p1, game.p2, game.ball);
+    draw(canvas, game.p1, game.p2, game.ball, game.score);
     game.p1.move();
     game.p2.move();
     const res = game.ball.move(canvas, game.p1, game.p2);

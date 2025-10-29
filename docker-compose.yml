@@ -1,38 +1,40 @@
 version: '3.8'
 
 services:
-  nginx:
-    container_name: nginx
-    build:
-      context: ./nginx
-      dockerfile: Dockerfile
-    ports:
-      - "443:443"
-    depends_on:
-      - app
-    networks:
-      - ft_transcendence
-    restart: unless-stopped
+	nginx:
+		container_name: nginx
+		build:
+			context: ./nginx
+			dockerfile: Dockerfile
+		ports:
+			- "443:443"
+		depends_on:
+			- app
+		networks:
+			- ft_transcendence
+		restart: unless-stopped
 
-  app:
-    container_name: app
-    build: 
-      context: .
-      dockerfile: Dockerfile
-    ports:
-      - "3000:3000"
-    volumes:
-      - .:/app
-      - /app/node_modules
-    environment:
-      - NODE_ENV=development
-      - HOST=0.0.0.0
-      - PORT=3000
-    networks:
-      - ft_transcendence
-    command: npm run dev
-    restart: unless-stopped
+	app:
+		container_name: app
+		build:
+			context: .
+			dockerfile: Dockerfile
+		ports:
+			- "${PORT:-3000}:${PORT:-3000}"
+		volumes:
+			- .:/app
+			- /app/node_modules
+			- /app/dist
+			- /app/public/js
+		environment:
+			- NODE_ENV=development
+			- HOST=0.0.0.0
+			- PORT=${PORT:-3000}
+		networks:
+			- ft_transcendence
+		command: npm run dev
+		restart: unless-stopped
 
 networks:
-  ft_transcendence:
-    driver: bridge
+	ft_transcendence:
+		driver: bridge

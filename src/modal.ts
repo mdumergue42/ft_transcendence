@@ -5,7 +5,6 @@ document.addEventListener('DOMContentLoaded', () => {
   let isUserLoggedIn = false;
   let isRegisterMode = false;
 
-  // Elements UI
   const interactiveElements = document.querySelectorAll('.sidebar a, #play-button');
   const modalOverlay        = document.getElementById('login-modal');
   const closeModalButton    = document.getElementById('close-modal-button');
@@ -23,7 +22,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const errorMessage         = document.getElementById('error-message') as HTMLElement | null;
   const playButton           = document.getElementById('play-button') as HTMLElement | null;
 
-  // Ouvrir/fermer modal
   function openModal() {
     modalOverlay?.classList.remove('hidden');
   }
@@ -31,7 +29,6 @@ document.addEventListener('DOMContentLoaded', () => {
     modalOverlay?.classList.add('hidden');
   }
 
-  // Met à jour l’UI du form (Login vs Register)
   function updateFormUI() {
     if (!modalTitle || !loginPasswordInput || !registerPasswordInput
         || !confirmPasswordGroup || !usernameInput || !errorMessage
@@ -47,12 +44,10 @@ document.addEventListener('DOMContentLoaded', () => {
     showRegisterLink .classList.toggle('hidden', isRegisterMode);
     showLoginLink    .classList.toggle('hidden', !isRegisterMode);
 
-    // Réinitialise le message d’erreur
     errorMessage.textContent = '';
     errorMessage.classList.add('hidden');
   }
 
-  // Soumission du form
   authForm?.addEventListener('submit', async (event) => {
     event.preventDefault();
     if (!usernameInput || !loginPasswordInput || !registerPasswordInput
@@ -63,7 +58,6 @@ document.addEventListener('DOMContentLoaded', () => {
       ? registerPasswordInput.value
       : loginPasswordInput.value;
 
-    // Check matching passwords en mode Register
     if (isRegisterMode && password !== confirmPasswordInput.value) {
       errorMessage.textContent = 'Passwords do not match.';
       errorMessage.classList.remove('hidden');
@@ -80,19 +74,16 @@ document.addEventListener('DOMContentLoaded', () => {
       const data = await res.json();
 
       if (!res.ok) {
-        // data.message peut être undefined
         const msg = data.message ?? 'Operation failed.';
         errorMessage.textContent = msg;
         errorMessage.classList.remove('hidden');
         return;
       }
 
-      // Succès → on ferme modal et actualise avatar
       isUserLoggedIn = true;
       closeModal();
       updateProfilePicture();
     } catch (err) {
-      // err peut être n’importe quoi → on extrait message si Error
       const msg = (err instanceof Error ? err.message : null)
                   ?? 'Could not connect to the server.';
       errorMessage.textContent = msg;
@@ -100,7 +91,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Gestion des clics pour ouvrir/fermer modal
   interactiveElements.forEach(el => el.addEventListener('click', openModal));
   closeModalButton   ?.addEventListener('click', closeModal);
   modalOverlay       ?.addEventListener('click', (e) => {
@@ -117,7 +107,6 @@ document.addEventListener('DOMContentLoaded', () => {
     updateFormUI();
   });
 
-  // Met à jour l’avatar selon l’état de connexion
   function updateProfilePicture() {
     if (!profilePicture) return;
     profilePicture.src = isUserLoggedIn
@@ -125,7 +114,6 @@ document.addEventListener('DOMContentLoaded', () => {
       : defaultImagePath;
   }
 
-  // Initialisation UI
   updateFormUI();
   updateProfilePicture();
 });

@@ -1,0 +1,12 @@
+{
+	"extends": "./tsconfig.json",
+	"compilerOptions": {
+		"rootDir": "src/backend",
+		"outDir": "dist/backend",
+		"module": "ESNext",
+		"resolveJsonModule": true
+	},
+	"include": [
+		"src/backend/**/*"
+	]
+}

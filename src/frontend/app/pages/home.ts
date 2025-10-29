@@ -1,5 +1,8 @@
+import '../ui/auth-modal.js';
+
 export function renderHome() {
 	return `<app-navbar></app-navbar>
+		<auth-modal></auth-modal>
 		<main class="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-cyan-400 overflow-x-hidden relative">
 			<div class="absolute inset-0 opacity-10 bg-[radial-gradient(circle,theme(colors.cyan.400)_1px,transparent_1px)] bg-[length:30px_30px] animate-pulse"></div>
 			<div class="absolute inset-0 bg-[repeating-linear-gradient(90deg,transparent,transparent_2px,rgba(6,182,212,0.02)_2px,rgba(6,182,212,0.02)_4px),repeating-linear-gradient(0deg,transparent,transparent_2px,rgba(6,182,212,0.02)_2px,rgba(6,182,212,0.02)_4px)] pointer-events-none"></div>

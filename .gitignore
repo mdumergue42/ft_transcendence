@@ -141,5 +141,3 @@ vite.config.ts.timestamp-*
 dist/*
 public/*
 !public/image/
-
-*.tsbuildinfo

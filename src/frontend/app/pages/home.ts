@@ -3,75 +3,132 @@ import '../ui/auth-modal.js';
 export function renderHome() {
 	return `<app-navbar></app-navbar>
 		<auth-modal></auth-modal>
-		<main class="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-cyan-400 overflow-x-hidden relative">
-			<div class="absolute inset-0 opacity-10 bg-[radial-gradient(circle,theme(colors.cyan.400)_1px,transparent_1px)] bg-[length:30px_30px] animate-pulse"></div>
-			<div class="absolute inset-0 bg-[repeating-linear-gradient(90deg,transparent,transparent_2px,rgba(6,182,212,0.02)_2px,rgba(6,182,212,0.02)_4px),repeating-linear-gradient(0deg,transparent,transparent_2px,rgba(6,182,212,0.02)_2px,rgba(6,182,212,0.02)_4px)] pointer-events-none"></div>
-			<div class="relative z-10 max-w-6xl mx-auto px-4 py-8">
-				<div class="text-center mb-12 p-16 bg-gradient-to-br from-cyan-500/10 to-purple-500/10 border-2 border-cyan-400 shadow-[0_0_30px_rgba(6,182,212,0.3)] relative overflow-hidden group">
-					<div class="absolute inset-0 bg-gradient-to-r from-transparent via-cyan-400/20 to-transparent -skew-x-12 transform -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
-					<h1 class="text-6xl font-black mb-6 uppercase tracking-[0.2em] bg-gradient-to-r from-cyan-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent animate-pulse relative z-10">
-						TRANSCENDENCE
-					</h1>
-					<p class="text-xl mb-8 text-cyan-300 font-mono relative z-10">
-						◖ ULTIMATE RETRO PONG EXPERIENCE ◗
-					</p>
-					<button id="play-button" class="px-8 py-4 bg-gradient-to-r from-cyan-500 to-blue-600 text-black font-bold text-lg uppercase tracking-wider shadow-[0_0_20px_rgba(6,182,212,0.5)] hover:shadow-[0_0_30px_rgba(236,72,153,0.7)] hover:bg-gradient-to-r hover:from-pink-500 hover:to-purple-600 transition-all duration-300 transform hover:-translate-y-1 relative z-10 font-mono">
-						▶ COMMENCER LA PARTIE ◀
+		<main class="min-h-screen bg-black text-green-400 overflow-x-hidden relative font-mono">
+			<!-- CRT Scanlines Effect -->
+			<div class="absolute inset-0 pointer-events-none z-40" style="background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,255,0,0.03) 2px, rgba(0,255,0,0.03) 4px);"></div>
+
+			<!-- Pixel Grid Background -->
+			<div class="absolute inset-0 opacity-5" style="background-image: repeating-conic-gradient(#00ff00 0% 25%, transparent 0% 50%) 50% / 4px 4px;"></div>
+
+			<!-- Old Terminal Header -->
+			<div class="bg-black border-b-2 border-green-400 p-2 font-mono text-xs text-green-400">
+				<div class="flex justify-between items-center">
+					<span>TRANSCENDENCE_TERMINAL_v1.42 █ READY</span>
+					<span id="terminal-clock" class="animate-pulse"></span>
+				</div>
+			</div>
+
+			<div class="relative z-10 max-w-4xl mx-auto p-4">
+				<!-- ASCII Art Header -->
+				<div class="text-center mb-8 p-6 border-2 border-green-400 bg-black/80 shadow-[inset_0_0_20px_rgba(0,255,0,0.1)]">
+					<pre class="text-green-400 text-xs md:text-sm leading-tight mb-4 whitespace-pre-wrap relative">
+						<span class="absolute inset-0 animate-noise-anim text-green-400 opacity-80">
+████████╗██████╗  █████╗ ███╗   ██╗███████╗
+╚══██╔══╝██╔══██╗██╔══██╗████╗  ██║██╔════╝
+   ██║   ██████╔╝███████║██╔██╗ ██║███████╗
+   ██║   ██╔══██╗██╔══██║██║╚██╗██║╚════██║
+   ██║   ██║  ██║██║  ██║██║ ╚████║███████║
+   ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝╚══════╝
+    ██████╗  ██████╗ ███╗   ██╗ ██████╗
+    ██╔══██╗██╔═══██╗████╗  ██║██╔════╝
+    ██████╔╝██║   ██║██╔██╗ ██║██║  ███╗
+    ██╔═══╝ ██║   ██║██║╚██╗██║██║   ██║
+    ██║     ╚██████╔╝██║ ╚████║╚██████╔╝
+    ╚═╝      ╚═════╝ ╚═╝  ╚═══╝ ╚═════╝
+</span>
+						<span class="relative z-10 animate-glitch-light">
+████████╗██████╗  █████╗ ███╗   ██╗███████╗
+╚══██╔══╝██╔══██╗██╔══██╗████╗  ██║██╔════╝
+   ██║   ██████╔╝███████║██╔██╗ ██║███████╗
+   ██║   ██╔══██╗██╔══██║██║╚██╗██║╚════██║
+   ██║   ██║  ██║██║  ██║██║ ╚████║███████║
+   ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝╚══════╝
+    ██████╗  ██████╗ ███╗   ██╗ ██████╗
+    ██╔══██╗██╔═══██╗████╗  ██║██╔════╝
+    ██████╔╝██║   ██║██╔██╗ ██║██║  ███╗
+    ██╔═══╝ ██║   ██║██║╚██╗██║██║   ██║
+    ██║     ╚██████╔╝██║ ╚████║╚██████╔╝
+    ╚═╝      ╚═════╝ ╚═╝  ╚═══╝ ╚═════╝
+</span>
+					</pre>
+					<div class="text-sm mb-4 text-green-300">
+						>>> RETRO GAMING SYSTEM INITIALIZED <<<
+						>>> COPYRIGHT 1982-2025 ARCADE CORP <<<
+					</div>
+					<button id="play-button" class="px-6 py-3 border-2 border-green-400 bg-black text-green-400 font-bold uppercase tracking-widest hover:bg-green-400 hover:text-black transition-all duration-200 animate-pulse">
+						[PRESS START]
 					</button>
 				</div>
-				<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
-					<div class="p-6 bg-gradient-to-br from-cyan-500/10 to-blue-600/10 border-2 border-cyan-400 text-center hover:border-pink-500 hover:shadow-[0_0_25px_rgba(236,72,153,0.4)] transition-all duration-300 transform hover:-translate-y-2 group">
-						<span class="text-3xl block mb-3">🏆</span>
-						<div class="text-sm uppercase tracking-wider text-cyan-300">VICTOIRES</div>
-						<div class="text-4xl font-bold text-cyan-400 group-hover:text-pink-400 transition-colors">28</div>
+
+				<!-- Retro Stats Display -->
+				<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+					<div class="border-2 border-green-400 bg-black p-4 text-center relative">
+						<div class="absolute top-1 left-1 text-xs text-green-300">SCORE</div>
+						<div class="text-2xl font-bold text-green-400 mt-4">000028</div>
+						<div class="text-xs text-green-300 mt-1">WINS</div>
 					</div>
-					<div class="p-6 bg-gradient-to-br from-cyan-500/10 to-blue-600/10 border-2 border-cyan-400 text-center hover:border-pink-500 hover:shadow-[0_0_25px_rgba(236,72,153,0.4)] transition-all duration-300 transform hover:-translate-y-2 group">
-						<span class="text-3xl block mb-3">🔥</span>
-						<div class="text-sm uppercase tracking-wider text-cyan-300">SÉRIE</div>
-						<div class="text-4xl font-bold text-cyan-400 group-hover:text-pink-400 transition-colors">+5</div>
+					<div class="border-2 border-green-400 bg-black p-4 text-center relative">
+						<div class="absolute top-1 left-1 text-xs text-green-300">COMBO</div>
+						<div class="text-2xl font-bold text-green-400 mt-4">+00005</div>
+						<div class="text-xs text-green-300 mt-1">STREAK</div>
 					</div>
-					<div class="p-6 bg-gradient-to-br from-cyan-500/10 to-blue-600/10 border-2 border-cyan-400 text-center hover:border-pink-500 hover:shadow-[0_0_25px_rgba(236,72,153,0.4)] transition-all duration-300 transform hover:-translate-y-2 group">
-						<span class="text-3xl block mb-3">⚡</span>
-						<div class="text-sm uppercase tracking-wider text-cyan-300">NIVEAU</div>
-						<div class="text-4xl font-bold text-cyan-400 group-hover:text-pink-400 transition-colors">42</div>
+					<div class="border-2 border-green-400 bg-black p-4 text-center relative">
+						<div class="absolute top-1 left-1 text-xs text-green-300">LEVEL</div>
+						<div class="text-2xl font-bold text-green-400 mt-4">000042</div>
+						<div class="text-xs text-green-300 mt-1">SKILL</div>
 					</div>
-					<div class="p-6 bg-gradient-to-br from-cyan-500/10 to-blue-600/10 border-2 border-cyan-400 text-center hover:border-pink-500 hover:shadow-[0_0_25px_rgba(236,72,153,0.4)] transition-all duration-300 transform hover:-translate-y-2 group">
-						<span class="text-3xl block mb-3">🎯</span>
-						<div class="text-sm uppercase tracking-wider text-cyan-300">PRÉCISION</div>
-						<div class="text-4xl font-bold text-cyan-400 group-hover:text-pink-400 transition-colors">87%</div>
-					</div>
-				</div>
-				<div class="space-y-4 mb-10">
-					<a href="#ai" data-page="ai" class="block p-5 bg-gradient-to-r from-cyan-500/15 to-blue-500/15 border-2 border-blue-400 text-cyan-400 no-underline text-lg font-semibold uppercase tracking-wide transition-all duration-300 hover:bg-gradient-to-r hover:from-pink-500/20 hover:to-purple-500/20 hover:border-pink-500 hover:text-pink-300 hover:shadow-[0_0_20px_rgba(236,72,153,0.3)] transform hover:translate-x-3 flex items-center justify-center gap-3">
-						🤖 AFFRONTER L'INTELLIGENCE ARTIFICIELLE
-					</a>
-					<a href="#match" data-page="match" class="block p-5 bg-gradient-to-r from-cyan-500/15 to-blue-500/15 border-2 border-blue-400 text-cyan-400 no-underline text-lg font-semibold uppercase tracking-wide transition-all duration-300 hover:bg-gradient-to-r hover:from-pink-500/20 hover:to-purple-500/20 hover:border-pink-500 hover:text-pink-300 hover:shadow-[0_0_20px_rgba(236,72,153,0.3)] transform hover:translate-x-3 flex items-center justify-center gap-3">
-						👥 COMBAT JOUEUR VS JOUEUR
-					</a>
-					<a href="#tournament" data-page="tournament" class="block p-5 bg-gradient-to-r from-cyan-500/15 to-blue-500/15 border-2 border-blue-400 text-cyan-400 no-underline text-lg font-semibold uppercase tracking-wide transition-all duration-300 hover:bg-gradient-to-r hover:from-pink-500/20 hover:to-purple-500/20 hover:border-pink-500 hover:text-pink-300 hover:shadow-[0_0_20px_rgba(236,72,153,0.3)] transform hover:translate-x-3 flex items-center justify-center gap-3">
-						🏆 TOURNOI GALACTIQUE
-					</a>
-				</div>
-				<div class="p-8 bg-gradient-to-br from-green-500/10 to-cyan-500/10 border-2 border-green-400 shadow-[0_0_20px_rgba(34,197,94,0.2)] mb-10">
-					<h2 class="text-2xl mb-6 text-green-400 uppercase tracking-wider font-bold">
-						◆ ACTIVITÉ RÉCENTE ◆
-					</h2>
-					<div class="text-left space-y-3">
-						<div class="text-green-300 py-2 border-b border-green-400/20">
-							🏆 VICTOIRE ÉCRASANTE contre Player42
-						</div>
-						<div class="text-green-300 py-2 border-b border-green-400/20">
-							🎖️ NOUVEAU BADGE: "Maître du Rebond"
-						</div>
-						<div class="text-green-300 py-2 border-b border-green-400/20">
-							⬆️ PROMOTION au classement galactique
-						</div>
-						<div class="text-green-300 py-2 border-b border-green-400/20">
-							🚀 RECORD PERSONNEL battu: 15 échanges
-						</div>
+					<div class="border-2 border-green-400 bg-black p-4 text-center relative">
+						<div class="absolute top-1 left-1 text-xs text-green-300">PERF</div>
+						<div class="text-2xl font-bold text-green-400 mt-4">087.0%</div>
+						<div class="text-xs text-green-300 mt-1">ACC</div>
 					</div>
 				</div>
-				<canvas id="pong-canvas" class="mx-auto border-4 border-orange-500 shadow-[0_0_30px_rgba(249,115,22,0.4)] bg-black block" width="600" height="300"></canvas>
+
+				<!-- Menu Options -->
+				<div class="space-y-2 mb-8">
+					<div class="border-2 border-green-400 bg-black p-4">
+						<div class="text-sm text-green-300 mb-2">SELECT GAME MODE:</div>
+						<a href="#ai" data-page="ai" class="block p-3 border border-green-400/50 bg-black/50 text-green-400 hover:bg-green-400 hover:text-black transition-all duration-200 uppercase tracking-wide">
+							> 1. FIGHT AGAINST ARTIFICIAL INTELLIGENCE
+						</a>
+						<a href="#match" data-page="match" class="block p-3 border border-green-400/50 bg-black/50 text-green-400 hover:bg-green-400 hover:text-black transition-all duration-200 uppercase tracking-wide mt-1">
+							> 2. PLAYER VS PLAYER BATTLE
+						</a>
+						<a href="#tournament" data-page="tournament" class="block p-3 border border-green-400/50 bg-black/50 text-green-400 hover:bg-green-400 hover:text-black transition-all duration-200 uppercase tracking-wide mt-1">
+							> 3. GALACTIC TOURNAMENT MODE
+						</a>
+						<a href="#history" data-page="history" class="block p-3 border border-green-400/50 bg-black/50 text-green-400 hover:bg-green-400 hover:text-black transition-all duration-200 uppercase tracking-wide mt-1">
+							> 4. VIEW BATTLE HISTORY
+						</a>
+					</div>
 				</div>
+
+				<!-- System Log -->
+				<div class="border-2 border-green-400 bg-black p-4 mb-8">
+					<div class="text-sm text-green-300 mb-3">SYSTEM LOG:</div>
+					<div class="space-y-1 text-xs text-green-400">
+						<div class="opacity-80">[23:42] VICTORY: PLAYER DEFEATED OPPONENT42</div>
+						<div class="opacity-70">[23:38] ACHIEVEMENT: "PIXEL MASTER" UNLOCKED</div>
+						<div class="opacity-60">[23:35] RANK_UP: PROMOTED TO LEVEL 42</div>
+						<div class="opacity-50">[23:30] HIGH_SCORE: NEW RECORD SET - 15 RALLIES</div>
+						<div class="opacity-40">[23:25] SYSTEM: GAME SESSION STARTED</div>
+					</div>
+				</div>
+
+				<!-- Retro Pong Game -->
+				<div class="border-2 border-green-400 bg-black p-4 text-center">
+					<div class="text-sm text-green-300 mb-3">ARCADE SIMULATOR:</div>
+					<canvas id="pong-canvas" class="mx-auto border border-green-400 bg-black" width="480" height="240" style="image-rendering: pixelated;"></canvas>
+					<div class="mt-3 text-xs text-green-300">
+						USE ARROW KEYS TO CONTROL PADDLE
+					</div>
+				</div>
+
+				<!-- Footer -->
+				<div class="text-center mt-8 text-xs text-green-400/50">
+					[ESC] EXIT | [F1] HELP | [F12] SETTINGS<br>
+					TRANSCENDENCE v1.42 - 1982 ARCADE CORPORATION
+				</div>
+			</div>
 		</main>`;
 }

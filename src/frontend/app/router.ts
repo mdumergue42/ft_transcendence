@@ -3,6 +3,10 @@ import { renderHistory } from './pages/history.js';
 import { renderMatch } from './pages/match.js';
 import './ui/navbar.js';
 
+import { renderChat } from './pages/chat.js';
+import {chat} from './components/chat/chat.js';
+
+
 export function initRouter() {
 	const root = document.getElementById('app')!;
 
@@ -28,6 +32,10 @@ export function initRouter() {
 				break;
 			case '/profil':
 				root.innerHTML = '<app-navbar></app-navbar><main style="margin-left: 100px; padding: 20px; background: black; color: #00ff00; min-height: 100vh;"><h1>👤 Profil - Coming Soon!</h1></main>';
+				break;
+			case '/chat':
+				root.innerHTML = renderChat();
+				chat();
 				break;
 			default: 
 				root.innerHTML = renderHome(); 

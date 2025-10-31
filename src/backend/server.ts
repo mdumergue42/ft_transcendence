@@ -3,6 +3,7 @@ import fastifyStatic from '@fastify/static';
 import fastifyCors from '@fastify/cors';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
+import  WebSocket, { WebSocketServer, } from 'ws';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -137,6 +138,31 @@ ${colors.bright}${colors.magenta}╚══════════════�
 				`using ${colors.green}${actualPort}${colors.reset} instead\n`
 			);
 		}
+		
+		//WS TEST
+
+		const server = new WebSocketServer({ port: 8080 });
+		var clients = [];
+
+		server.on('connection', (socket:WebSocket) => {
+			console.log('Client connected');
+			clients.push(socket);
+
+			socket.on('message', (message:string) => {
+				console.log('Received message:', message);
+
+				clients.forEach(function(client) {
+					if (client != socket)
+						client.send(`${message}`);
+				});
+			});
+
+			socket.on('close', () => console.log('Client disconnected'));
+		});
+
+		console.log("WebSocket server running on ws://localhost:8080");
+		//WS TEST</>
+
 	} catch (err: any) {
 		if (err.code === 'EADDRINUSE') {
 			console.error(`\n${colors.red}❌ Error: Port ${PORT} is already in use!${colors.reset}`);

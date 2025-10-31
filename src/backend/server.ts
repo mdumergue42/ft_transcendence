@@ -138,11 +138,11 @@ ${colors.bright}${colors.magenta}╚══════════════�
 				`using ${colors.green}${actualPort}${colors.reset} instead\n`
 			);
 		}
-		
+
 		//WS TEST
 
 		const server = new WebSocketServer({ port: 8080 });
-		var clients = [];
+		var clients: WebSocket[] = [];
 
 		server.on('connection', (socket:WebSocket) => {
 			console.log('Client connected');

@@ -6,20 +6,21 @@ import './ui/navbar.js';
 import { renderChat } from './pages/chat.js';
 import {chat} from './components/chat/chat.js';
 
+import { renderDevTest, initDevTest } from './pages/dev-test.js';
 
 export function initRouter() {
 	const root = document.getElementById('app')!;
 
 	function render(path: string) {
 		switch (path) {
-			case '/': 
-				root.innerHTML = renderHome(); 
+			case '/':
+				root.innerHTML = renderHome();
 				break;
-			case '/match': 
-				root.innerHTML = renderMatch(); 
+			case '/match':
+				root.innerHTML = renderMatch();
 				break;
-			case '/history': 
-				root.innerHTML = renderHistory(); 
+			case '/history':
+				root.innerHTML = renderHistory();
 				break;
 			case '/ai':
 				root.innerHTML = '<app-navbar></app-navbar><main style="margin-left: 100px; padding: 20px; background: black; color: #00ff00; min-height: 100vh;"><h1>🤖 IA Mode - Coming Soon!</h1></main>';
@@ -37,8 +38,12 @@ export function initRouter() {
 				root.innerHTML = renderChat();
 				chat();
 				break;
-			default: 
-				root.innerHTML = renderHome(); 
+			case '/dev-test':
+				root.innerHTML = renderDevTest();
+				setTimeout(() => initDevTest(), 100);
+				break;
+			default:
+				root.innerHTML = renderHome();
 				break;
 		}
 	}

@@ -16,7 +16,6 @@ body {
 }
 
 #app {
-	margin-left: 80px;
 	/* Espace pour la sidebar */
 	min-height: 100vh;
 }

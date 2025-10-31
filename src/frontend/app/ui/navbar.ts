@@ -62,6 +62,12 @@ export class AppNavbar extends HTMLElement {
 				</a>
 				<span class="absolute left-20 bg-black/90 text-cyan-400 border border-cyan-400 px-3 py-2 rounded-md text-xs whitespace-nowrap opacity-0 pointer-events-none transition-opacity duration-200 z-[51] font-mono group-hover:opacity-100">Statistiques</span>
 			</li>
+			<li class="w-full flex justify-center relative">
+				<a href="/dev-test" class="menu w-14 h-14 flex items-center justify-center bg-black/30 border-2 border-orange-400 rounded-xl text-orange-400 text-2xl cursor-pointer transition-all duration-300 no-underline hover:bg-orange-400/20 hover:scale-110 hover:shadow-[0_0_15px_rgba(251,146,60,0.5)] group" data-page="dev-test" title="Tests Dev">
+					⚡
+				</a>
+				<span class="absolute left-20 bg-black/90 text-orange-400 border border-orange-400 px-3 py-2 rounded-md text-xs whitespace-nowrap opacity-0 pointer-events-none transition-opacity duration-200 z-[51] font-mono group-hover:opacity-100">Tests Dev</span>
+			</li>
 			<li class="w-full flex justify-center mt-auto relative">
 				${isLoggedIn
 				? `<a href="/profil" class="menu w-14 h-14 flex items-center justify-center bg-black/30 border-2 border-cyan-400 rounded-xl text-cyan-400 text-2xl cursor-pointer transition-all duration-300 no-underline hover:bg-cyan-400/20 hover:scale-110 hover:shadow-[0_0_15px_rgba(6,182,212,0.5)] group" data-page="profil" title="Profil">

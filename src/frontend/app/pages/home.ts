@@ -3,23 +3,16 @@ import '../ui/auth-modal.js';
 export function renderHome() {
 	return `<app-navbar></app-navbar>
 		<auth-modal></auth-modal>
-		<main class="min-h-screen bg-black text-green-400 overflow-x-hidden relative font-mono">
-			<!-- CRT Scanlines Effect -->
+		<main class="ml-[80px] min-h-screen bg-black text-green-400 overflow-x-hidden relative font-mono">
 			<div class="absolute inset-0 pointer-events-none z-40" style="background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,255,0,0.03) 2px, rgba(0,255,0,0.03) 4px);"></div>
-
-			<!-- Pixel Grid Background -->
 			<div class="absolute inset-0 opacity-5" style="background-image: repeating-conic-gradient(#00ff00 0% 25%, transparent 0% 50%) 50% / 4px 4px;"></div>
-
-			<!-- Old Terminal Header -->
 			<div class="bg-black border-b-2 border-green-400 p-2 font-mono text-xs text-green-400">
 				<div class="flex justify-between items-center">
 					<span>TRANSCENDENCE_TERMINAL_v1.42 █ READY</span>
 					<span id="terminal-clock" class="animate-pulse"></span>
 				</div>
 			</div>
-
 			<div class="relative z-10 max-w-4xl mx-auto p-4">
-				<!-- ASCII Art Header -->
 				<div class="text-center mb-8 p-6 border-2 border-green-400 bg-black/80 shadow-[inset_0_0_20px_rgba(0,255,0,0.1)]">
 					<pre class="text-green-400 text-xs md:text-sm leading-tight mb-4 whitespace-pre-wrap relative">
 						<span class="absolute inset-0 animate-noise-anim text-green-400 opacity-80">
@@ -59,8 +52,6 @@ export function renderHome() {
 						[PRESS START]
 					</button>
 				</div>
-
-				<!-- Retro Stats Display -->
 				<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
 					<div class="border-2 border-green-400 bg-black p-4 text-center relative">
 						<div class="absolute top-1 left-1 text-xs text-green-300">SCORE</div>
@@ -83,8 +74,6 @@ export function renderHome() {
 						<div class="text-xs text-green-300 mt-1">ACC</div>
 					</div>
 				</div>
-
-				<!-- Menu Options -->
 				<div class="space-y-2 mb-8">
 					<div class="border-2 border-green-400 bg-black p-4">
 						<div class="text-sm text-green-300 mb-2">SELECT GAME MODE:</div>
@@ -102,8 +91,6 @@ export function renderHome() {
 						</a>
 					</div>
 				</div>
-
-				<!-- System Log -->
 				<div class="border-2 border-green-400 bg-black p-4 mb-8">
 					<div class="text-sm text-green-300 mb-3">SYSTEM LOG:</div>
 					<div class="space-y-1 text-xs text-green-400">
@@ -114,8 +101,6 @@ export function renderHome() {
 						<div class="opacity-40">[23:25] SYSTEM: GAME SESSION STARTED</div>
 					</div>
 				</div>
-
-				<!-- Retro Pong Game -->
 				<div class="border-2 border-green-400 bg-black p-4 text-center">
 					<div class="text-sm text-green-300 mb-3">ARCADE SIMULATOR:</div>
 					<canvas id="pong-canvas" class="mx-auto border border-green-400 bg-black" width="480" height="240" style="image-rendering: pixelated;"></canvas>
@@ -123,8 +108,6 @@ export function renderHome() {
 						USE ARROW KEYS TO CONTROL PADDLE
 					</div>
 				</div>
-
-				<!-- Footer -->
 				<div class="text-center mt-8 text-xs text-green-400/50">
 					[ESC] EXIT | [F1] HELP | [F12] SETTINGS<br>
 					TRANSCENDENCE v1.42 - 1982 ARCADE CORPORATION

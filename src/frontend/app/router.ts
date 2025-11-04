@@ -3,8 +3,7 @@ import { renderHistory } from './pages/history.js';
 import { renderMatch } from './pages/match.js';
 import './ui/navbar.js';
 
-import { renderChat } from './pages/chat.js';
-import {chat} from './components/chat/chat.js';
+import { renderChat, devChat } from './pages/chat.js';
 
 import { renderDevTest, initDevTest } from './pages/dev-test.js';
 
@@ -36,7 +35,7 @@ export function initRouter() {
 				break;
 			case '/chat':
 				root.innerHTML = renderChat();
-				chat();
+				devChat();
 				break;
 			case '/dev-test':
 				root.innerHTML = renderDevTest();

@@ -1,16 +1,14 @@
 import { ChatUser,Conv } from '../components/chat/chat.js'
 
-const user = new ChatUser("username", 8080);
+const user = new ChatUser("bastien", 8080);
 
 function peers(name:string) {
 	return `
-	<table class="chat-list">
-	<tr>
-		<span class="peer-name">${name}</span>
+	<li class="chat-list">
+		<button class="choose-peer" id="choose-peer-${name}">${name}</button>
 		<button class="invite-btn">🎮 </button>
 		<button class="block-btn">⛔ </button>
-		</tr>
-	</table>`
+	</li>`
 }
 
 function renderConv(conv:Conv)
@@ -25,7 +23,7 @@ function renderConv(conv:Conv)
 
 function chat(user:ChatUser, conv:Conv)
 {
-	const t = `<div class="chat-header" style="margin-top:100px">${conv.penPal}
+	const t = `<div class="chat-header" id="chat-header" style="margin-top:100px">${conv.penPal}
 	</div>
 	<div class="chat" id="chat-box" style="margin-top:30px">
 	${renderConv(conv)}
@@ -38,23 +36,46 @@ function chat(user:ChatUser, conv:Conv)
 export function renderChat() {
 	var t = `
 		<h1>CHAT</h1>
-		<div>addFriend ⌛TODO</div>`;
+		<div>addFriend ⌛TODO</div>
+		<ul>`;
 
 	for (let friend of user.friendList)
 	{
 		t += peers(friend.penPal);
 	}
-	var showing = user.friendList[0];
+	t += `</ul>`;
+	var showing = user.lastPeer;
 	if (showing)
 		t += chat(user, showing)
 	return t;
 }
 
-export function devChat() {
-	const conv = user.friendList[0];
+function choosePeer(chatBox:HTMLDivElement, chatHeader:HTMLDivElement)
+{
+	for (let friend of user.friendList)
+	{
+		const btn = <HTMLButtonElement>document.getElementById(`choose-peer-${friend.penPal}`);
+		btn?.onclick = () => {
+			friend.setChatBox(chatBox);
+			user.lastPeer.setChatBox(null);
+			user.lastPeer = friend;
+			friend.reRenderConv();
+			chatHeader.textContent = friend.penPal;
+		}
+	}
+}
 
+export function devChat() {
+	var chatBox = <HTMLDivElement>document.getElementById("chat-box");
+	var chatHeader = <HTMLDivElement>document.getElementById("chat-header");
+	if (chatBox == null)
+		return ;
+	choosePeer(chatBox, chatHeader);
+	const conv = user.lastPeer;
 	if (!conv)
 		return ;
+	conv.setChatBox(chatBox);
+
 	const msgInput = <HTMLInputElement>document.getElementById("msg");
     const sendBtn = <HTMLButtonElement>document.getElementById("send");
 	if (msgInput == null || sendBtn == null)
@@ -62,13 +83,8 @@ export function devChat() {
 	sendBtn.onclick = () => {
 		const message = msgInput.value.trim();
 		if (message) {
-			user.sendMsg(conv.penPal, message)
+			user.sendMsg(user.lastPeer.penPal, message)
 			msgInput.value = "";
-			var chatBox = <HTMLDivElement>document.getElementById("chat-box");
-			var newMsg = document.createElement('div');
-			const newContent = document.createTextNode(`You: ${message}`);
-			newMsg.appendChild(newContent);
-			chatBox.appendChild(newMsg);
 		}
 	};
 }

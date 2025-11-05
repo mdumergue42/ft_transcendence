@@ -8,7 +8,7 @@ export class Conv
 	constructor(_user:string)
 	{
 		this.penPal = _user;
-		this.msgList = ["M:Hey comment Va tu", "T:tres bien et toi?"];
+		this.msgList = [];
 		this.chatBox = null;
 	}
 

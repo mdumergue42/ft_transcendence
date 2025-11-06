@@ -55,9 +55,11 @@ function choosePeer(chatBox:HTMLDivElement, chatHeader:HTMLDivElement)
 	for (let friend of user.friendList)
 	{
 		const btn = <HTMLButtonElement>document.getElementById(`choose-peer-${friend.penPal}`);
-		btn?.onclick = () => {
+		if (btn == null)
+			continue ;
+		btn.onclick = () => {
 			friend.setChatBox(chatBox);
-			user.lastPeer.setChatBox(null);
+			user.lastPeer?.setChatBox(null);
 			user.lastPeer = friend;
 			friend.reRenderConv();
 			chatHeader.textContent = friend.penPal;
@@ -71,10 +73,9 @@ export function devChat() {
 	if (chatBox == null)
 		return ;
 	choosePeer(chatBox, chatHeader);
-	const conv = user.lastPeer;
-	if (!conv)
+	if (!user.lastPeer)
 		return ;
-	conv.setChatBox(chatBox);
+	user.lastPeer.setChatBox(chatBox);
 
 	const msgInput = <HTMLInputElement>document.getElementById("msg");
     const sendBtn = <HTMLButtonElement>document.getElementById("send");
@@ -82,7 +83,7 @@ export function devChat() {
 		return ;
 	sendBtn.onclick = () => {
 		const message = msgInput.value.trim();
-		if (message) {
+		if (message && user.lastPeer != null) {
 			user.sendMsg(user.lastPeer.penPal, message)
 			msgInput.value = "";
 		}

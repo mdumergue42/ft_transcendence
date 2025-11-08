@@ -2,6 +2,9 @@ FROM node:20-alpine
 
 WORKDIR /app
 
+# pour tester la database en mode manuel
+RUN apk add --no-cache sqlite
+
 # Copier package files
 COPY package*.json ./
 

@@ -6,21 +6,21 @@ const saltRounds = 10;
 export async function hashPassword(password: string): Promise<string> {
 	try {
 		const hashPassword = await bcrypt.hash(password, saltRounds);
-		console.log('Mot de passe hasher avec succés: ', hashPassword);
+		console.log('Password hashed successfully');
 		return hashPassword;
 	} catch (error) {
-		console.error('Erreur lors du hashage du mot de passe: ', error);
+		console.error('Error during password hashing', error);
 		throw error;
 	}
 }
 
-//verif un mdp saisi par un user
-export async function verifPassword(password: string, hashPassword: string): Promise<void> {
-	try {
-		const matchPass = await bcrypt.compare(password, hashPassword);
-		console.log(matchPass ? 'Mot de passe valide' : 'Mot de passe invalide');
-	} catch (error) {console.error('Erreur avec la vérification du mot de passe: ', error);}
-}
+//verif un mdp saisi par un user |||| pour le moment ne sert pas
+// export async function verifPassword(password: string, hashPassword: string): Promise<void> {
+// 	try {
+// 		const matchPass = await bcrypt.compare(password, hashPassword);
+// 		console.log(matchPass ? 'Mot de passe valide' : 'Mot de passe invalide');
+// 	} catch (error) {console.error('Erreur avec la vérification du mot de passe: ', error);}
+// }
 
 
 

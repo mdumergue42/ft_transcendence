@@ -1,12 +1,12 @@
 export async function verifDataUser(username: string, password: string, email: string) {
 	const validUsername = validateUsername(username);
-	if (!validUsername) return 'Le nom d\'utilisateur ne peut contenir que des lettres, des chiffres et underscore.';
+	if (!validUsername) return 'The username can only contain letters, numbers, and underscores.';
 
 	const validPassword = validatePassword(password);
-	if (!validPassword) return 'Le mot de passe doit contenir 5 a 42 caracteres, au moins 1 majuscule, une minuscule, un chiffre.';
+	if (!validPassword) return 'The password must contain between 5 and 42 characters, at least 1 uppercase letter, 1 lowercase letter, and 1 number.';
 
 	const validEmail = validateEmail(email);
-	if (!validEmail) return 'L\'email n\'est pas conforme au Mail Protocole.';
+	if (!validEmail) return 'The email does not comply with the Mail Protocol.';
 
 	return null;
 }
@@ -35,8 +35,3 @@ export const validateEmail = (email: string) => {
 	const regex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]{1,64}@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
 	return regex.test(email);
 };
-
-
-export async function verifUser(username: string, password: string) {
-	
-}

@@ -4,3 +4,4 @@ export interface User {
 	wins: number;
 	losses: number;
 }
+

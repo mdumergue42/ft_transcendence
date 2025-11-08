@@ -3,7 +3,9 @@ import fastifyStatic from '@fastify/static';
 import fastifyCors from '@fastify/cors';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
-import {WSServInit} from './dev-chat/wss.js'
+import { WSServInit } from './dev-chat/wss.js';
+import { initDb } from './db/database.js'
+import { authRt } from './routes/auth.js'
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -69,31 +71,10 @@ server.register(fastifyStatic, {
 	prefix: '/',
 });
 
-server.get('/api/auth/status', async (request, reply) => {
-	return { loggedIn: false };
-});
+// init database and routes
+await initDb(server);
+await server.register(authRt);
 
-server.post('/api/login', async (request, reply) => {
-	const { username, password } = request.body as any;
-
-	if (username && password) {
-		return { success: true, message: 'Login successful' };
-	}
-
-	reply.code(401);
-	return { success: false, message: 'Invalid credentials' };
-});
-
-server.post('/api/register', async (request, reply) => {
-	const { username, password } = request.body as any;
-
-	if (username && password) {
-		return { success: true, message: 'Registration successful' };
-	}
-
-	reply.code(400);
-	return { success: false, message: 'Invalid data' };
-});
 
 server.setNotFoundHandler((request, reply) => {
 	reply.sendFile('index.html');

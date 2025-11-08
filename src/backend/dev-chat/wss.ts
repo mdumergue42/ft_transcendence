@@ -27,11 +27,10 @@ class Client
 			console.log("friend,flag:", row.id_friend, row.flag);
 			this.friendList.push([row.id_friend, row.flag]);
 		});
-			//await db.all(`SELECT msg FROM msgs WHERE id_from = '${this.id}' OR id_to = '${this.id}' ORDER BY date`,
-			//	(err:any, row:any) => {
-			//	console.log("ALL MSG:", row);
-		//sendALL(msg[], friend)
-			//})
+		await db.all(`SELECT msg FROM msgs WHERE id_from = '${this.id}' OR id_to = '${this.id}' ORDER BY date`, (err:any, row:any) => {
+			console.log("ALL MSG:", row);
+			//sendALL(msg[], friend)
+			})
 		console.log("USER IS LOGIN; friendList:", this.friendList);
 	}
 
@@ -72,15 +71,17 @@ class WsServ
 
 		console.log(`WebSocket server running on wss://localhost:${this.port}`);
 		this.db = SQLserver.db;
+		this.tmp() //TODO retirer car c sencer etre automatique!
 	}
 
-	tmp()
+	async tmp()
 	{
 		await this.db.run(`INSERT INTO users(username, email, password) VALUES('bastien','a@mail.com','123')`);
 		await this.db.run(`INSERT INTO users(username, email, password) VALUES('gaby','b@mail.com','123')`);
 		await this.db.run(`INSERT INTO users(username, email, password) VALUES('maelys','c@mail.com','123')`);
 		await this.db.run(`INSERT INTO friends(id_user, id_friend, flag) VALUES('1','2','0')`);
 		await this.db.run(`INSERT INTO friends(id_user, id_friend, flag) VALUES('1','3','0')`);
+		await this.db.run(`INSERT INTO friends(id_user, id_friend, flag) VALUES('1','1','0')`);
 	}
 
 	connection(socket:WebSocket)
@@ -142,7 +143,7 @@ class WsServ
 
 	async sendTo(message:string, to:string, from:Client)
 	{
-		var pal;
+		var pal = null;
 		for (let client of this.clients)
 		{
 			if (client.username == to)
@@ -151,17 +152,21 @@ class WsServ
 				break ;
 			}
 		}
-		await this.db.each(`SELECT flag FROM friends WHERE id_friend = '${from.id}' AND id_user = '${pal.id}'`, (err:any, row:any) =>
-		   {
+		if (pal == null)
+			return ; //informer le user?
+		console.log(`SELECT flag FROM friends WHERE id_friend = '${from.id}' AND id_user = '${pal.id}'`);
+		await this.db.each(`SELECT flag FROM friends WHERE id_friend = '${from.id}' AND id_user = '${pal.id}'`, (err:any, row:any) => {
+			console.log("TEST FRIENDSHIP:", row);
 			//test if blocked
 		});
 		pal.send(message, from);
-		await this.db.run(`INSERT INTO msgs(msg, id_from, id_to) VALUES(?, ?, ?)`, message, from.id, pal.id);
+		await this.db.run(`INSERT INTO msgs(msg, id_from, id_to) VALUES(?, ?, ?)`, [message, from.id, pal.id]);
+		console.log(`SELECT msg FROM msgs WHERE id_from = '${from.id}'`);
 
+		await this.db.all(`SELECT msg FROM msgs WHERE id_from = '${from.id}'`, (err:any, row:any) => {
+			console.log("LOG ALL MSGS:", row);
+			})
 		
-			//await db.all(`SELECT msg FROM msgs WHERE id_from = '${this.id}' OR id_to = '${this.id}' ORDER BY date`,
-		//verif si blocker ou pas
-		//ajouter au sql
 		return ;
 	}
 }

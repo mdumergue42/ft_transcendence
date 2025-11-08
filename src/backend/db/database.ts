@@ -13,7 +13,14 @@ export async function initDb(server: FastifyInstance) {
 	email TEXT UNIQUE NOT NULL,
 	password TEXT NOT NULL);
 
-	CREATE TABLE IF NOT EXISTS msg (
+	CREATE TABLE IF NOT EXISTS friends (
+	id_user INTEGER NOT NULL,
+	id_friend INTEGER NOT NULL,
+	flag INTEGER,
+	FOREIGN KEY (id_user) REFERENCES users(id_user),
+	FOREIGN KEY (id_friend) REFERENCES users(id_user));
+
+	CREATE TABLE IF NOT EXISTS msgs (
 	id_msg INTEGER PRIMARY KEY AUTOINCREMENT,
 	msg TEXT NOT NULL,
 	id_from INTEGER NOT NULL,
@@ -26,7 +33,7 @@ export async function initDb(server: FastifyInstance) {
 }
 
 
-
+//friend.FLAG => 0:blocked 1:yes 2:asking 3:got_asked
 
 //memo
 

@@ -105,12 +105,12 @@ const start = async () => {
 		const actualPort = await findAvailablePort(PORT);
 
 		console.log(`
-${colors.bright}${colors.magenta}╔════════════════════════════════════════╗${colors.reset}
-${colors.bright}${colors.magenta}║${colors.reset}  🚀 ${colors.bright}${colors.cyan}Transcendence Server${colors.reset}              ${colors.bright}${colors.magenta} ║${colors.reset}
-${colors.bright}${colors.magenta}║${colors.reset}                                        ${colors.bright}${colors.magenta}║${colors.reset}
-${colors.bright}${colors.magenta}║${colors.reset}  🌐 ${colors.bright}${colors.green}http://localhost:${actualPort}${colors.reset}${actualPort >= 10000 ? '' : ' '}             ${colors.bright}${colors.magenta}║${colors.reset}
-${colors.bright}${colors.magenta}║${colors.reset}  📁 ${colors.gray}Static files: /public${colors.reset}              ${colors.bright}${colors.magenta}║${colors.reset}
-${colors.bright}${colors.magenta}╚════════════════════════════════════════╝${colors.reset}
+${colors.bright}${colors.magenta}╔═════════════════════════════════════╗${colors.reset}
+${colors.bright}${colors.magenta}║${colors.reset}  🚀 ${colors.bright}${colors.cyan}Transcendence Server${colors.reset}${colors.bright}${colors.magenta}		║${colors.reset}
+${colors.bright}${colors.magenta}║${colors.reset}					${colors.bright}${colors.magenta}║${colors.reset}
+${colors.bright}${colors.magenta}║${colors.reset}  🌐 ${colors.bright}${colors.green}https://localhost:${actualPort}${colors.reset}${actualPort >= 10000 ? '' : ' '}		${colors.bright}${colors.magenta}║${colors.reset}
+${colors.bright}${colors.magenta}║${colors.reset}  📁 ${colors.gray}Static files: /public${colors.reset}		${colors.bright}${colors.magenta}║${colors.reset}
+${colors.bright}${colors.magenta}╚═════════════════════════════════════╝${colors.reset}
 `);
 
 		if (actualPort !== PORT) {
@@ -120,7 +120,7 @@ ${colors.bright}${colors.magenta}╚══════════════�
 			);
 		}
 
-		WSServInit(8080);
+		WSServInit(8080, server);
 
 	} catch (err: any) {
 		if (err.code === 'EADDRINUSE') {

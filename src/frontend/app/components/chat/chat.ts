@@ -80,19 +80,19 @@ export class ChatUser
 	{
 		const message = event.data;
 
-		const [type, arg, ...X] = message.split('+');
+		const [type, arg1, arg2, ...X] = message.split('+');
 		const content = X.join('+');
 
 		switch (type) {
 			case 'msg':
 				for (let friend of this.friendList)
 				{
-					if (friend.penPal == arg)
-						friend.addMsg(`${arg}: ${content}`);
+					if (friend.penPal == arg1 || friend.penPal == arg2)
+						friend.addMsg(`${arg1}: ${content}`);
 				}
 				break ;
 			case 'invited':
-				return `${arg}: invited you to room ${content}`
+				return `${arg1}: invited you to room ${content}`
 			//todo interactiv!
 			default:
 				break;
@@ -105,7 +105,7 @@ export class ChatUser
 		for (let friend of this.friendList)
 		{
 			if (friend.penPal == penPal)
-				friend.addMsg(`You: ${content}`);
+				friend.addMsg(`${this.username}: ${content}`);
 		}
 	}
 }

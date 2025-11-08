@@ -15,10 +15,10 @@ export async function initDb(server: FastifyInstance) {
 
 	CREATE TABLE IF NOT EXISTS friends (
 	id_relationship INTEGER PRIMARY KEY AUTOINCREMENT,
-	id_user INTEGER NOT NULL,
+	id_self INTEGER NOT NULL,
 	id_friend INTEGER NOT NULL,
 	flag INTEGER,
-	FOREIGN KEY (id_user) REFERENCES users(id_user),
+	FOREIGN KEY (id_self) REFERENCES users(id_user),
 	FOREIGN KEY (id_friend) REFERENCES users(id_user));
 
 	CREATE TABLE IF NOT EXISTS msgs (

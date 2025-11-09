@@ -34,7 +34,7 @@ export async function initDb(server: FastifyInstance) {
 }
 
 
-//friend.FLAG => 0:blocked 1:yes 2:asking 3:got_asked
+//friend.FLAG => 0:blocked 1:yes
 
 //memo
 

@@ -42,6 +42,18 @@ export class Conv
 		newMsg.appendChild(newContent);
 		this.chatBox.appendChild(newMsg);
 	}
+
+	friendDiv()
+	{
+		var li = document.createElement('li');
+		li.className = "chat-list";
+		li.innerHTML = `
+		<button class="choose-peer" id="choose-peer-${this.penPal}">${this.penPal}</button>
+		<button class="invite-btn">🎮 </button>
+		<button class="block-btn">⛔ </button>
+		`
+		return li;
+	}
 }
 
 export class ChatUser
@@ -55,15 +67,15 @@ export class ChatUser
 	{
 		this.username = _name;
 		this.port = _port;
+		//TODO WSS
 		this.ws = new WebSocket(`ws://localhost:${this.port}`);
 		this.connect();
-		this.friendList = [new Conv("bastien"), new Conv("gaby"), new Conv("maelys")];
+		this.friendList = [];
 		this.lastPeer = this.friendList[0];
 	}
 
 	connect()
 	{
-		//TODO WSS
 		this.ws.onopen  = () => 
 		{
 			this.ws.send(`user+${this.username}+user`);
@@ -75,7 +87,29 @@ export class ChatUser
 		this.ws.onmessage = (event) => this.onMsg(event);
 	}
 
-	//pour le moment <pre> peut changer + tard
+	receiveMsg(arg1:string, arg2:string, content:string)
+	{
+		find : {
+			const other = (arg1 != this.username) ? arg1 : arg2;
+			for (let friend of this.friendList)
+			{
+				if (friend.penPal == other)
+				{
+					friend.addMsg(`${arg1}: ${content}`);
+					break find;
+				}
+			}
+			const nc = new Conv(other)
+			this.friendList.push(nc);
+			nc.addMsg(`${arg1}: ${content}`);
+		}
+	}
+
+	receiveInvite(arg:string, room:string)
+	{
+		console.log(`${arg} invited you to room ${room}`);
+	}
+
 	onMsg(event:MessageEvent)
 	{
 		const message = event.data;
@@ -85,15 +119,17 @@ export class ChatUser
 
 		switch (type) {
 			case 'msg':
-				for (let friend of this.friendList)
-				{
-					if (friend.penPal == arg1 || friend.penPal == arg2)
-						friend.addMsg(`${arg1}: ${content}`);
-				}
+				this.receiveMsg(arg1, arg2, content);
 				break ;
 			case 'invited':
-				return `${arg1}: invited you to room ${content}`
-			//todo interactiv!
+				this.receiveInvite(arg1, content);
+				break ;
+			case 'endDb':
+				this.reRenderFriendList();
+				break
+			case 'add':
+				this.addAccepted(arg1, arg2);
+
 			default:
 				break;
 		}
@@ -106,6 +142,74 @@ export class ChatUser
 		{
 			if (friend.penPal == penPal)
 				friend.addMsg(`${this.username}: ${content}`);
+		}
+	}
+
+	addFriend(name:string)
+	{
+		//TODO refuse yourself
+		var log = document.getElementById("log-add-friend");
+		for (let friend of this.friendList)
+		{
+			if (friend.penPal == name)
+			{
+				if (log)
+					log.innerHTML = "your already friend with him!";
+				return ;
+			}
+		}
+		this.ws.send(`add+${name}+its cool to have friend`);
+		if (log)
+			log.innerHTML = "searching"
+	}
+	addAccepted(name:string, arg:string)
+	{
+		var log = document.getElementById("log-add-friend");
+
+		receiveEnd : {
+			if (arg == "no")
+			{
+				for (let friend of this.friendList)
+				{
+					if (friend.penPal == name)
+						return ;
+				}
+				if (log)
+					log.innerHTML = "user doesn't exist";
+				return ;
+			}
+		};
+
+		this.friendList.push(new Conv(name));
+		if (log)
+			log.innerHTML = "accpeted";
+		this.reRenderFriendList();
+	}
+
+	reRenderFriendList()
+	{
+		var friendDiv = document.getElementById("friends-list");
+		if (friendDiv == null)
+			return ;
+
+		var chatBox = <HTMLDivElement>document.getElementById("chat-box");
+		var chatHeader = document.getElementById("chat-header");
+		friendDiv.innerHTML = "";
+		for (let fr of this.friendList)
+		{
+			var ele = fr.friendDiv();
+			friendDiv.appendChild(ele);
+			const btn = document.getElementById(`choose-peer-${fr.penPal}`);
+			if (!btn)
+				continue ;
+			btn.onclick = () => {
+				fr.setChatBox(chatBox);
+				this.lastPeer?.setChatBox(null);
+				this.lastPeer = fr;
+				fr.reRenderConv();
+				if (chatHeader)
+					chatHeader.textContent = fr.penPal;
+			}
 		}
 	}
 }

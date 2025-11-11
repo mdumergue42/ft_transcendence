@@ -13,6 +13,9 @@ class Client
 		this.username = "TBD";
 		this.id = 0
 		this.friendList = [];
+
+		/*console.log("USER IS LOGIN; friendList:", this.friendList);
+		await db.each(`SELECT id_friend,id_self FROM friends`, (err:any, row:any) => {console.log("RS:", row)});*/
 	}
 
 	async user(name: string, db:any)
@@ -30,11 +33,18 @@ class Client
 			await this.sendOldMsg(row.msg, row.id_from, row.id_to);
 		});
 
-		console.log("USER IS LOGIN; friendList:", this.friendList);
-		await db.each(`SELECT id_friend,id_self FROM friends`, (err:any, row:any) => {console.log("RS:", row)});
 
-		//TODO AJOUTER LIST BLOCKER!!
+		this.sendBlockedList();
 		this.socket.send(`endDb+x+x+end of stored msg`);
+	}
+
+	sendBlockedList()
+	{
+		for (let fr of this.friendList)
+		{
+			if (fr[1] == 0)
+				this.socket.send(`blocked+${fr[2]}+x+x`);
+		}
 	}
 
 	send(message:string, from:Client)
@@ -148,8 +158,7 @@ class WsServ
 				this.addFriend(arg, client);
 				break
 			case 'block':
-				//arg = cible
-				//content = null
+				this.block(client, arg, parseInt(content, 10))
 				break;
 			case 'invite':
 				//arg = cible
@@ -157,6 +166,21 @@ class WsServ
 			default:
 				break;
 		}
+	}
+
+	async block(client: Client, name:string, flag:number)
+	{
+		await this.db.each(`SELECT id_user as id_to FROM users WHERE username = '${name}'`, async (err:any, rowID:any) => {
+
+			await this.db.each(`SELECT COUNT(1) AS nb FROM friends WHERE id_self = ${client.id} AND id_friend = ${rowID.id_to}`,
+				async (err:any, row:any) =>{
+					
+					if (row.nb != 0)
+						await this.db.run(`UPDATE friends SET flag = ${flag} WHERE id_self = ${client.id} AND id_friend = ${rowID.id_to}`);
+					else
+						await this.db.run(`INSERT INTO friends(id_self, id_friend, flag) VALUES(?, ?, ?)`, [client.id, rowID.id_to, flag]);
+			});
+		});
 	}
 
 	async addFriend(name:string, from:Client)
@@ -174,6 +198,10 @@ class WsServ
 			if (row.nb != 0)
 				return ;
 			await this.db.run(`INSERT INTO friends(id_self, id_friend, flag) VALUES(?, ?, ?)`, [from.id, o_id, 1]);
+		});
+		await this.db.each(`SELECT COUNT(1) AS nb FROM friends WHERE id_friend = ${from.id} AND id_self = ${o_id}`, async (err:any, row:any) =>{
+			if (row.nb != 0)
+				return ;
 			if (o_id != from.id) //TODO SUPPR C JUSTE POUR LES TEST CA
 				await this.db.run(`INSERT INTO friends(id_self, id_friend, flag) VALUES(?, ?, ?)`, [o_id, from.id, 1]);
 		});

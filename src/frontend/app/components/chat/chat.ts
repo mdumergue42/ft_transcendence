@@ -5,11 +5,13 @@ export class Conv
 	penPal:string
 	msgList:string[]
 	chatBox:HTMLDivElement | null
-	constructor(_user:string)
+	flag:number
+	constructor(_user:string, _flag:number)
 	{
 		this.penPal = _user;
 		this.msgList = [];
 		this.chatBox = null;
+		this.flag = _flag;
 	}
 
 	reRenderConv()
@@ -43,14 +45,28 @@ export class Conv
 		this.chatBox.appendChild(newMsg);
 	}
 
+	toggleBlock(chooseBtn: HTMLElement | null)
+	{
+		this.flag = 1 - this.flag;
+		
+		if (chooseBtn)
+		{
+			const color = ["red", "black"];
+			chooseBtn.style.color = color[this.flag];
+		}
+
+		return this.flag;
+	}
+
 	friendDiv()
 	{
+		const color = ["red", "black"];
 		var li = document.createElement('li');
 		li.className = "chat-list";
 		li.innerHTML = `
-		<button class="choose-peer" id="choose-peer-${this.penPal}">${this.penPal}</button>
+		<button class="choose-peer" id="choose-peer-${this.penPal}" style="color:${color[this.flag]}">${this.penPal}</button>
 		<button class="invite-btn">🎮 </button>
-		<button class="block-btn">⛔ </button>
+		<button class="block-btn" id="block-peer-${this.penPal}">⛔ </button>
 		`
 		return li;
 	}
@@ -82,7 +98,6 @@ export class ChatUser
 		}
 		this.ws.onclose = () =>
 		{
-			console.log("disocnneted\n");
 		}
 		this.ws.onmessage = (event) => this.onMsg(event);
 	}
@@ -99,10 +114,14 @@ export class ChatUser
 					break find;
 				}
 			}
-			const nc = new Conv(other)
+			const nc = new Conv(other, 1)
 			this.friendList.push(nc);
 			nc.addMsg(`${arg1}: ${content}`);
 		}
+	}
+	receiveBlocked(name:string)
+	{
+		this.friendList.push(new Conv(name, 0));
 	}
 
 	receiveInvite(arg:string, room:string)
@@ -129,10 +148,18 @@ export class ChatUser
 				break
 			case 'add':
 				this.addAccepted(arg1, arg2);
-
+				break
+			case 'blocked':
+				this.receiveBlocked(arg1);
+				break
 			default:
 				break;
 		}
+	}
+
+	sendBlock(friend:Conv)
+	{
+		this.ws.send(`block+${friend.penPal}+${friend.flag}`);
 	}
 
 	sendMsg(penPal:string, content:string)
@@ -180,7 +207,8 @@ export class ChatUser
 			}
 		};
 
-		this.friendList.push(new Conv(name));
+		const newFriend = new Conv(name, 1);
+		this.friendList.push(newFriend);
 		if (log)
 			log.innerHTML = "accpeted";
 		this.reRenderFriendList();
@@ -188,6 +216,7 @@ export class ChatUser
 
 	reRenderFriendList()
 	{
+		console.log(this.friendList);
 		var friendDiv = document.getElementById("friends-list");
 		if (friendDiv == null)
 			return ;
@@ -199,17 +228,41 @@ export class ChatUser
 		{
 			var ele = fr.friendDiv();
 			friendDiv.appendChild(ele);
-			const btn = document.getElementById(`choose-peer-${fr.penPal}`);
-			if (!btn)
-				continue ;
-			btn.onclick = () => {
-				fr.setChatBox(chatBox);
-				this.lastPeer?.setChatBox(null);
-				this.lastPeer = fr;
-				fr.reRenderConv();
-				if (chatHeader)
-					chatHeader.textContent = fr.penPal;
+
+			const chooseBtn = document.getElementById(`choose-peer-${fr.penPal}`);
+			if (chooseBtn)
+			{
+				chooseBtn.onclick = () => {
+					if (fr.flag == 1)
+					{
+						fr.setChatBox(chatBox);
+						this.lastPeer?.setChatBox(null);
+						this.lastPeer = fr;
+						fr.reRenderConv();
+						if (chatHeader)
+							chatHeader.textContent = fr.penPal;
+					}
+				}
 			}
+			const blockBtn = document.getElementById(`block-peer-${fr.penPal}`);
+			if (blockBtn)
+			{
+				blockBtn.onclick = () => {
+					fr.toggleBlock(chooseBtn);
+					if (fr.flag == 0 && this.lastPeer == fr)
+					{
+						if (chatBox)
+							chatBox.innerHTML = "";
+						fr.setChatBox(null);
+						this.lastPeer = null;
+						if (chatHeader)
+							chatHeader.textContent = "Conv";
+					}
+					this.sendBlock(fr);
+				}
+			}
+			
+
 		}
 	}
 }

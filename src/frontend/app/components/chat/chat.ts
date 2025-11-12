@@ -1,90 +1,16 @@
-var ws : WebSocket;
-
-export class Conv
-{
-	penPal:string
-	msgList:string[]
-	chatBox:HTMLDivElement | null
-	flag:number
-	constructor(_user:string, _flag:number)
-	{
-		this.penPal = _user;
-		this.msgList = [];
-		this.chatBox = null;
-		this.flag = _flag;
-	}
-
-	reRenderConv()
-	{
-		if (this.chatBox == null)
-			return ;
-		this.chatBox.innerHTML = "";
-		for (let msg of this.msgList)
-		{
-			var newMsg = document.createElement('div');
-			newMsg.className = "msg-class";
-			newMsg.appendChild(document.createTextNode(msg))
-			this.chatBox.appendChild(newMsg);
-		}
-	}
-
-	setChatBox(_div:HTMLDivElement | null)
-	{
-		this.chatBox = _div;
-	}
-
-	addMsg(msg:string)
-	{
-		this.msgList.push(msg);
-		if (this.chatBox == null)
-			return ;
-		var newMsg = document.createElement('div');
-		newMsg.className = "msg-class";
-		const newContent = document.createTextNode(msg);
-		newMsg.appendChild(newContent);
-		this.chatBox.appendChild(newMsg);
-	}
-
-	toggleBlock(chooseBtn: HTMLElement | null)
-	{
-		this.flag = 1 - this.flag;
-		
-		if (chooseBtn)
-		{
-			const color = ["red", "black"];
-			chooseBtn.style.color = color[this.flag];
-		}
-
-		return this.flag;
-	}
-
-	friendDiv()
-	{
-		const color = ["red", "black"];
-		var li = document.createElement('li');
-		li.className = "chat-list";
-		li.innerHTML = `
-		<button class="choose-peer" id="choose-peer-${this.penPal}" style="color:${color[this.flag]}">${this.penPal}</button>
-		<button class="invite-btn">🎮 </button>
-		<button class="block-btn" id="block-peer-${this.penPal}">⛔ </button>
-		`
-		return li;
-	}
-}
+import {Conv, Conv__lt__} from './conv.js'
 
 export class ChatUser
 {
 	username:string
-	port:number
 	ws: WebSocket
 	friendList:Conv[]
 	lastPeer:Conv | null
-	constructor(_name:string, _port:number)
+	constructor(_name:string, port:number)
 	{
 		this.username = _name;
-		this.port = _port;
 		//TODO WSS
-		this.ws = new WebSocket(`ws://localhost:${this.port}`);
+		this.ws = new WebSocket(`ws://localhost:${port}`);
 		this.connect();
 		this.friendList = [];
 		this.lastPeer = this.friendList[0];
@@ -92,48 +18,64 @@ export class ChatUser
 
 	connect()
 	{
-		this.ws.onopen  = () => 
-		{
-			this.ws.send(`user+${this.username}+user`);
-		}
-		this.ws.onclose = () =>
-		{
-		}
+		this.ws.onopen  = () => this.ws.send(`user+${this.username}+user`);
+		this.ws.onclose = () => {}
 		this.ws.onmessage = (event) => this.onMsg(event);
+	}
+
+	_getConv(name:string)
+	{
+		for (let conv of this.friendList)
+		{
+			if (name == conv.penPal)
+				return conv
+		}
+		return null;
 	}
 
 	receiveMsg(arg1:string, arg2:string, content:string)
 	{
-		find : {
-			const other = (arg1 != this.username) ? arg1 : arg2;
-			for (let friend of this.friendList)
-			{
-				if (friend.penPal == other)
-				{
-					friend.addMsg(`${arg1}: ${content}`);
-					break find;
-				}
-			}
-			const nc = new Conv(other, 1)
-			this.friendList.push(nc);
-			nc.addMsg(`${arg1}: ${content}`);
+		const other = (arg1 != this.username) ? arg1 : arg2;
+		var conv = this._getConv(other);
+		if (!conv)
+		{
+			conv = new Conv(other, 1)
+			this.friendList.push(conv);
+			return ;
 		}
+		conv.HTMLAddMsg(`${arg1}: ${content}`);
 	}
 	receiveBlocked(name:string)
 	{
 		this.friendList.push(new Conv(name, 0));
 	}
-
 	receiveInvite(arg:string, room:string)
 	{
-		console.log(`${arg} invited you to room ${room}`);
+		console.log(`${arg} invited you to room ${room}`); //TODO
+	}
+	receiveAdd(name:string, arg:string)
+	{
+		var log = document.getElementById("log-add-friend");
+		if (arg == "no")
+		{
+			var conv = this._getConv(name);
+			if (conv)
+				return ;
+			if (log)
+				log.innerHTML = "user doesn't exist";
+			return ;
+		}
+
+		const newFriend = new Conv(name, 1);
+		this.friendList.push(newFriend);
+		if (log)
+			log.innerHTML = "accpeted";
+		this.reRenderFriendList(); //TODO TROP GOURMAND!
 	}
 
 	onMsg(event:MessageEvent)
 	{
-		const message = event.data;
-
-		const [type, arg1, arg2, ...X] = message.split('+');
+		const [type, arg1, arg2, ...X] = event.data.split('+');
 		const content = X.join('+');
 
 		switch (type) {
@@ -143,14 +85,14 @@ export class ChatUser
 			case 'invited':
 				this.receiveInvite(arg1, content);
 				break ;
-			case 'endDb':
-				this.reRenderFriendList();
-				break
 			case 'add':
-				this.addAccepted(arg1, arg2);
+				this.receiveAdd(arg1, arg2);
 				break
 			case 'blocked':
 				this.receiveBlocked(arg1);
+				break
+			case 'endDb':
+				this.reRenderFriendList();
 				break
 			default:
 				break;
@@ -165,104 +107,80 @@ export class ChatUser
 	sendMsg(penPal:string, content:string)
 	{
 		this.ws.send(`msg+${penPal}+${content}`)
-		for (let friend of this.friendList)
-		{
-			if (friend.penPal == penPal)
-				friend.addMsg(`${this.username}: ${content}`);
-		}
+		const conv = this._getConv(penPal);
+		conv?.HTMLAddMsg(`${this.username}: ${content}`);
 	}
 
 	addFriend(name:string)
 	{
 		//TODO refuse yourself
 		var log = document.getElementById("log-add-friend");
-		for (let friend of this.friendList)
+
+		const conv = this._getConv(name);
+		if (conv)
 		{
-			if (friend.penPal == name)
-			{
-				if (log)
-					log.innerHTML = "your already friend with him!";
-				return ;
-			}
+			if (log)
+				log.innerHTML = "your already friend with him!";
+			return ;
 		}
 		this.ws.send(`add+${name}+its cool to have friend`);
 		if (log)
 			log.innerHTML = "searching"
 	}
-	addAccepted(name:string, arg:string)
+
+	HTMLChooseBtn(conv: Conv, chatBox: HTMLElement, chatHeader: HTMLElement, chooseBtn: HTMLElement)
 	{
-		var log = document.getElementById("log-add-friend");
-
-		receiveEnd : {
-			if (arg == "no")
-			{
-				for (let friend of this.friendList)
-				{
-					if (friend.penPal == name)
-						return ;
-				}
-				if (log)
-					log.innerHTML = "user doesn't exist";
+		chooseBtn.onclick = () => {
+			if (conv.flag == 0)
 				return ;
+			conv.setChatBox(chatBox);
+			this.lastPeer?.setChatBox(null);
+			this.lastPeer = conv;
+			conv.HTMLRenderConv();
+			chatHeader.textContent = conv.penPal;
+		}
+	}
+	HTMLBlockBtn(conv: Conv, chatBox: HTMLElement, chatHeader: HTMLElement, chooseBtn: HTMLElement, blockBtn: HTMLElement)
+	{
+		if (!blockBtn)
+			return ;
+		blockBtn.onclick = () => {
+			conv.toggleBlock(chooseBtn);
+			if (conv.flag == 0 && this.lastPeer == conv)
+			{
+				chatBox.innerHTML = "";
+				conv.setChatBox(null);
+				this.lastPeer = null;
+				chatHeader.textContent = "Chats-init-toRename";
 			}
-		};
+			this.sendBlock(conv);
+		}
+	}
 
-		const newFriend = new Conv(name, 1);
-		this.friendList.push(newFriend);
-		if (log)
-			log.innerHTML = "accpeted";
-		this.reRenderFriendList();
+	HTMLRenderPeer(conv: Conv, friendDiv: HTMLElement, chatBox: HTMLElement, chatHeader: HTMLElement)
+	{
+		var li = conv.HTMLChoosePeer();
+		friendDiv.appendChild(li);
+
+		const chooseBtn = document.getElementById(`choose-peer-${conv.penPal}`);
+		const blockBtn = document.getElementById(`block-peer-${conv.penPal}`);
+		if (!chooseBtn || !blockBtn)
+			return ;
+		this.HTMLChooseBtn(conv, chatBox, chatHeader, chooseBtn);
+		this.HTMLBlockBtn(conv, chatBox, chatHeader, chooseBtn, blockBtn);
 	}
 
 	reRenderFriendList()
 	{
-		console.log(this.friendList);
 		var friendDiv = document.getElementById("friends-list");
-		if (friendDiv == null)
-			return ;
-
-		var chatBox = <HTMLDivElement>document.getElementById("chat-box");
+		var chatBox = document.getElementById("chat-box");
 		var chatHeader = document.getElementById("chat-header");
+		if (!friendDiv || !chatHeader || !chatBox)
+			return ;
 		friendDiv.innerHTML = "";
-		for (let fr of this.friendList)
-		{
-			var ele = fr.friendDiv();
-			friendDiv.appendChild(ele);
 
-			const chooseBtn = document.getElementById(`choose-peer-${fr.penPal}`);
-			if (chooseBtn)
-			{
-				chooseBtn.onclick = () => {
-					if (fr.flag == 1)
-					{
-						fr.setChatBox(chatBox);
-						this.lastPeer?.setChatBox(null);
-						this.lastPeer = fr;
-						fr.reRenderConv();
-						if (chatHeader)
-							chatHeader.textContent = fr.penPal;
-					}
-				}
-			}
-			const blockBtn = document.getElementById(`block-peer-${fr.penPal}`);
-			if (blockBtn)
-			{
-				blockBtn.onclick = () => {
-					fr.toggleBlock(chooseBtn);
-					if (fr.flag == 0 && this.lastPeer == fr)
-					{
-						if (chatBox)
-							chatBox.innerHTML = "";
-						fr.setChatBox(null);
-						this.lastPeer = null;
-						if (chatHeader)
-							chatHeader.textContent = "Conv";
-					}
-					this.sendBlock(fr);
-				}
-			}
-			
-
-		}
+		this.friendList.sort(Conv__lt__);
+		for (let conv of this.friendList)
+			this.HTMLRenderPeer(conv, friendDiv, chatBox, chatHeader);
 	}
 }

@@ -1,15 +1,15 @@
-import { ChatUser,Conv } from '../components/chat/chat.js'
+import { ChatUser } from '../components/chat/chat.js'
 
 export function renderChat() {
 	return `
 	<input id="add-friend" type="text" placeholder="add a friend"></input>
 	<button id="send-add">ADD</button>
 	<div id="log-add-friend" style="height:2rem;color:grey;">logs</div>
-	<div style="overflow:scroll;height:5rem;">
+	<div style="overflow-y: scroll; overflow-x: hidden;;height:5rem;">
 	<ul class="list-frinds" id="friends-list">
 	</ul>
 	</div>
-	<div class="chat-header" id="chat-header" style="margin-top:10px">Convs</div>
+	<div class="chat-header" id="chat-header" style="margin-top:10px">Chats-init-toRename</div>
 	<div class="chat" id="chat-box" style="margin-top:30px">
 	</div>
 	<input id="msg" type="text" placeholder="write a msg"></input>

@@ -1,4 +1,4 @@
-import { renderHome } from './pages/home.js';
+import { renderHome,initHome } from './pages/home.js';
 import { renderHistory } from './pages/history.js';
 import { renderMatch } from './pages/match.js';
 import './ui/navbar.js';
@@ -14,6 +14,7 @@ export function initRouter() {
 		switch (path) {
 			case '/':
 				root.innerHTML = renderHome();
+				initHome();
 				break;
 			case '/match':
 				root.innerHTML = renderMatch();

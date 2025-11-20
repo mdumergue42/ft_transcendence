@@ -10,102 +10,102 @@ export class AuthModal extends HTMLElement {
 
     render() {
         this.innerHTML = `
-            <div id="auth-modal" class="modal-overlay fixed inset-0 bg-black/80 flex items-center justify-center z-50 opacity-0 pointer-events-none transition-opacity duration-300 backdrop-blur-sm">
-                <div class="bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 border-2 border-cyan-400 rounded-2xl p-8 max-w-md w-full mx-4 transform scale-95 transition-transform duration-300 shadow-[0_0_30px_rgba(6,182,212,0.5)]">
+            <div id="auth-modal" class="modal-overlay fixed inset-0 bg-black/90 flex items-center justify-center z-50 opacity-0 pointer-events-none transition-opacity duration-300 backdrop-blur-sm">
+                <div class="bg-black border-2 border-green-400 rounded-xl p-8 max-w-md w-full mx-4 transform scale-95 transition-transform duration-300 shadow-[0_0_30px_rgba(0,255,0,0.2)]">
                     <div class="flex items-center justify-between mb-6">
-                        <h2 class="text-2xl font-bold text-cyan-400 font-mono tracking-wider">
+                        <h2 class="text-2xl font-bold text-green-400 font-mono tracking-wider">
                             <span id="modal-title">CONNEXION</span>
                         </h2>
-                        <button id="close-modal" class="text-cyan-400 hover:text-red-500 transition-colors duration-300 text-2xl font-bold">
+                        <button id="close-modal" class="text-green-400 hover:text-red-500 transition-colors duration-300 text-2xl font-bold">
                             ✕
                         </button>
                     </div>
-                    <div class="flex mb-6 bg-black/30 rounded-xl p-1 border border-cyan-400/20">
-                        <button id="login-tab" class="auth-tab flex-1 py-2 px-4 rounded-lg font-mono text-sm font-semibold transition-all duration-300 text-cyan-400 bg-cyan-400/20 border border-cyan-400/50">
+                    <div class="flex mb-6 bg-black rounded-xl p-1 border border-green-400/30">
+                        <button id="login-tab" class="auth-tab flex-1 py-2 px-4 rounded-lg font-mono text-sm font-semibold transition-all duration-300 text-black bg-green-400 border border-green-400">
                             CONNEXION
                         </button>
-                        <button id="register-tab" class="auth-tab flex-1 py-2 px-4 rounded-lg font-mono text-sm font-semibold transition-all duration-300 text-cyan-300/70 hover:text-cyan-400">
+                        <button id="register-tab" class="auth-tab flex-1 py-2 px-4 rounded-lg font-mono text-sm font-semibold transition-all duration-300 text-green-400/50 hover:text-green-400">
                             INSCRIPTION
                         </button>
                     </div>
                     <form id="login-form" class="auth-form space-y-4">
                         <div>
-                            <label class="block text-cyan-300 font-mono text-sm mb-2">IDENTIFIANT</label>
+                            <label class="block text-green-400 font-mono text-sm mb-2">IDENTIFIANT</label>
                             <input
                                 type="text"
                                 name="username"
                                 required
-                                class="w-full bg-black/50 border-2 border-cyan-400/30 rounded-lg px-4 py-3 text-cyan-100 font-mono focus:border-cyan-400 focus:outline-none transition-colors duration-300 placeholder-cyan-300/40"
+                                class="w-full bg-black border-2 border-green-400/50 rounded-lg px-4 py-3 text-green-400 font-mono focus:border-green-400 focus:outline-none transition-colors duration-300 placeholder-green-400/30 focus:shadow-[0_0_15px_rgba(0,255,0,0.2)]"
                                 placeholder="Votre nom d'utilisateur"
                             >
                         </div>
                         <div>
-                            <label class="block text-cyan-300 font-mono text-sm mb-2">MOT DE PASSE</label>
+                            <label class="block text-green-400 font-mono text-sm mb-2">MOT DE PASSE</label>
                             <input
                                 type="password"
                                 name="password"
                                 required
-                                class="w-full bg-black/50 border-2 border-cyan-400/30 rounded-lg px-4 py-3 text-cyan-100 font-mono focus:border-cyan-400 focus:outline-none transition-colors duration-300 placeholder-cyan-300/40"
+                                class="w-full bg-black border-2 border-green-400/50 rounded-lg px-4 py-3 text-green-400 font-mono focus:border-green-400 focus:outline-none transition-colors duration-300 placeholder-green-400/30 focus:shadow-[0_0_15px_rgba(0,255,0,0.2)]"
                                 placeholder="••••••••"
                             >
                         </div>
                         <button
                             type="submit"
-                            class="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-black font-mono font-bold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 hover:shadow-[0_0_20px_rgba(6,182,212,0.5)] uppercase tracking-wider"
+                            class="w-full bg-black border-2 border-green-400 text-green-400 hover:bg-green-400 hover:text-black font-mono font-bold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 hover:shadow-[0_0_20px_rgba(0,255,0,0.4)] uppercase tracking-wider"
                         >
                             SE CONNECTER
                         </button>
                     </form>
                     <form id="register-form" class="auth-form space-y-4 hidden">
                         <div>
-                            <label class="block text-cyan-300 font-mono text-sm mb-2">IDENTIFIANT</label>
+                            <label class="block text-green-400 font-mono text-sm mb-2">IDENTIFIANT</label>
                             <input
                                 type="text"
                                 name="username"
                                 required
-                                class="w-full bg-black/50 border-2 border-cyan-400/30 rounded-lg px-4 py-3 text-cyan-100 font-mono focus:border-cyan-400 focus:outline-none transition-colors duration-300 placeholder-cyan-300/40"
+                                class="w-full bg-black border-2 border-green-400/50 rounded-lg px-4 py-3 text-green-400 font-mono focus:border-green-400 focus:outline-none transition-colors duration-300 placeholder-green-400/30 focus:shadow-[0_0_15px_rgba(0,255,0,0.2)]"
                                 placeholder="Choisir un nom d'utilisateur"
                             >
                         </div>
                         <div>
-                            <label class="block text-cyan-300 font-mono text-sm mb-2">EMAIL</label>
+                            <label class="block text-green-400 font-mono text-sm mb-2">EMAIL</label>
                             <input
                                 type="email"
                                 name="email"
                                 required
-                                class="w-full bg-black/50 border-2 border-cyan-400/30 rounded-lg px-4 py-3 text-cyan-100 font-mono focus:border-cyan-400 focus:outline-none transition-colors duration-300 placeholder-cyan-300/40"
+                                class="w-full bg-black border-2 border-green-400/50 rounded-lg px-4 py-3 text-green-400 font-mono focus:border-green-400 focus:outline-none transition-colors duration-300 placeholder-green-400/30 focus:shadow-[0_0_15px_rgba(0,255,0,0.2)]"
                                 placeholder="votre@email.com"
                             >
                         </div>
                         <div>
-                            <label class="block text-cyan-300 font-mono text-sm mb-2">MOT DE PASSE</label>
+                            <label class="block text-green-400 font-mono text-sm mb-2">MOT DE PASSE</label>
                             <input
                                 type="password"
                                 name="password"
                                 required
-                                class="w-full bg-black/50 border-2 border-cyan-400/30 rounded-lg px-4 py-3 text-cyan-100 font-mono focus:border-cyan-400 focus:outline-none transition-colors duration-300 placeholder-cyan-300/40"
+                                class="w-full bg-black border-2 border-green-400/50 rounded-lg px-4 py-3 text-green-400 font-mono focus:border-green-400 focus:outline-none transition-colors duration-300 placeholder-green-400/30 focus:shadow-[0_0_15px_rgba(0,255,0,0.2)]"
                                 placeholder="••••••••"
                             >
                         </div>
                         <div>
-                            <label class="block text-cyan-300 font-mono text-sm mb-2">CONFIRMER LE MOT DE PASSE</label>
+                            <label class="block text-green-400 font-mono text-sm mb-2">CONFIRMER LE MOT DE PASSE</label>
                             <input
                                 type="password"
                                 name="confirmPassword"
                                 required
-                                class="w-full bg-black/50 border-2 border-cyan-400/30 rounded-lg px-4 py-3 text-cyan-100 font-mono focus:border-cyan-400 focus:outline-none transition-colors duration-300 placeholder-cyan-300/40"
+                                class="w-full bg-black border-2 border-green-400/50 rounded-lg px-4 py-3 text-green-400 font-mono focus:border-green-400 focus:outline-none transition-colors duration-300 placeholder-green-400/30 focus:shadow-[0_0_15px_rgba(0,255,0,0.2)]"
                                 placeholder="••••••••"
                             >
                         </div>
                         <button
                             type="submit"
-                            class="w-full bg-gradient-to-r from-green-500 to-blue-600 hover:from-green-400 hover:to-blue-500 text-black font-mono font-bold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 hover:shadow-[0_0_20px_rgba(34,197,94,0.5)] uppercase tracking-wider"
+                            class="w-full bg-black border-2 border-green-400 text-green-400 hover:bg-green-400 hover:text-black font-mono font-bold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 hover:shadow-[0_0_20px_rgba(0,255,0,0.4)] uppercase tracking-wider"
                         >
                             S'INSCRIRE
                         </button>
                     </form>
                     <div class="mt-6 text-center">
-                        <p class="text-cyan-300/70 font-mono text-xs">
+                        <p class="text-green-400/40 font-mono text-xs">
                             🏓 TRANSCENDENCE v2.0 🏓
                         </p>
                     </div>
@@ -151,17 +151,20 @@ export class AuthModal extends HTMLElement {
         const registerForm = this.querySelector('#register-form') as HTMLFormElement;
         const modalTitle = this.querySelector('#modal-title') as HTMLElement;
 
-        loginTab.className = 'auth-tab flex-1 py-2 px-4 rounded-lg font-mono text-sm font-semibold transition-all duration-300 text-cyan-300/70 hover:text-cyan-400';
-        registerTab.className = 'auth-tab flex-1 py-2 px-4 rounded-lg font-mono text-sm font-semibold transition-all duration-300 text-cyan-300/70 hover:text-cyan-400';
+        const inactiveClass = 'auth-tab flex-1 py-2 px-4 rounded-lg font-mono text-sm font-semibold transition-all duration-300 text-green-400/50 hover:text-green-400 border border-transparent';
+        
+        const activeClass = 'auth-tab flex-1 py-2 px-4 rounded-lg font-mono text-sm font-semibold transition-all duration-300 text-black bg-green-400 border border-green-400 shadow-[0_0_10px_rgba(0,255,0,0.3)]';
 
         if (tab === 'login') {
             modalTitle.textContent = 'CONNEXION';
-            loginTab.className = 'auth-tab flex-1 py-2 px-4 rounded-lg font-mono text-sm font-semibold transition-all duration-300 text-cyan-400 bg-cyan-400/20 border border-cyan-400/50';
+            loginTab.className = activeClass;
+            registerTab.className = inactiveClass;
             loginForm.classList.remove('hidden');
             registerForm.classList.add('hidden');
         } else {
             modalTitle.textContent = 'INSCRIPTION';
-            registerTab.className = 'auth-tab flex-1 py-2 px-4 rounded-lg font-mono text-sm font-semibold transition-all duration-300 text-cyan-400 bg-cyan-400/20 border border-cyan-400/50';
+            registerTab.className = activeClass;
+            loginTab.className = inactiveClass;
             registerForm.classList.remove('hidden');
             loginForm.classList.add('hidden');
         }

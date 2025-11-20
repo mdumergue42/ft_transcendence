@@ -3,6 +3,31 @@ import '../ui/auth-modal.js';
 export function renderHome() {
 	return `<app-navbar></app-navbar>
 		<auth-modal></auth-modal>
+		<button id="chat-bubble-toggle" 
+                class="fixed bottom-4 right-4 w-16 h-16 border-2 border-green-400 bg-black 
+                       text-green-400 text-3xl rounded-full z-50 
+                       hover:bg-green-400 hover:text-black transition-all duration-200 
+                       hover:shadow-[0_0_20px_rgba(0,255,0,0.8)] animate-pulse">
+            💬
+        </button>
+
+        <div id="chat-sidebar" 
+             class="fixed top-0 right-0 h-screen w-80 bg-black border-l-2 border-green-400 z-[60]
+                    transform transition-transform duration-300 ease-in-out translate-x-full
+                    flex flex-col">
+            
+            <div class="flex justify-between items-center p-2 border-b-2 border-green-400">
+                <h3 class="text-lg uppercase tracking-widest text-green-400">[CHAT]</h3>
+                <button id="chat-close-btn" 
+                        class="p-2 text-green-400 hover:bg-green-400 hover:text-black">
+                    [FERMER]
+                </button>
+            </div>
+
+            <div class="flex-1 p-4 text-green-400/50">
+                testcaca
+            </div>
+        </div>
 		<main class="ml-[80px] min-h-screen bg-black text-green-400 overflow-x-hidden relative font-mono">
 			<div class="absolute inset-0 pointer-events-none z-40" style="background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,255,0,0.03) 2px, rgba(0,255,0,0.03) 4px);"></div>
 			<div class="absolute inset-0 opacity-5" style="background-image: repeating-conic-gradient(#00ff00 0% 25%, transparent 0% 50%) 50% / 4px 4px;"></div>
@@ -114,4 +139,27 @@ export function renderHome() {
 				</div>
 			</div>
 		</main>`;
+}
+
+export function initHome() {
+    
+    const bubbleButton = document.getElementById('chat-bubble-toggle');
+    const sidebar = document.getElementById('chat-sidebar');
+    const closeButton = document.getElementById('chat-close-btn');
+
+    if (!bubbleButton || !sidebar || !closeButton) {
+        console.warn('Éléments du chat (bulle/sidebar) non trouvés.');
+        return;
+    }
+
+    const openChat = () => {
+        sidebar.classList.remove('translate-x-full');
+    };
+
+    const closeChat = () => {
+        sidebar.classList.add('translate-x-full');
+    };
+
+    bubbleButton.addEventListener('click', openChat);
+    closeButton.addEventListener('click', closeChat);
 }

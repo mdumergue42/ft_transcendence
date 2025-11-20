@@ -1,4 +1,5 @@
 import '../ui/navbar.js';
+import '../ui/chat.js';
 import { ChatUser } from '../components/chat/chat.js'
 
 //TODO dashboard/profile/historic = 1thing; need to acces other player profile 2
@@ -6,6 +7,7 @@ import { ChatUser } from '../components/chat/chat.js'
 export function renderHistory() {
 	return `
 		<app-navbar></app-navbar>
+		<app-chat></app-chat>
 		<main class="content-area" style="padding: 20px;">
 			<div style="max-width: 1200px; margin: 0 auto;">
 				<div style="text-align: center; margin-bottom: 30px;">
@@ -52,6 +54,7 @@ export function renderHistory() {
 }
 
 export function DevHistory(user:ChatUser, name:string) {
+	console.log("TEST");
 	//TODO implement flag option!
 	//victory only
 	//lose only

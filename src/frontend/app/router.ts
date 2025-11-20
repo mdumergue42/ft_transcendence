@@ -1,15 +1,17 @@
-import { renderHome } from './pages/home.js';
+import { renderHome} from './pages/home.js';
 import { renderHistory, DevHistory } from './pages/history.js';
 import { renderMatch, DevGame } from './pages/match.js';
 import './ui/navbar.js';
+import './ui/chat.js';
 
-import { renderChat, devChat } from './pages/chat.js';
+import { devChat } from './pages/chat.js';
 import { renderDevTest, initDevTest } from './pages/dev-test.js';
 import { ChatUser } from './components/chat/chat.js'
 
 export function initRouter() {
 	const root = document.getElementById('app')!;
 	const user = new ChatUser("bastien");
+	console.log("CREATING USER");
 
 	function render(path: string) {
 		switch (path) {
@@ -36,10 +38,6 @@ export function initRouter() {
 			case '/profil':
 				root.innerHTML = '<app-navbar></app-navbar><main style="margin-left: 100px; padding: 20px; background: black; color: #00ff00; min-height: 100vh;"><h1>👤 Profil - Coming Soon!</h1></main>';
 				break;
-			case '/chat':
-				root.innerHTML = renderChat();
-				devChat(user);
-				break;
 			case '/dev-test':
 				root.innerHTML = renderDevTest();
 				setTimeout(() => initDevTest(), 100);
@@ -48,6 +46,7 @@ export function initRouter() {
 				root.innerHTML = renderHome();
 				break;
 		}
+		devChat(user);
 	}
 
 	window.addEventListener('popstate', () => render(location.pathname));

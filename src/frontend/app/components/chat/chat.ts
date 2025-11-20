@@ -18,7 +18,6 @@ async function _waitWs (socket:WebSocket, loops:number = 100) {
   }
 }
 
-
 export class ChatUser
 {
 	username:string

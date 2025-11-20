@@ -214,7 +214,7 @@ export class ChatUser
 				chatBox.innerHTML = "";
 				conv.setChatBox(null);
 				this.lastPeer = null;
-				chatHeader.textContent = "Chats-init-toRename";
+				chatHeader.textContent = "[CONV]";
 			}
 			this.sendBlock(conv);
 		}
@@ -234,6 +234,7 @@ export class ChatUser
 		const chooseBtn = document.getElementById(`choose-peer-${conv.penPal}`);
 		const blockBtn = document.getElementById(`block-peer-${conv.penPal}`);
 		const inviteBtn = document.getElementById(`invite-peer-${conv.penPal}`);
+		console.log(chooseBtn, blockBtn, inviteBtn);
 		if (!chooseBtn || !blockBtn || !inviteBtn)
 			return ;
 		this.HTMLChooseBtn(conv, chatBox, chatHeader, chooseBtn);

@@ -77,7 +77,6 @@ export class Historic
 
 	addGame(def:string, names:string, scores:string)
 	{
-		console.log("ADD GAMES:", def, names, scores);
 		if (def == "endb")
 		{
 			this.HTMLrenderHistoric();

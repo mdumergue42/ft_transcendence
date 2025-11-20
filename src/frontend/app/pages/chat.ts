@@ -4,7 +4,6 @@ function devSendMsg(user: ChatUser) {
 	const msgInput = <HTMLInputElement>document.getElementById("msg");
     const sendBtn = <HTMLButtonElement>document.getElementById("send-msg");
 	if (msgInput == null || sendBtn == null) {
-		console.warn("DEV SEND MSG PRB");
 		return ;
 	}
 	sendBtn.onclick = () => {
@@ -20,7 +19,6 @@ function devAddFriend(user: ChatUser) {
 	const addInput = <HTMLInputElement>document.getElementById("add-friend");
     const sendBtn = <HTMLButtonElement>document.getElementById("send-add");
 	if (addInput == null || sendBtn == null) {
-		console.warn("DEV SEND MSG PRB");
 		return ;
 	}
 	sendBtn.onclick = () => {

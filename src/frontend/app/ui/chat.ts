@@ -46,7 +46,7 @@ export class AppChat extends HTMLElement {
 		<ul class="list-frinds" id="friends-list">
 		</ul>
 		</div>
-		<div class="chat-header" id="chat-header" style="margin-top:10px">Chats-init-toRename</div>
+		<div class="chat-header" id="chat-header" style="margin-top:10px">[CONV]</div>
 		<div class="chat" id="chat-box" style="margin-top:30px">
 		</div>
 		<input id="msg" type="text" placeholder="write a msg"></input>

@@ -1,5 +1,4 @@
-const colorBlock = ["red", "black"];
-const colorBGMsg = ["Cornsilk", "CornflowerBlue", "grey"];
+import {HTMLChatListElement, HTMLColorBlocked, HTMLChatMsg} from './HTMLchat.js'
 
 export class Conv
 {
@@ -24,24 +23,13 @@ export class Conv
 		this.flag = 1 - this.flag;
 		
 		if (chooseBtn)
-		{
-			chooseBtn.style.color = colorBlock[this.flag];
-		}
+			HTMLColorBlocked(chooseBtn, 1 - this.flag);
 		return this.flag;
 	}
 
 	_addMsg(msg:string, flagColor: number)
 	{
-		var colorNb;
-		var newMsg = document.createElement('div');
-		newMsg.className = "msg-class";
-		if (flagColor)
-			colorNb = 2;
-		else
-			colorNb = msg.substring(0, this.penPal.length) == this.penPal;
-		newMsg.style.backgroundColor = colorBGMsg[Number(colorNb)];
-		newMsg.appendChild(document.createTextNode(msg))
-		this.chatBox?.appendChild(newMsg);
+		this.chatBox?.appendChild(HTMLChatMsg(this.penPal, msg, flagColor));
 	}
 
 	HTMLAddInvite()
@@ -68,14 +56,7 @@ export class Conv
 
 	HTMLChoosePeer()
 	{
-		var li = document.createElement('li');
-		li.className = "chat-list";
-		li.innerHTML = `
-		<button class="choose-peer" id="choose-peer-${this.penPal}" style="color:${colorBlock[this.flag]}">${this.penPal}</button>
-		<button class="invite-btn" id="invite-peer-${this.penPal}">🎮 </button>
-		<button class="block-btn" id="block-peer-${this.penPal}">⛔ </button>
-		`
-		return li;
+		return HTMLChatListElement(this.penPal, 1 - this.flag);
 	}
 }
 

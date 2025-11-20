@@ -1,8 +1,8 @@
-import {Player} from './player.js'
-import {Ball} from './ball.js'
-import {Vector2} from './vector2.js'
-import {rtCollidePlane, moduloPi, getAngle} from './collision.js'
-import {RECT_HEIGHT} from './global.js'
+import {Player} from '../pongLib/player.js'
+import {Ball} from '../pongLib/ball.js'
+import {Vector2} from '../pongLib/vector2.js'
+import {rtCollidePlane, moduloPi, getAngle} from '../pongLib/collision.js'
+import {RECT_HEIGHT} from '../pongLib/global.js'
 
 function getImpact(
 	center: Vector2, speed: Vector2,

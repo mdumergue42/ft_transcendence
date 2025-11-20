@@ -29,3 +29,11 @@ export function draw(
 	p2.draw(context, "green");
 	ball.draw(context, "white");
 }
+
+export function resetCanvas(canvas: HTMLCanvasElement)
+{
+    var context = <CanvasRenderingContext2D>canvas.getContext('2d');
+
+    context.fillStyle = "black";
+    context.fillRect(0, 0, canvas.width, canvas.height);
+}

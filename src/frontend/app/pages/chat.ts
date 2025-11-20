@@ -2,6 +2,9 @@ import { ChatUser } from '../components/chat/chat.js'
 
 export function renderChat() {
 	return `
+	<app-navbar></app-navbar>
+	<main style="margin-left: 100px; padding: 20px; background: black; color: #00ff00; min-height: 100vh;">
+
 	<input id="add-friend" type="text" placeholder="add a friend"></input>
 	<button id="send-add">ADD</button>
 	<div id="log-add-friend" style="height:2rem;color:grey;">logs</div>
@@ -14,6 +17,8 @@ export function renderChat() {
 	</div>
 	<input id="msg" type="text" placeholder="write a msg"></input>
 	<button id="send-msg">Send</button>
+
+	</main>
 	`
 }
 
@@ -45,8 +50,7 @@ function devAddFriend(user: ChatUser) {
 	};
 }
 
-export function devChat() {
-	const user = new ChatUser("bastien", 8080);
+export function devChat(user: ChatUser) {
 	devSendMsg(user);
 	devAddFriend(user);
 }

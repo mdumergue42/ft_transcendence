@@ -1,5 +1,5 @@
 const colorBlock = ["red", "black"];
-const colorBackGroundMsg = ["Cornsilk", "CornflowerBlue"];
+const colorBGMsg = ["Cornsilk", "CornflowerBlue", "grey"];
 
 export class Conv
 {
@@ -30,13 +30,23 @@ export class Conv
 		return this.flag;
 	}
 
-	_addMsg(msg:string)
+	_addMsg(msg:string, flagColor: number)
 	{
+		var colorNb;
 		var newMsg = document.createElement('div');
 		newMsg.className = "msg-class";
-		newMsg.style.backgroundColor = colorBackGroundMsg[Number(msg.substring(0, this.penPal.length) == this.penPal)];
+		if (flagColor)
+			colorNb = 2;
+		else
+			colorNb = msg.substring(0, this.penPal.length) == this.penPal;
+		newMsg.style.backgroundColor = colorBGMsg[Number(colorNb)];
 		newMsg.appendChild(document.createTextNode(msg))
 		this.chatBox?.appendChild(newMsg);
+	}
+
+	HTMLAddInvite()
+	{
+		this._addMsg("you invatation was send!", 1);
 	}
 
 	HTMLRenderConv()
@@ -45,7 +55,7 @@ export class Conv
 			return ;
 		this.chatBox.innerHTML = "";
 		for (let msg of this.msgList)
-			this._addMsg(msg)
+			this._addMsg(msg, 0)
 	}
 
 	HTMLAddMsg(msg:string)
@@ -53,7 +63,7 @@ export class Conv
 		this.msgList.push(msg);
 		if (this.chatBox == null)
 			return ;
-		this._addMsg(msg);
+		this._addMsg(msg, 0);
 	}
 
 	HTMLChoosePeer()
@@ -62,7 +72,7 @@ export class Conv
 		li.className = "chat-list";
 		li.innerHTML = `
 		<button class="choose-peer" id="choose-peer-${this.penPal}" style="color:${colorBlock[this.flag]}">${this.penPal}</button>
-		<button class="invite-btn">🎮 </button>
+		<button class="invite-btn" id="invite-peer-${this.penPal}">🎮 </button>
 		<button class="block-btn" id="block-peer-${this.penPal}">⛔ </button>
 		`
 		return li;

@@ -1,25 +1,57 @@
 import {Conv, Conv__lt__} from './conv.js'
+import {DevPongGame} from '../pongLib/game.js'
+import {Historic} from './historic.js'
+
+async function _waitWs (socket:WebSocket, loops:number = 100) {
+  const isOpened = () => (socket.readyState === WebSocket.OPEN)
+
+  if (socket.readyState !== WebSocket.CONNECTING) {
+    return isOpened();
+  }
+  else {
+    let loop = 0
+    while (socket.readyState === WebSocket.CONNECTING && loop < loops) {
+      await new Promise(resolve => setTimeout(resolve, 100))
+      loop++
+    }
+    return isOpened();
+  }
+}
+
 
 export class ChatUser
 {
 	username:string
 	ws: WebSocket
-	friendList:Conv[]
 	lastPeer:Conv | null
-	constructor(_name:string, port:number)
+	pingInterval:any
+	pongGame: DevPongGame
+	historic: Historic
+	friendList:Conv[] = [];
+	constructor(_name:string)
 	{
 		this.username = _name;
-		//TODO WSS
-		this.ws = new WebSocket(`ws://localhost:${port}`);
+		this.ws = new WebSocket(`wss://${window.location.hostname}/ws/`);
 		this.connect();
-		this.friendList = [];
 		this.lastPeer = this.friendList[0];
+		this.pongGame = new DevPongGame();
+		this.pongGame.setWs(this.ws);
+		this.historic = new Historic();
 	}
+
 
 	connect()
 	{
-		this.ws.onopen  = () => this.ws.send(`user+${this.username}+user`);
-		this.ws.onclose = () => {}
+		this.ws.onopen  = () => {
+			this.ws.send(`user+${this.username}+user`);
+			this.pingInterval = setInterval(() => {
+				this.ws.send(`ping+x+x`);
+			}, 1000);
+		}
+		this.ws.onclose = () => {
+			clearInterval(this.pingInterval);
+			this.pongGame.setWs(null);
+		}
 		this.ws.onmessage = (event) => this.onMsg(event);
 	}
 
@@ -31,6 +63,19 @@ export class ChatUser
 				return conv
 		}
 		return null;
+	}
+
+	async askHistoric(name:string, flag:number)
+	{
+		const isopen = await _waitWs(this.ws);
+		if (!isopen)
+			return ;
+		this.historic.reset(name);
+		this.ws.send(`getHistoric+${name}+${flag}`);
+	}
+	receiveHistoric(arg1:string, arg2:string, content:string)
+	{
+		this.historic.addGame(arg1, arg2, content);
 	}
 
 	receiveMsg(arg1:string, arg2:string, content:string)
@@ -58,9 +103,6 @@ export class ChatUser
 		var log = document.getElementById("log-add-friend");
 		if (arg == "no")
 		{
-			var conv = this._getConv(name);
-			if (conv)
-				return ;
 			if (log)
 				log.innerHTML = "user doesn't exist";
 			return ;
@@ -94,6 +136,11 @@ export class ChatUser
 			case 'endDb':
 				this.reRenderFriendList();
 				break
+			case 'historic':
+				this.receiveHistoric(arg1, arg2, content);
+			case 'game':
+				this.pongGame.onMsg(arg1, arg2, content);
+				break ;
 			default:
 				break;
 		}
@@ -109,6 +156,25 @@ export class ChatUser
 		this.ws.send(`msg+${penPal}+${content}`)
 		const conv = this._getConv(penPal);
 		conv?.HTMLAddMsg(`${this.username}: ${content}`);
+	}
+
+	sendFindGame()
+	{
+		this.ws.send(`findGame+x+x`);
+	}
+
+	sendInvite(conv:Conv)
+	{
+		//need to create a room
+		this.ws.send(`invite+${conv.penPal}+x`);
+		conv.HTMLAddInvite();
+
+		//need the user to be online
+		//
+		//_addInvite()
+		//afficher les joueurs invite dans la room
+		//quand un jouer est dans la room: pouvoir lancer
+		//tournois/1VS1/ mutli (3+player)
 	}
 
 	addFriend(name:string)
@@ -133,8 +199,8 @@ export class ChatUser
 		chooseBtn.onclick = () => {
 			if (conv.flag == 0)
 				return ;
-			conv.setChatBox(chatBox);
 			this.lastPeer?.setChatBox(null);
+			conv.setChatBox(chatBox);
 			this.lastPeer = conv;
 			conv.HTMLRenderConv();
 			chatHeader.textContent = conv.penPal;
@@ -142,8 +208,6 @@ export class ChatUser
 	}
 	HTMLBlockBtn(conv: Conv, chatBox: HTMLElement, chatHeader: HTMLElement, chooseBtn: HTMLElement, blockBtn: HTMLElement)
 	{
-		if (!blockBtn)
-			return ;
 		blockBtn.onclick = () => {
 			conv.toggleBlock(chooseBtn);
 			if (conv.flag == 0 && this.lastPeer == conv)
@@ -156,6 +220,12 @@ export class ChatUser
 			this.sendBlock(conv);
 		}
 	}
+	HTMLInviteBtn(conv: Conv, chatBox: HTMLElement, inviteBtn: HTMLElement)
+	{
+		inviteBtn.onclick = () => {
+			this.sendInvite(conv);
+		}
+	}
 
 	HTMLRenderPeer(conv: Conv, friendDiv: HTMLElement, chatBox: HTMLElement, chatHeader: HTMLElement)
 	{
@@ -164,10 +234,12 @@ export class ChatUser
 
 		const chooseBtn = document.getElementById(`choose-peer-${conv.penPal}`);
 		const blockBtn = document.getElementById(`block-peer-${conv.penPal}`);
-		if (!chooseBtn || !blockBtn)
+		const inviteBtn = document.getElementById(`invite-peer-${conv.penPal}`);
+		if (!chooseBtn || !blockBtn || !inviteBtn)
 			return ;
 		this.HTMLChooseBtn(conv, chatBox, chatHeader, chooseBtn);
 		this.HTMLBlockBtn(conv, chatBox, chatHeader, chooseBtn, blockBtn);
+		this.HTMLInviteBtn(conv, chatBox, inviteBtn);
 	}
 
 	reRenderFriendList()

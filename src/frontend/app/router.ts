@@ -1,14 +1,15 @@
 import { renderHome } from './pages/home.js';
-import { renderHistory } from './pages/history.js';
-import { renderMatch } from './pages/match.js';
+import { renderHistory, DevHistory } from './pages/history.js';
+import { renderMatch, DevGame } from './pages/match.js';
 import './ui/navbar.js';
 
 import { renderChat, devChat } from './pages/chat.js';
-
 import { renderDevTest, initDevTest } from './pages/dev-test.js';
+import { ChatUser } from './components/chat/chat.js'
 
 export function initRouter() {
 	const root = document.getElementById('app')!;
+	const user = new ChatUser("bastien");
 
 	function render(path: string) {
 		switch (path) {
@@ -17,9 +18,11 @@ export function initRouter() {
 				break;
 			case '/match':
 				root.innerHTML = renderMatch();
+				DevGame(user);
 				break;
 			case '/history':
 				root.innerHTML = renderHistory();
+				DevHistory(user, user.username); //TODO
 				break;
 			case '/ai':
 				root.innerHTML = '<app-navbar></app-navbar><main style="margin-left: 100px; padding: 20px; background: black; color: #00ff00; min-height: 100vh;"><h1>🤖 IA Mode - Coming Soon!</h1></main>';
@@ -35,7 +38,7 @@ export function initRouter() {
 				break;
 			case '/chat':
 				root.innerHTML = renderChat();
-				devChat();
+				devChat(user);
 				break;
 			case '/dev-test':
 				root.innerHTML = renderDevTest();

@@ -21,6 +21,17 @@ export async function initDb(server: FastifyInstance) {
 	FOREIGN KEY (id_self) REFERENCES users(id_user),
 	FOREIGN KEY (id_friend) REFERENCES users(id_user));
 
+	CREATE TABLE IF NOT EXISTS matchs (
+	id_match INTEGER PRIMARY KEY AUTOINCREMENT,
+	match_type TEXT NOT NULL,
+	id_p1 INTEGER NOT NULL,
+	id_p2 INTEGER,
+	score_p1 INTEGER NOT NULL,
+	score_p2 INTEGER NOT NULL,
+	date DATETIME DEFAULT CURRENT_TIMESTAMP,
+	FOREIGN KEY (id_p1) REFERENCES users(id_user),
+	FOREIGN KEY (id_p2) REFERENCES users(id_user));
+
 	CREATE TABLE IF NOT EXISTS msgs (
 	id_msg INTEGER PRIMARY KEY AUTOINCREMENT,
 	msg TEXT NOT NULL,
@@ -29,6 +40,7 @@ export async function initDb(server: FastifyInstance) {
 	date DATETIME DEFAULT CURRENT_TIMESTAMP,
 	FOREIGN KEY (id_from) REFERENCES users(id_user),
 	FOREIGN KEY (id_to) REFERENCES users(id_user))`);
+
 
 	console.log('✅ Base de données créer avec succés !')
 }

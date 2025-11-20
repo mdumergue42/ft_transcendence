@@ -1,6 +1,6 @@
-import {Player} from './player.js'
-import {Ball} from './ball.js'
-import {Vector2} from './vector2.js'
+import {Player} from '../pongLib/player.js'
+import {Ball} from '../pongLib/ball.js'
+import {Vector2} from '../pongLib/vector2.js'
 import {draw} from './draw.js'
 import {ia} from './ia.js'
 
@@ -35,7 +35,7 @@ function play()
 	draw(canvas, game.p1, game.p2, game.ball, game.score);
 	game.p1.move();
 	game.p2.move();
-	const res = game.ball.move(canvas, game.p1, game.p2);
+	const res = game.ball.move(game.p1, game.p2);
 	if (res != 0)
 	{
 		if (res == 2)
@@ -61,8 +61,8 @@ export function Pong()
 	}
 	var mid = new Vector2(canvas.width / 2, canvas.height / 2);
 	game = {
-		p1: new Player(0, mid.y, -1, false),
-		p2: new Player(canvas.width, mid.y, 1, true),
+		p1: new Player(0, false),
+		p2: new Player(canvas.width, true),
 		ball: new Ball(mid),
 		score: new Vector2()
 	};

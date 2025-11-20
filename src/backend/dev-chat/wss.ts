@@ -1,94 +1,27 @@
 import WebSocket, {WebSocketServer} from 'ws';
 import {FastifyInstance} from 'fastify';
-
-class Client
-{
-	socket: WebSocket
-	username: string
-	id: number
-	friendList: [number, number, string][]
-	constructor(_socket:WebSocket)
-	{
-		this.socket = _socket;
-		this.username = "TBD";
-		this.id = 0
-		this.friendList = [];
-
-		/*console.log("USER IS LOGIN; friendList:", this.friendList);
-		await db.each(`SELECT id_friend,id_self FROM friends`, (err:any, row:any) => {console.log("RS:", row)});*/
-	}
-
-	async user(name: string, db:any)
-	{
-		this.username = name;
-		console.log("this.username:", this.username);
-
-		await db.each(`SELECT id_user FROM users WHERE username='${this.username}'`, (err:any, row:any) => {this.id = row.id_user});
-		await db.each(`SELECT friends.id_friend, friends.flag, users.username FROM friends JOIN users ON users.id_user = friends.id_friend WHERE id_self = '${this.id}'`, (err:any, row:any) =>
-		{
-			this.friendList.push([row.id_friend, row.flag, row.username]);
-		});
-
-		await db.each(`SELECT msg,id_from,id_to FROM msgs WHERE id_from = '${this.id}' OR id_to = '${this.id}' ORDER BY date`, async (err:any, row:any) => {
-			await this.sendOldMsg(row.msg, row.id_from, row.id_to);
-		});
+import {Client} from './client.js';
+import {ARoom} from './Aroom.js';
+import {MMRoom} from './MMroom.js';
+import {TRoom} from './Troom.js';
+import {getIdByName, getNameById, getFlagFriendShip, getHistoricById} from './sqlGet.js'
 
 
-		this.sendBlockedList();
-		this.socket.send(`endDb+x+x+end of stored msg`);
-	}
-
-	sendBlockedList()
-	{
-		for (let fr of this.friendList)
-		{
-			if (fr[1] == 0)
-				this.socket.send(`blocked+${fr[2]}+x+x`);
-		}
-	}
-
-	send(message:string, from:Client)
-	{
-		this.socket.send(`msg+${from.username}+${this.username}+${message}`)
-	}
-
-	async sendOldMsg(message:string, id_from:number, id_to:number)
-	{
-		var get_name = (id:number) => {
-			for (let fr of this.friendList)
-			{
-				if (fr[0] == id)
-					return fr;
-			}
-			return [-1, -1, "no"];
-		}
-		var from, to, _, flag;
-		if (id_from == this.id)
-		{
-			from = this.username;
-			[_,flag,to] = get_name(id_to);
-		}
-		else
-		{
-			to = this.username;
-			[_,flag,from] = get_name(id_from);
-		}
-		if (flag == 1)
-			this.socket.send(`msg+${from}+${to}+${message}`);
-	}
+interface Dictionary<T> {
+    [Key: string]: T;
 }
+
 
 class WsServ
 {
-	port: number
 	server: WebSocketServer
-	clients: Client[]
+	clients: Client[] = [];
+	rooms: Record<number, ARoom> = {};
+	roomsIds: number = 1;
 	db: any //need to find type!!!
 	constructor(_port:number, SQLserver: FastifyInstance)
 	{
-		this.port = _port;
-		this.clients = [];
-		this.server = new WebSocketServer({ port: this.port});
+		this.server = new WebSocketServer({ port: _port});
 
 		this.server.on('connection', (socket:WebSocket) => {
 			this.connection(socket);
@@ -96,7 +29,6 @@ class WsServ
 			socket.on('close', () => this.deco(socket));
 		});
 
-		console.log(`WebSocket server running on wss://localhost:${this.port}`);
 		this.db = SQLserver.db;
 		this.tmp() //TODO retirer car c sencer etre automatique!
 	}
@@ -107,6 +39,14 @@ class WsServ
 		await this.db.run(`INSERT INTO users(username, email, password) VALUES('gaby','b@mail.com','123')`);
 		await this.db.run(`INSERT INTO users(username, email, password) VALUES('maelys','c@mail.com','123')`);
 		await this.db.run(`INSERT INTO users(username, email, password) VALUES('youenn','d@mail.com','123')`);
+
+		const idB = await getIdByName('bastien', this.db);
+		const idM = await getIdByName('maelys', this.db);
+
+		await this.db.run(`INSERT INTO matchs(match_type, id_p1, id_p2, score_p1, score_p2) VALUES (?, ?, ?, ?, ?)`, ["test",idB, idM,"1","0"]);
+		await this.db.run(`INSERT INTO matchs(match_type, id_p1, id_p2, score_p1, score_p2) VALUES (?, ?, ?, ?, ?)`, ["vsi",idB, idM,"0","1"]);
+		await this.db.run(`INSERT INTO matchs(match_type, id_p1, id_p2, score_p1, score_p2) VALUES (?, ?, ?, ?, ?)`, ["ftg",idB, idM,"3","1"]);
+		await this.db.run(`INSERT INTO matchs(match_type, id_p1, id_p2, score_p1, score_p2) VALUES (?, ?, ?, ?, ?)`, ["jpp",idB, idM,"3","1"]);
 	}
 
 	connection(socket:WebSocket)
@@ -126,12 +66,16 @@ class WsServ
 				return ;
 			}
 		}
+		//TODO clear rooms?
 	}
 
 	msg(message:string, socket:WebSocket)
 	{
-		console.log('Received message:', message);
-
+		if (message == "ping+x+x")
+		{
+			socket.send(`pong+x+x+x`);
+			return ;
+		}
 		for (let client of this.clients)
 		{
 			if (client.socket == socket)
@@ -144,99 +88,175 @@ class WsServ
 
 	parsing(message:string, client:Client)
 	{
-		const [type, arg, ...X] = message.split('+');
+		var [type, arg, ...X] = message.split('+');
 		const content = X.join('+');
 
 		switch (type) {
 			case 'user':
+			{
+				if (this.clients.length == 2)
+					arg = "youenn"; //TODO
 				client.user(arg, this.db);
 				break;
+			}
 			case 'msg':
 				this.sendTo(content, arg, client);
 				break;
 			case 'add':
 				this.addFriend(arg, client);
-				break
+				break;
 			case 'block':
 				this.block(client, arg, parseInt(content, 10))
 				break;
 			case 'invite':
-				//arg = cible
-				//content = room
+				break;
+
+			case 'roomCreate':
+				this.createRoom(client);
+				break;
+			case 'roomAddPlayer':
+				break;
+			case 'roomAddBot':
+				break;
+			case 'roomKickPlayer':
+				break;
+			case 'roomJoin':
+				break;
+			case 'gameInput':
+				this.rooms[client.roomId!].gameInput(client, arg, content);
+				break;
+			case 'findGame':
+				this.findGame(client);
+				break;
+			case 'getHistoric':
+				this.getHistoric(client, arg, parseInt(content));
 			default:
 				break;
 		}
 	}
 
+	createRoom(client: Client)
+	{
+		var GameRoom = new TRoom(this.roomsIds, 1, this.db);
+		this.rooms[this.roomsIds] = GameRoom;
+		this.roomsIds += 1;
+		GameRoom.addPlayer(client, client.username);
+		client.setRoomId(GameRoom.id);
+	}
+
+	findGame(client: Client)
+	{
+		//TODO destroy rooms after using it!!  avec delete rooms[id]
+		//ATTENTION ID = index -> va causer de lourd degat!
+		//faire un dico ig?
+		var GameRoom;
+		find : {
+			for (let k in this.rooms)
+			{
+				var room = this.rooms[k];
+				if (room.isOpenForMM() == 0)
+					continue ;
+				GameRoom = room;
+				break find;
+			}
+			GameRoom = new MMRoom(this.roomsIds, 0, this.db);
+			this.rooms[this.roomsIds] = GameRoom;
+			this.roomsIds += 1;
+		}
+		GameRoom.addPlayer(client, client.username);
+		client.setRoomId(GameRoom.id);
+	}
+
+	async getHistoric(client: Client, name:string, flag:number)
+	{
+		const id = await getIdByName(name, this.db);
+		if (id == undefined)
+			return ;
+
+		const games = await getHistoricById(id, this.db);
+		if (games == undefined)
+			return ;
+
+		for (let game of games)
+		{
+			const p1_name = await getNameById(game.id_p1, this.db);
+			var p2_name;
+			if (game.id_p2)
+				p2_name = await getNameById(game.id_p2, this.db);
+			else
+				p2_name = "-";
+			client.socket.send(`historic+${game.match_type}+${p1_name}#${p2_name}+${game.score_p1}#${game.score_p2}`);
+		}
+		client.socket.send(`historic+endb+x+x`);
+	}
+
 	async block(client: Client, name:string, flag:number)
 	{
-		await this.db.each(`SELECT id_user as id_to FROM users WHERE username = '${name}'`, async (err:any, rowID:any) => {
+		const id = await getIdByName(name, this.db);
+		if (id == undefined)
+			return ;
 
-			await this.db.each(`SELECT COUNT(1) AS nb FROM friends WHERE id_self = ${client.id} AND id_friend = ${rowID.id_to}`,
-				async (err:any, row:any) =>{
-					
-					if (row.nb != 0)
-						await this.db.run(`UPDATE friends SET flag = ${flag} WHERE id_self = ${client.id} AND id_friend = ${rowID.id_to}`);
-					else
-						await this.db.run(`INSERT INTO friends(id_self, id_friend, flag) VALUES(?, ?, ?)`, [client.id, rowID.id_to, flag]);
-			});
-		});
+		const nb = await this.db.get(`SELECT COUNT(1) AS nb FROM friends WHERE id_self = ? AND id_friend = ?`, [client.id, id])
+		if (nb == undefined)
+			return ;
+
+		if (nb.nb != 0)
+			await this.db.run(`UPDATE friends SET flag = ? WHERE id_self = ? AND id_friend = ?`, [flag, client.id, id]);
+		else
+			await this.db.run(`INSERT INTO friends(id_self, id_friend, flag) VALUES(?, ?, ?)`, [client.id, id, flag]);
 	}
 
 	async addFriend(name:string, from:Client)
 	{
-		await this.db.each(`SELECT id_user FROM users WHERE username = '${name}'`, (err:any, row:any) => {
-			
+		const id = await getIdByName(name, this.db);
+		if (id == undefined)
+			from.socket.send(`add+${name}+no+user doest not exist`);
+		else
 			from.socket.send(`add+${name}+x+x`);
-		});
-		from.socket.send(`add+${name}+no+user doest not exist`);
 	}
 
 	async newFriendShip(from:Client, o_id:number)
 	{
-		await this.db.each(`SELECT COUNT(1) AS nb FROM friends WHERE id_self = ${from.id} AND id_friend = ${o_id}`, async (err:any, row:any) =>{
-			if (row.nb != 0)
-				return ;
+		const nb = await this.db.get(`SELECT COUNT(1) AS nb FROM friends WHERE id_self = ? AND id_friend = ?`, [from.id, o_id]); 
+		if (nb.nb == 0)
 			await this.db.run(`INSERT INTO friends(id_self, id_friend, flag) VALUES(?, ?, ?)`, [from.id, o_id, 1]);
-		});
-		await this.db.each(`SELECT COUNT(1) AS nb FROM friends WHERE id_friend = ${from.id} AND id_self = ${o_id}`, async (err:any, row:any) =>{
-			if (row.nb != 0)
-				return ;
+
+
+		const nbR = await this.db.get(`SELECT COUNT(1) AS nb FROM friends WHERE id_friend = ? AND id_self = ?`, [from.id, o_id]);
+		if (nbR.nb != 0)
 			if (o_id != from.id) //TODO SUPPR C JUSTE POUR LES TEST CA
 				await this.db.run(`INSERT INTO friends(id_self, id_friend, flag) VALUES(?, ?, ?)`, [o_id, from.id, 1]);
-		});
 	}
 
 	async sendTo(message:string, to:string, from:Client)
 	{
-		await this.db.each(`SELECT id_user as id_to FROM users WHERE username = '${to}'`, async (err:any, row:any) => {
-			await this.newFriendShip(from, row.id_to);
-			await this.db.run(`INSERT INTO msgs(msg, id_from, id_to) VALUES(?, ?, ?)`, [message, from.id, row.id_to]);
+		const id = await getIdByName(to, this.db);
+		if (id == undefined)
+			return ;
 
-			await this.db.each(`SELECT flag FROM friends WHERE id_friend = '${from.id}' AND id_self = '${row.id_to}'`,
-				(blockErr:any, blockRow:any) => {
+		await this.newFriendShip(from, id);
+		await this.db.run(`INSERT INTO msgs(msg, id_from, id_to) VALUES(?, ?, ?)`, [message, from.id, id]);
 
-				var pal = null;
-				for (let client of this.clients)
-				{
-					if (client.username == to)
-					{
-						pal = client;
-						break ;
-					}
-				}
-				if (pal && blockRow.flag == 1)
-				{
-					pal.send(message, from);
-				}
-				
-				return ;
-			});
-		});
+		const flag = await getFlagFriendShip(from.id, id, this.db);
+		if (flag == undefined)
+			return ;
+
+		var pal = null;
+		for (let client of this.clients)
+		{
+			if (client.username == to)
+			{
+				pal = client;
+				break ;
+			}
+		}
+		if (pal && flag == 1)
+			pal.send(message, from);
+		return ;
 	}
 }
 
 export function WSServInit(port:number, server:FastifyInstance)
 {
-	const serv = new WsServ(port, server);
+	const serv = new WsServ(8080, server);
 }

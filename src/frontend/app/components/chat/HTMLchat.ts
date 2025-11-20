@@ -4,6 +4,7 @@ const colorBGMsg = ["Cornsilk", "CornflowerBlue", "grey"];
 export function HTMLColorBlocked(btn: HTMLElement, isBlocked:number)
 {
 	btn.style.cssText = `color:${colorBlock[isBlocked]}`;
+	btn.className = "";
 }
 
 export function HTMLChatListElement(name:string, isBlocked:number)
@@ -13,7 +14,6 @@ export function HTMLChatListElement(name:string, isBlocked:number)
 
 	var btn1 = document.createElement('button');
 	btn1.id = `choose-peer-${name}`;
-	btn1.className = "";
 	btn1.innerHTML = `${name}`;
 	HTMLColorBlocked(btn1, isBlocked);
 
@@ -43,8 +43,10 @@ export function HTMLChatMsg(name:string, msg:string, flagColor: number)
 	//colorNb: 0:je recois le msg 1:j'envoie le msg 2:notif msg
 
 	var newMsg = document.createElement('div');
+
 	newMsg.className = "msg-class";
 	newMsg.style.backgroundColor = colorBGMsg[Number(colorNb)];
+
 	newMsg.appendChild(document.createTextNode(msg))
 	return newMsg;
 }

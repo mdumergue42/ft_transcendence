@@ -22,7 +22,7 @@ export async function getFlagFriendShip(friendId:number, selfId:number, db:any)
 	return result;
 }
 
-export async function getHistoricById(id:number, db:any, flag=0:number)
+export async function getHistoricById(id:number, db:any, flag:number= 0)
 {
 	//TODO FLAGS
 	//victory only

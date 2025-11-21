@@ -11,7 +11,8 @@ export async function initDb(server: FastifyInstance) {
 	id_user INTEGER PRIMARY KEY AUTOINCREMENT,
 	username TEXT UNIQUE NOT NULL,
 	email TEXT UNIQUE NOT NULL,
-	password TEXT NOT NULL);
+	password TEXT NOT NULL,
+	avatar TEXT NOT NULL);
 
 	CREATE TABLE IF NOT EXISTS friends (
 	id_relationship INTEGER PRIMARY KEY AUTOINCREMENT,

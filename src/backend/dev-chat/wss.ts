@@ -4,7 +4,7 @@ import {Client} from './client.js';
 import {ARoom} from './Aroom.js';
 import {MMRoom} from './MMroom.js';
 import {TRoom} from './Troom.js';
-import {getIdByName, getNameById, getFlagFriendShip, getHistoricById} from './sqlGet.js'
+import {getIdByName, getNameById, getFlagFriendShip, getHistoricById, insertUser, insertMatchs, insertMsg, insertFriend, updateFlagFriend, getCountFriend} from './sqlGet.js'
 
 
 interface Dictionary<T> {
@@ -35,18 +35,18 @@ class WsServ
 
 	async tmp()
 	{
-		await this.db.run(`INSERT INTO users(username, email, password) VALUES('bastien','a@mail.com','123')`);
-		await this.db.run(`INSERT INTO users(username, email, password) VALUES('gaby','b@mail.com','123')`);
-		await this.db.run(`INSERT INTO users(username, email, password) VALUES('maelys','c@mail.com','123')`);
-		await this.db.run(`INSERT INTO users(username, email, password) VALUES('youenn','d@mail.com','123')`);
+		await insertUser('bastien','a@mail.com','123', this.db);
+		await insertUser('youenn','b@mail.com','123', this.db);
+		await insertUser('gaby','c@mail.com','123', this.db);
+		await insertUser('maelys','d@mail.com','123', this.db);
 
 		const idB = await getIdByName('bastien', this.db);
 		const idM = await getIdByName('maelys', this.db);
 
-		await this.db.run(`INSERT INTO matchs(match_type, id_p1, id_p2, score_p1, score_p2) VALUES (?, ?, ?, ?, ?)`, ["test",idB, idM,"1","0"]);
-		await this.db.run(`INSERT INTO matchs(match_type, id_p1, id_p2, score_p1, score_p2) VALUES (?, ?, ?, ?, ?)`, ["pvp",idB, idM,"0","1"]);
-		await this.db.run(`INSERT INTO matchs(match_type, id_p1, id_p2, score_p1, score_p2) VALUES (?, ?, ?, ?, ?)`, ["pvp",idB, idM,"3","1"]);
-		await this.db.run(`INSERT INTO matchs(match_type, id_p1, id_p2, score_p1, score_p2) VALUES (?, ?, ?, ?, ?)`, ["ai",idB, idM,"3","1"]);
+		await insertMatchs("test",idB, idM,1,0, this.db);
+		await insertMatchs("pvp",idB, idM,10,8, this.db);
+		await insertMatchs("ia",idB, idM,6,9, this.db);
+		await insertMatchs("pvp",idB, idM,2,6, this.db);
 	}
 
 	connection(socket:WebSocket)
@@ -213,36 +213,32 @@ class WsServ
 		if (id == undefined)
 			return ;
 
-		const nb = await this.db.get(`SELECT COUNT(1) AS nb FROM friends WHERE id_self = ? AND id_friend = ?`, [client.id, id])
+		const nb = await getCountFriend(client.id, id, this.db);
 		if (nb == undefined)
 			return ;
 
-		if (nb.nb != 0)
-			await this.db.run(`UPDATE friends SET flag = ? WHERE id_self = ? AND id_friend = ?`, [flag, client.id, id]);
+		if (nb != 0)
+			await updateFlagFriend(client.id, id, flag, this.db)
 		else
-			await this.db.run(`INSERT INTO friends(id_self, id_friend, flag) VALUES(?, ?, ?)`, [client.id, id, flag]);
+			await insertFriend(client.id, id, flag, this.db);
 	}
 
 	async addFriend(name:string, from:Client)
 	{
 		const id = await getIdByName(name, this.db);
 		if (id == undefined)
+		{
 			from.send({type: "add", name: name, error: "noUser"});
+			return ;
+		}
 		else
 			from.send({type: "add", name: name});
-	}
 
-	async newFriendShip(from:Client, o_id:number)
-	{
-		const nb = await this.db.get(`SELECT COUNT(1) AS nb FROM friends WHERE id_self = ? AND id_friend = ?`, [from.id, o_id]); 
-		if (nb.nb == 0)
-			await this.db.run(`INSERT INTO friends(id_self, id_friend, flag) VALUES(?, ?, ?)`, [from.id, o_id, 1]);
-
-
-		const nbR = await this.db.get(`SELECT COUNT(1) AS nb FROM friends WHERE id_friend = ? AND id_self = ?`, [from.id, o_id]);
-		if (nbR.nb != 0)
-			if (o_id != from.id) //TODO SUPPR C JUSTE POUR LES TEST CA
-				await this.db.run(`INSERT INTO friends(id_self, id_friend, flag) VALUES(?, ?, ?)`, [o_id, from.id, 1]);
+		const nb = await getCountFriend(from.id, id, this.db);
+		if (nb == undefined)
+			return ;
+		if (nb == 0)
+			await insertFriend(from.id, id, 0, this.db);
 	}
 
 	async sendTo(message:string, to:string, from:Client)
@@ -251,8 +247,14 @@ class WsServ
 		if (id == undefined)
 			return ;
 
-		await this.newFriendShip(from, id);
-		await this.db.run(`INSERT INTO msgs(msg, id_from, id_to) VALUES(?, ?, ?)`, [message, from.id, id]);
+		const nb = await getCountFriend(id, from.id, this.db);
+		if (nb == undefined)
+			return ;
+		if (nb == 0 && id != from.id) //TODO suppr c pour les tests; tu peux pas etre amis avec toi meme
+			await insertFriend(id, from.id, 0, this.db);
+
+
+		await insertMsg(message, from.id, id, this.db);
 
 		const flag = await getFlagFriendShip(from.id, id, this.db);
 		if (flag == undefined)

@@ -49,6 +49,24 @@ export async function getHistoricById(id:number, db:any, flag:any)
 	return result;
 }
 
+export async function getAllFriends(id:number, db:any)
+{
+	const stmt = await db.prepare(`SELECT friends.id_friend, friends.flag, users.username FROM friends JOIN users ON users.id_user = friends.id_friend WHERE id_self = ?`);
+	let result = await stmt.all([id]);
+	if (result == undefined)
+		return [];
+	return result;
+}
+
+export async function getAllMsg(id: number, db:any)
+{
+	const stmt = await db.prepare(`SELECT msg,id_from,id_to FROM msgs WHERE id_from = ? OR id_to = ? ORDER BY date`);
+	let result = await stmt.all([id, id]);
+	if (result == undefined)
+		return [];
+	return result;
+}
+
 export async function insertUser(name:string, email:string, pass:string, db:any)
 {
 	const stmt = await db.prepare(`INSERT INTO users(username, email, password, avatar) VALUES(?, ?, ?, ?)`);

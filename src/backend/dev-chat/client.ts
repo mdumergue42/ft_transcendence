@@ -1,5 +1,5 @@
 import {WebSocket} from 'ws';
-import {getIdByName, getNameById} from './sqlGet.js'
+import {getIdByName, getNameById, getAllMsg, getAllFriends} from './sqlGet.js'
 
 export class Client
 {
@@ -25,19 +25,20 @@ export class Client
 	async user(name: string, db:any)
 	{
 		this.username = name;
-		console.log("this.username:", this.username);
 
 		this.id = await getIdByName(name, db);
 
-		await db.each(`SELECT friends.id_friend, friends.flag, users.username FROM friends JOIN users ON users.id_user = friends.id_friend WHERE id_self = ?`, [this.id], (err:any, row:any) =>
+		const friends = await getAllFriends(this.id, db);
+		for (let friend of friends)
 		{
-			this.friendList.push([row.id_friend, row.flag, row.username]);
-		});
-		//TODO prepare SQL
+			this.friendList.push([friend.id_friend, friend.flag, friend.username]);
+		}
 
-		await db.each(`SELECT msg,id_from,id_to FROM msgs WHERE id_from = ? OR id_to = ? ORDER BY date`, [this.id, this.id ], async (err:any, row:any) => {
-			await this.sendOldMsg(row.msg, row.id_from, row.id_to);
-		});
+		const msgs = await getAllMsg(this.id, db);
+		for (let msg of msgs)
+		{
+			await this.sendOldMsg(msg.msg, msg.id_from, msg.id_to);
+		}
 
 
 		this.sendBlockedList();

@@ -28,7 +28,7 @@ export abstract class ARoom
 	}
 
 	abstract addPlayer(user:Client, username:string): void;
-	abstract gameInput(user:Client, x:string, y:string): void;
+	abstract gameInput(user:Client, msg:any): void;
 	abstract endGame(): void;
 	abstract assignPlayer(): void;
 
@@ -38,10 +38,10 @@ export abstract class ARoom
 			return 1;
 		return 0;
 	}
-	broadCast(msg: string)
+	broadCast(obj: any)
 	{
 		for (let k in this.players)
-			this.players[k].socket.send(msg);
+			this.players[k].send(obj);
 	}
 
 	startGame()
@@ -61,10 +61,25 @@ export abstract class ARoom
 			this.endGame();
 			return ;
 		}
-		this.broadCast(`game+p1+${this.game.p1!.racket.x}+${this.game.p1!.racket.y}`);
-		this.broadCast(`game+p2+${this.game.p2!.racket.x}+${this.game.p2!.racket.y}`);
-		this.broadCast(`game+ball+${this.game.ball!.center.x}+${this.game.ball!.center.y}`);
-		this.broadCast(`game+score+${this.game.score!.x}+${this.game.score!.y}`);
+		const st = {type: "game", tag: "state",
+			p1: {
+				x: this.game.p1!.racket.x,
+				y: this.game.p1!.racket.y
+			},
+			p2: {
+				x: this.game.p2!.racket.x,
+				y: this.game.p2!.racket.y
+			},
+			ball: {
+				x: this.game.ball!.center.x,
+				y: this.game.ball!.center.y
+			},
+			score: {
+				x: this.game.score!.x,
+				y: this.game.score!.y
+			}
+		};
+		this.broadCast(st);
 	}
 
 	kickAllPlayers()

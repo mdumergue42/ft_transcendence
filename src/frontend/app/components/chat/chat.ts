@@ -38,13 +38,17 @@ export class ChatUser
 		this.historic = new Historic();
 	}
 
+	wsSend(obj:any)
+	{
+		this.ws.send(JSON.stringify(obj));
+	}
 
 	connect()
 	{
 		this.ws.onopen  = () => {
-			this.ws.send(`user+${this.username}+user`);
+			this.wsSend({type: "user", name:this.username});
 			this.pingInterval = setInterval(() => {
-				this.ws.send(`ping+x+x`);
+				this.wsSend({type: "ping"});
 			}, 1000);
 		}
 		this.ws.onclose = () => {
@@ -64,81 +68,85 @@ export class ChatUser
 		return null;
 	}
 
-	async askHistoric(name:string, flag:number)
+	async askHistoric(username:string, flag:any)
 	{
 		const isopen = await _waitWs(this.ws);
 		if (!isopen)
 			return ;
-		this.historic.reset(name);
-		this.ws.send(`getHistoric+${name}+${flag}`);
-	}
-	receiveHistoric(arg1:string, arg2:string, content:string)
-	{
-		this.historic.addGame(arg1, arg2, content);
+		this.historic.reset(username);
+		this.wsSend({type: "getHistoric", name: username, flag: flag});
 	}
 
-	receiveMsg(arg1:string, arg2:string, content:string)
+	receiveHistoric(msg: any)
 	{
-		const other = (arg1 != this.username) ? arg1 : arg2;
+		this.historic.addGame(msg);
+	}
+
+	receiveMsg(msg: any)
+	{
+		const other = (msg.from != this.username) ? msg.from : msg.to;
 		var conv = this._getConv(other);
 		if (!conv)
 		{
 			conv = new Conv(other, 1)
 			this.friendList.push(conv);
+			this.reRenderFriendList();
 			return ;
 		}
-		conv.HTMLAddMsg(`${arg1}: ${content}`);
+		conv.HTMLAddMsg(`${msg.from}: ${msg.content}`);
 	}
-	receiveBlocked(name:string)
+	receiveBlocked(msg: any)
 	{
-		this.friendList.push(new Conv(name, 0));
+		this.friendList.push(new Conv(msg.name, 0));
 	}
-	receiveInvite(arg:string, room:string)
+	receiveInvite(msg: any)
 	{
-		console.log(`${arg} invited you to room ${room}`); //TODO
+		console.log(`${msg.name} invited you to his room`); //TODO
 	}
-	receiveAdd(name:string, arg:string)
+	receiveAdd(msg: any)
 	{
 		var log = document.getElementById("log-add-friend");
-		if (arg == "no")
-		{
-			if (log)
-				log.innerHTML = "user doesn't exist";
+		if (msg.error != undefined) {
+			if (msg.error == "no")
+			{
+				if (log)
+					log.innerHTML = "user doesn't exist";
+			}
 			return ;
 		}
 
-		const newFriend = new Conv(name, 1);
+		const newFriend = new Conv(msg.name, 1);
 		this.friendList.push(newFriend);
 		if (log)
 			log.innerHTML = "accpeted";
-		this.reRenderFriendList(); //TODO TROP GOURMAND!
+		this.reRenderFriendList();
 	}
 
-	onMsg(event:MessageEvent)
+	onMsg(message:any)
 	{
-		const [type, arg1, arg2, ...X] = event.data.split('+');
-		const content = X.join('+');
+		const msg = JSON.parse(message.data);
 
-		switch (type) {
+		switch (msg.type) {
 			case 'msg':
-				this.receiveMsg(arg1, arg2, content);
+				this.receiveMsg(msg);
 				break ;
 			case 'invited':
-				this.receiveInvite(arg1, content);
+				this.receiveInvite(msg);
 				break ;
 			case 'add':
-				this.receiveAdd(arg1, arg2);
+				this.receiveAdd(msg);
 				break
 			case 'blocked':
-				this.receiveBlocked(arg1);
+				this.receiveBlocked(msg);
+				break
+			case 'historic':
+				this.receiveHistoric(msg);
 				break
 			case 'endDb':
 				this.reRenderFriendList();
 				break
-			case 'historic':
-				this.receiveHistoric(arg1, arg2, content);
 			case 'game':
-				this.pongGame.onMsg(arg1, arg2, content);
+				this.pongGame.onMsg(msg);
 				break ;
 			default:
 				break;
@@ -147,25 +155,25 @@ export class ChatUser
 
 	sendBlock(friend:Conv)
 	{
-		this.ws.send(`block+${friend.penPal}+${friend.flag}`);
+		this.wsSend({type: "block", name: friend.penPal, flag: friend.flag});
 	}
 
 	sendMsg(penPal:string, content:string)
 	{
-		this.ws.send(`msg+${penPal}+${content}`)
+		this.wsSend({type: "msg", name: penPal, content: content})
 		const conv = this._getConv(penPal);
 		conv?.HTMLAddMsg(`${this.username}: ${content}`);
 	}
 
 	sendFindGame()
 	{
-		this.ws.send(`findGame+x+x`);
+		this.wsSend({type: "findGame"});
 	}
 
 	sendInvite(conv:Conv)
 	{
 		//need to create a room
-		this.ws.send(`invite+${conv.penPal}+x`);
+		this.wsSend({type: "invite", name:conv.penPal});
 		conv.HTMLAddInvite();
 
 		//need the user to be online
@@ -188,7 +196,7 @@ export class ChatUser
 				log.innerHTML = "your already friend with him!";
 			return ;
 		}
-		this.ws.send(`add+${name}+its cool to have friend`);
+		this.wsSend({type:"add", name: name});
 		if (log)
 			log.innerHTML = "searching"
 	}
@@ -226,6 +234,15 @@ export class ChatUser
 		}
 	}
 
+	HTMLProfilePageBtn(conv: Conv, profileBtn: HTMLElement)
+	{
+		profileBtn.onclick = () => {
+			const path = `/history/${conv.penPal}`;
+			history.pushState({}, '', path);
+			window.dispatchEvent(new PopStateEvent('popstate'));
+		}
+	}
+
 	HTMLRenderPeer(conv: Conv, friendDiv: HTMLElement, chatBox: HTMLElement, chatHeader: HTMLElement)
 	{
 		var li = conv.HTMLChoosePeer();
@@ -234,12 +251,16 @@ export class ChatUser
 		const chooseBtn = document.getElementById(`choose-peer-${conv.penPal}`);
 		const blockBtn = document.getElementById(`block-peer-${conv.penPal}`);
 		const inviteBtn = document.getElementById(`invite-peer-${conv.penPal}`);
-		console.log(chooseBtn, blockBtn, inviteBtn);
-		if (!chooseBtn || !blockBtn || !inviteBtn)
+		const profileBtn = document.getElementById(`profile-peer-${conv.penPal}`);
+		if (!chooseBtn || !blockBtn || !inviteBtn || !profileBtn)
+		{
+			console.warn("BTN ERROR:", chooseBtn, blockBtn, inviteBtn, profileBtn);
 			return ;
+		}
 		this.HTMLChooseBtn(conv, chatBox, chatHeader, chooseBtn);
 		this.HTMLBlockBtn(conv, chatBox, chatHeader, chooseBtn, blockBtn);
 		this.HTMLInviteBtn(conv, chatBox, inviteBtn);
+		this.HTMLProfilePageBtn(conv, profileBtn);
 	}
 
 	reRenderFriendList()

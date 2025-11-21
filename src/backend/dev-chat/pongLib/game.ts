@@ -27,28 +27,22 @@ export class DevPongGame
 		this.ws = ws;
 	}
 
-	onMsg(tag:string, x:string, y:string)
+	onMsg(msg:any)
 	{
-		switch (tag) {
+		switch (msg.tag) {
 			case 'start':
 				this.initGame();
 				this.initInput();
 				break ;
-			case 'p1':
-				this.p1!.racket.x = parseInt(x);
-				this.p1!.racket.y = parseInt(y);
-				break ;
-			case 'p2':
-				this.p2!.racket.x = parseInt(x);
-				this.p2!.racket.y = parseInt(y);
-				break ;
-			case 'ball':
-				this.ball!.center.x = parseInt(x);
-				this.ball!.center.y = parseInt(y);
-				break ;
-			case 'score':
-				this.score!.x = parseInt(x);
-				this.score!.y = parseInt(y);
+			case 'state':
+				this.p1!.racket.x = msg.p1.x;
+				this.p1!.racket.y = msg.p1.y;
+				this.p2!.racket.x = msg.p2.x;
+				this.p2!.racket.y = msg.p2.y;
+				this.ball!.center.x = msg.ball.x;
+				this.ball!.center.y = msg.ball.y;
+				this.score!.x = msg.score.x;
+				this.score!.y = msg.score.y;
 				this.redraw();
 				break ;
 			case 'end':
@@ -108,16 +102,16 @@ export class DevPongGame
 	inputDown(event : KeyboardEvent)
 	{
 		if (event.code == "ArrowUp")
-			this.ws?.send(`gameInput+down+up`);
+			this.ws?.send(JSON.stringify({type: "gameInput", pressState: "down", dir:"up"}));
 		if (event.code == "ArrowDown")
-			this.ws?.send(`gameInput+down+down`);
+			this.ws?.send(JSON.stringify({type: "gameInput", pressState: "down", dir:"down"}));
 	}
 	inputUp(event : KeyboardEvent)
 	{
 		if (event.code == "ArrowUp")
-			this.ws?.send(`gameInput+up+up`);
+			this.ws?.send(JSON.stringify({type: "gameInput", pressState: "up", dir:"up"}));
 		if (event.code == "ArrowDown")
-			this.ws?.send(`gameInput+up+down`);
+			this.ws?.send(JSON.stringify({type: "gameInput", pressState: "up", dir:"down"}));
 	}
 
 	initGame()

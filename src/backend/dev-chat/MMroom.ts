@@ -10,10 +10,10 @@ export class MMRoom extends ARoom {
 	{
 		var keys = Object.keys(this.players);
 		this.p1 = this.players[Number(keys[0])];
-		this.p1!.socket.send(`game+start+Left+x`);
+		this.p1!.send({type: "game", tag: "start", dir:"Left"});
 
 		this.p2 = this.players[Number(keys[1])];
-		this.p2!.socket.send(`game+start+Right+x`);
+		this.p2!.send({type: "game", tag: "start", dir:"Right"});
 	}
 
 	addPlayer(user:Client, _:string)
@@ -24,7 +24,7 @@ export class MMRoom extends ARoom {
 			this.startGame();
 	}
 
-	gameInput(client: Client, arg: string, content:string)
+	gameInput(client: Client, msg:any)
 	{
 		var player;
 		if (client == this.p1)
@@ -33,8 +33,8 @@ export class MMRoom extends ARoom {
 			player = this.game.p2;
 		else
 			return ;
-		const value = arg == "up" ? 0 : 1;
-		const coordinal = content == "up" ? 0 : 1;
+		const value = msg.pressState == "up" ? 0 : 1;
+		const coordinal = msg.dir == "up" ? 0 : 1;
 		player!.keysPressed[coordinal] = value;
 	}
 
@@ -42,8 +42,8 @@ export class MMRoom extends ARoom {
 	{
 		clearInterval(this.newFrameInterval);
 		this.inGame = 0;
-		this.broadCast(`game+end+TODO+x`); //TODO (client side)
-		this.addMatch(this.p1!, this.p2!, this.game.score!.x, this.game.score!.y, "1vs1");
+		this.broadCast({type: "game", tag: "end"}); //TODO (client side)
+		this.addMatch(this.p1!, this.p2!, this.game.score!.x, this.game.score!.y, "pvp");
 		this.p1 = null;
 		this.p2 = null;
 		this.game.endGame();

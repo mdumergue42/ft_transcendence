@@ -25,7 +25,7 @@ class WsServ
 
 		this.server.on('connection', (socket:WebSocket) => {
 			this.connection(socket);
-			socket.on('message', (message:string) => this.msg(`${message}`, socket));
+			socket.on('message', (message:any) => this.msg(message, socket));
 			socket.on('close', () => this.deco(socket));
 		});
 
@@ -44,9 +44,9 @@ class WsServ
 		const idM = await getIdByName('maelys', this.db);
 
 		await this.db.run(`INSERT INTO matchs(match_type, id_p1, id_p2, score_p1, score_p2) VALUES (?, ?, ?, ?, ?)`, ["test",idB, idM,"1","0"]);
-		await this.db.run(`INSERT INTO matchs(match_type, id_p1, id_p2, score_p1, score_p2) VALUES (?, ?, ?, ?, ?)`, ["vsi",idB, idM,"0","1"]);
-		await this.db.run(`INSERT INTO matchs(match_type, id_p1, id_p2, score_p1, score_p2) VALUES (?, ?, ?, ?, ?)`, ["ftg",idB, idM,"3","1"]);
-		await this.db.run(`INSERT INTO matchs(match_type, id_p1, id_p2, score_p1, score_p2) VALUES (?, ?, ?, ?, ?)`, ["jpp",idB, idM,"3","1"]);
+		await this.db.run(`INSERT INTO matchs(match_type, id_p1, id_p2, score_p1, score_p2) VALUES (?, ?, ?, ?, ?)`, ["pvp",idB, idM,"0","1"]);
+		await this.db.run(`INSERT INTO matchs(match_type, id_p1, id_p2, score_p1, score_p2) VALUES (?, ?, ?, ?, ?)`, ["pvp",idB, idM,"3","1"]);
+		await this.db.run(`INSERT INTO matchs(match_type, id_p1, id_p2, score_p1, score_p2) VALUES (?, ?, ?, ?, ?)`, ["ai",idB, idM,"3","1"]);
 	}
 
 	connection(socket:WebSocket)
@@ -69,44 +69,58 @@ class WsServ
 		//TODO clear rooms?
 	}
 
-	msg(message:string, socket:WebSocket)
+	isOnline(name: string)
 	{
-		if (message == "ping+x+x")
+		for (let client of this.clients)
 		{
-			socket.send(`pong+x+x+x`);
+			if (client.username == name)
+				return 1;
+		}
+		return 0;
+	}
+
+	msg(message:any, socket:WebSocket)
+	{
+		const msg = JSON.parse(message);
+
+		if (msg.type == "ping")
+		{
+			socket.send(JSON.stringify({type: "pong"}));
 			return ;
 		}
 		for (let client of this.clients)
 		{
 			if (client.socket == socket)
 			{
-				this.parsing(message, client);
+				this.parsing(msg, client);
 				return ;
 			}
 		}
 	}
 
-	parsing(message:string, client:Client)
+	parsing(msg:any, client:Client)
 	{
-		var [type, arg, ...X] = message.split('+');
-		const content = X.join('+');
+		var type = msg.type;
+		var arg;
+		var content;
 
 		switch (type) {
 			case 'user':
 			{
+				arg = msg.name;
 				if (this.clients.length == 2)
 					arg = "youenn"; //TODO
 				client.user(arg, this.db);
 				break;
 			}
 			case 'msg':
-				this.sendTo(content, arg, client);
+				this.sendTo(msg.content, msg.name, client);
 				break;
 			case 'add':
-				this.addFriend(arg, client);
+				this.addFriend(msg.name, client);
 				break;
 			case 'block':
-				this.block(client, arg, parseInt(content, 10))
+				this.block(client, msg.name, msg.flag)
 				break;
 			case 'invite':
 				break;
@@ -123,13 +137,13 @@ class WsServ
 			case 'roomJoin':
 				break;
 			case 'gameInput':
-				this.rooms[client.roomId!].gameInput(client, arg, content);
+				this.rooms[client.roomId!].gameInput(client, msg);
 				break;
 			case 'findGame':
 				this.findGame(client);
 				break;
 			case 'getHistoric':
-				this.getHistoric(client, arg, parseInt(content));
+				this.getHistoric(client, msg.name, msg.flag);
 			default:
 				break;
 		}
@@ -167,16 +181,16 @@ class WsServ
 		client.setRoomId(GameRoom.id);
 	}
 
-	async getHistoric(client: Client, name:string, flag:number)
+	async getHistoric(client: Client, name:string, flag:any)
 	{
 		const id = await getIdByName(name, this.db);
 		if (id == undefined)
 		{
-			client.socket.send(`historic+noUser+user not found+x`);
+			client.send({type: "historic", error: "noUser"});
 			return ;
 		}
 
-		const games = await getHistoricById(id, this.db);
+		const games = await getHistoricById(id, this.db, flag);
 		if (games != undefined)
 		{
 			for (let game of games)
@@ -187,10 +201,10 @@ class WsServ
 					p2_name = await getNameById(game.id_p2, this.db);
 				else
 					p2_name = "-";
-				client.socket.send(`historic+${game.match_type}+${p1_name}#${p2_name}+${game.score_p1}#${game.score_p2}`);
+				client.send({type: "historic", matchName: game.match_type, p1: p1_name, p2: p2_name, s1: game.score_p1, s2: game.score_p2, date: game.date});
 			}
 		}
-		client.socket.send(`historic+endb+x+x`);
+		client.send({type: "historic", error: "endDb", isOnline: this.isOnline(name)});
 	}
 
 	async block(client: Client, name:string, flag:number)
@@ -213,9 +227,9 @@ class WsServ
 	{
 		const id = await getIdByName(name, this.db);
 		if (id == undefined)
-			from.socket.send(`add+${name}+no+user doest not exist`);
+			from.send({type: "add", name: name, error: "noUser"});
 		else
-			from.socket.send(`add+${name}+x+x`);
+			from.send({type: "add", name: name});
 	}
 
 	async newFriendShip(from:Client, o_id:number)
@@ -254,7 +268,7 @@ class WsServ
 			}
 		}
 		if (pal && flag == 1)
-			pal.send(message, from);
+			pal.sendMsg(message, from);
 		return ;
 	}
 }

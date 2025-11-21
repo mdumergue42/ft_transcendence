@@ -4,61 +4,92 @@ import { ChatUser } from '../components/chat/chat.js'
 
 //TODO dashboard/profile/historic = 1thing; need to acces other player profile 2
 
+function statSquare(title: string, id:string) {
+	return `
+	<div class="border-2 border-green-400 bg-black p-4 text-center relative" style="padding-bottom: 28px">
+		<div class="absolute top-1 left-1 text-xs text-green-300">${title}</div>
+		<div id="${id}" class="text-2xl font-bold text-green-400 mt-4">-</div>
+	</div>
+	`;
+}
+
+function dotIsOnline() {
+	return `
+	<div class="relative">
+	  <div id="ring-online" class="ring-online"></div>
+	  <div id="dot-online" class="dot-online"></div>
+	</div>
+	`;
+}
+
+function profile() {
+	return `
+	<div class="text-center mb-8 p-6 border-2 border-green-400 bg-black/80 shadow-[inset_0_0_20px_rgba(0,255,0,0.1)]" style="margin-top: 24px">
+		<div style="text-align: center; margin-bottom: 30px; display: flex">
+			<h1 id="name-plate" style="font-size: 2.5rem; margin-bottom: 10px; color: green-400;">Profile Page</h1>
+			${dotIsOnline()}
+		</div>
+	</div>
+	`
+}
+
 export function renderHistory() {
 	return `
 		<app-navbar></app-navbar>
 		<app-chat></app-chat>
-		<main class="content-area" style="padding: 20px;">
+		<main class="ml-[80px] min-h-screen bg-black text-green-400 overflow-x-hidden relative font-mono">
 			<div style="max-width: 1200px; margin: 0 auto;">
-				<div style="text-align: center; margin-bottom: 30px;">
-					<h1 style="font-size: 2.5rem; margin-bottom: 10px; color: #333;">📊 Historique des Matchs</h1>
-					<p style="color: #666; font-size: 1.1rem;">Retrouve tous tes matchs passés</p>
-				</div>
-				<div style="background: #f8f9fa; padding: 20px; border-radius: 12px; margin-bottom: 25px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+				${profile()}
+				<div class="text-center mb-8 p-6 border-2 border-green-400 bg-black/80 shadow-[inset_0_0_20px_rgba(0,255,0,0.1)]">
 					<div style="display: flex; gap: 15px; flex-wrap: wrap; align-items: center;">
-						<select id="match-filter" style="padding: 10px 15px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px; cursor: pointer;">
+						<select id="type-filter" class="bg-black/80 border-green-400 border-2" style="padding: 10px 15px; font-size: 14px; cursor: pointer;">
 							<option value="all">Tous les matchs</option>
-							<option value="win">Victoires</option>
-							<option value="loss">Défaites</option>
 							<option value="pvp">PvP uniquement</option>
 							<option value="ai">vs IA uniquement</option>
 						</select>
-						<input type="date" id="date-filter" style="padding: 10px 15px; border: 2px solid #ddd; border-radius: 8px; font-size: 14px;">
-						<button id="reset-filters" style="padding: 10px 20px; background: #667eea; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold;">
-							🔄 Réinitialiser
+						<select id="limit-filter" class="bg-black/80 border-green-400 border-2" style="padding: 10px 15px; font-size: 14px; cursor: pointer;">
+							<option value="10">Last 10</option>
+							<option value="30">Last 30</option>
+							<option value="100">Last 100</option>
+						</select>
+						<button id="valid-filters" class="bg-black/80 border-green-400 border-2" style="padding: 8px 15px;font-size: 14px; cursor: pointer;">
+							[Update]
 						</button>
 					</div>
 				</div>
 				<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 30px;">
-					<div style="background: linear-gradient(135deg, #4caf50 0%, #66bb6a 100%); padding: 20px; border-radius: 12px; color: white; box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);">
-						<div style="font-size: 0.9rem; opacity: 0.9; margin-bottom: 5px;">Total Victoires</div>
-						<div id="stat-win" style="font-size: 2.5rem; font-weight: bold;">-</div>
-					</div>
-					<div style="background: linear-gradient(135deg, #f44336 0%, #e57373 100%); padding: 20px; border-radius: 12px; color: white; box-shadow: 0 4px 12px rgba(244, 67, 54, 0.3);">
-						<div style="font-size: 0.9rem; opacity: 0.9; margin-bottom: 5px;">Total Défaites</div>
-						<div  id="stat-lose" style="font-size: 2.5rem; font-weight: bold;">-</div>
-					</div>
-					<div style="background: linear-gradient(135deg, #2196f3 0%, #64b5f6 100%); padding: 20px; border-radius: 12px; color: white; box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3);">
-						<div style="font-size: 0.9rem; opacity: 0.9; margin-bottom: 5px;">Win Rate</div>
-						<div id="stat-win-rate" style="font-size: 2.5rem; font-weight: bold;">-%</div>
-					</div>
-					<div style="background: linear-gradient(135deg, #ff9800 0%, #ffb74d 100%); padding: 20px; border-radius: 12px; color: white; box-shadow: 0 4px 12px rgba(255, 152, 0, 0.3);">
-						<div style="font-size: 0.9rem; opacity: 0.9; margin-bottom: 5px;">Série actuelle</div>
-						<div id="stat-win-streak"style="font-size: 2.5rem; font-weight: bold;">-</div>
-					</div>
+				${statSquare("total Win", "stat-win")}
+				${statSquare("total Lost", "stat-lose")}
+				${statSquare("Win rate", "stat-win-rate")}
+				${statSquare("Win streak", "stat-win-streak")}
+				${statSquare("K/D", "stat-kd")}
 				</div>
+				<div class="mb-8 p-6 border-2 border-green-400 bg-black/80 shadow-[inset_0_0_20px_rgba(0,255,0,0.1)]">
+				<div class="text-sm text-green-300 mb-2">HISTORIC:</div>
+
 				<div id="match-list" style="display: flex; flex-direction: column; gap: 15px;">
+				</div>
 				</div>
 			</div>
 		</main>`;
 }
 
-export function DevHistory(user:ChatUser, name:string) {
-	//TODO implement flag option!
-	//victory only
-	//lose only
-	//pvp only
-	//ia only
-	user.askHistoric(name, 0);
+function _getHistory(user: ChatUser, name:string) {
+	const type = <HTMLSelectElement>document.getElementById("type-filter");
+	const limit = <HTMLSelectElement>document.getElementById("limit-filter");
+	if (type && limit)
+		user.askHistoric(name, {mode: type.value, limit: limit.value});
+
+	const namePlate = <HTMLSelectElement>document.getElementById("name-plate");
+	namePlate.innerHTML = name;
+}
+
+export function DevHistory(user:ChatUser, name:string)
+{
+	_getHistory(user, name);
+
+	const btn = <HTMLButtonElement>document.getElementById("valid-filters");
+	if (btn)
+		btn.onclick = () => {_getHistory(user, name);}
 }
 

@@ -9,6 +9,32 @@
 	box-sizing: border-box;
 }
 
+html {
+  background-color: black;
+}
+
+.dot-online {
+	background-color: green;
+	border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    position: absolute;
+    top: 20px;
+    left: 20px;
+	opacity: 100;
+}
+
+.ring-online {
+    border: 3px solid green;
+    border-radius: 50%;
+    height: 20px;
+    width: 20px;
+    position: absolute;
+    left: 20px;
+    top: 20px;
+	opacity: 0;
+}
+
 body {
 	font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 	background: #f5f5f5;

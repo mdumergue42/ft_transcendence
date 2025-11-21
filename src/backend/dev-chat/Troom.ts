@@ -9,10 +9,10 @@ export class TRoom extends ARoom {
 	assignPlayer()
 	{
 		this.p1 = this.players[0];
-		this.p1!.socket.send(`game+start+Left+x`);
+		this.p1!.send({type: "game", tag: "start", dir:"Left"});
 
 		this.p2 = this.players[1];
-		this.p2!.socket.send(`game+start+Right+x`);
+		this.p2!.send({type: "game", tag: "start", dir:"Right"});
 
 		//game+start+Streaming+x
 	}
@@ -22,7 +22,7 @@ export class TRoom extends ARoom {
 
 	}
 
-	gameInput(client: Client, arg: string, content:string)
+	gameInput(client: Client, msg:any)
 	{
 
 	}

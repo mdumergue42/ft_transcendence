@@ -5,13 +5,15 @@ class HistoricGame
 	s1:number
 	s2:number
 	def:string
-	constructor(p1:string, p2:string, s1:string, s2:string, def:string)
+	date:string
+	constructor(p1:string, p2:string, s1:string, s2:string, def:string, date:string)
 	{
 		this.p1 = p1;
 		this.p2 = p2;
 		this.s1 = Number(s1);
 		this.s2 = Number(s2);
 		this.def = def;
+		this.date = date;
 	}
 
 	_win()
@@ -21,15 +23,15 @@ class HistoricGame
 
 	HTMLrenderGame(div: HTMLElement)
 	{
-		const colors = ["background: linear-gradient(135deg, #f44336 0%, #e57373 100%); box-shadow: 0 4px 12px rgba(244, 67, 54, 0.3)", "background: linear-gradient(135deg, #4caf50 0%, #66bb6a 100%); box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3)"];
-
 		var newGame = document.createElement('div');
-		newGame.style.cssText = `${colors[this._win()]}; padding: 20px; border-radius: 12px; color: white;`
+		if (this._win())
+			newGame.className = "block p-3 text-center relative border border-green-400/50 bg-green-400 text-black";
+		else
+			newGame.className = "block p-3 text-center relative border border-green-400/50 bg-black/50 text-green-400";
 		newGame.innerHTML = `
-		<div style="font-size: 0.9rem; opacity: 0.9; margin-bottom: 5px;">${this.def}</div>
+		<div class="absolute top-1 left-1" style="font-size: 0.9rem; opacity: 0.9; margin-bottom: 5px; text-transform: uppercase;">${this.def} - ${this.date}</div>
 
-		<div style="font-size: 2.5rem; font-weight: bold;">${this.p1} vs ${this.p2}</div>
-		<div style="font-size: 2.5rem; font-weight: bold;">${this.s1} vs ${this.s2}</div>
+		<div style="font-size: 2.5rem; font-weight: bold;">${this.p1} ${this.s1} vs ${this.s2} ${this.p2}</div>
 		`;
 
 		div.appendChild(newGame);
@@ -40,11 +42,13 @@ export class Historic
 {
 	name:string | null = null;
 	error:string | null = null;
+	isOnline:number = 0;
 	games: HistoricGame[] = [];
 
 	reset(name:string)
 	{
 		this.name = name;
+		this.isOnline = 0;
 		this.games = [];
 	}
 
@@ -53,12 +57,14 @@ export class Historic
 		var win = 0;
 		var lose = 0;
 		var winStreak = 0;
+		var k = 0;
+		var d = 0;
 		for (let indx in this.games)
 		{
 			const game = this.games[this.games.length - Number(indx) - 1];
 			if (game._win())
 			{
-				win += 1;https://192:168:0:19/
+				win += 1;
 				winStreak += 1;
 			}
 			else
@@ -66,37 +72,44 @@ export class Historic
 				lose += 1;
 				winStreak = 0;
 			}
+			k += game.s1;
+			d += game.s2;
 		}
-		return [win, lose, Math.ceil(win / (win + lose) * 100), winStreak];
+		if (d == 0)
+			d = 1;
+		return [win, lose, Math.ceil(win / (win + lose) * 100), winStreak, Math.ceil(k / d * 100) / 100];
 	}
 
-	_addGame(p1:string, p2:string, s1:string, s2:string, d:string)
+	_addGame(p1:string, p2:string, s1:string, s2:string, d:string, date:string)
 	{
-		const x = new HistoricGame(p1, p2, s1, s2, d);
+		const x = new HistoricGame(p1, p2, s1, s2, d, date);
 		this.games.push(x);
 	}
 
-	addGame(def:string, names:string, scores:string)
+	addGame(msg:any)
 	{
-		console.log("ADD GAME:", def, names);
-		if (def == "endb")
-		{
-			this.error = null;
+		if (msg.error != undefined) {
+			if (msg.error == "endDb")
+			{
+				this.error = null;
+				this.isOnline = msg.isOnline;
+			}
+			if (msg.error == "noUser")
+			{
+				this.error = "user not found";
+				this.isOnline = 1;
+			}
 			this.HTMLrenderHistoric();
 			return ;
 		}
-		if (def == "noUser")
-		{
-			this.error = "user not found";
-			this.HTMLrenderHistoric();
-			return ;
-		}
-		var [p1, p2] = names.split('#');
-		var [s1, s2] = scores.split('#');
+		var p1 = msg.p1;
+		var p2 = msg.p2;
+		var s1 = msg.s1;
+		var s2 = msg.s2;
 		if (p1 == this.name)
-			this._addGame(p1, p2, s1, s2, def);
+			this._addGame(p1, p2, s1, s2, msg.matchName, msg.date);
 		else
-			this._addGame(p2, p1, s2, s1, def);
+			this._addGame(p2, p1, s2, s1, msg.matchName, msg.date);
 	}
 
 	HTMLrenderHistoric()
@@ -106,19 +119,29 @@ export class Historic
 			return ;
 		matchList.innerHTML = "";
 
+		const ringOnline = document.getElementById("ring-online");
+		const dotOnline = document.getElementById("dot-online");
+		if (ringOnline && dotOnline)
+		{
+			if (this.error)
+				dotOnline.style.backgroundColor = "red";
+			else
+				dotOnline.style.backgroundColor = "green";
+			dotOnline.style.opacity = `${this.isOnline * 100}`;
+			ringOnline.style.opacity = `${(1 - this.isOnline) * 100}`;
+		}
+
 
 		if (this.error)
 		{
-			console.log(this.error);
 			matchList.innerHTML = this.error;
 			return ;
 		}
 
-
 		for (let game of this.games)
 			game.HTMLrenderGame(matchList);
 
-		let [win, lose, wr, ws] = this._stats();
+		let [win, lose, wr, ws, kd] = this._stats();
 		const statWin = document.getElementById("stat-win");
 		if (statWin)
 			statWin.innerText = `${win}`;
@@ -131,5 +154,8 @@ export class Historic
 		const statWS = document.getElementById("stat-win-streak");
 		if (statWS)
 			statWS.innerText = `${ws}`;
+		const statKd = document.getElementById("stat-kd");
+		if (statKd)
+			statKd.innerText = `${kd}`;
 	}
 }

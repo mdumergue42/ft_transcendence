@@ -22,14 +22,22 @@ export async function getFlagFriendShip(friendId:number, selfId:number, db:any)
 	return result;
 }
 
-export async function getHistoricById(id:number, db:any, flag:number= 0)
+export async function getHistoricById(id:number, db:any, flag:any)
 {
-	//TODO FLAGS
-	//victory only
-	//lose only
-	//pvp only
-	//ia only
-	const stmt = await db.prepare(`SELECT match_type,id_p1,id_p2,score_p1,score_p2 FROM matchs WHERE id_p1 = ? OR id_p2 = ? ORDER BY date DESC LIMIT 30`);
-	let result = await stmt.all([id, id]);
+	var stack = [id, id];
+
+	var sql = "SELECT match_type,id_p1,id_p2,score_p1,score_p2,date FROM matchs WHERE (id_p1 = ? OR id_p2 = ?) "
+
+	if (flag.mode != "all")
+	{
+		sql += "AND match_type = ? ";
+		stack.push(flag.mode);
+	}
+
+	sql += "ORDER BY date DESC LIMIT ?";
+	stack.push(flag.limit);
+
+	const stmt = await db.prepare(sql);
+	let result = await stmt.all(stack);
 	return result;
 }

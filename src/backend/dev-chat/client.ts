@@ -16,8 +16,10 @@ export class Client
 		this.friendList = [];
 		this.roomId = null;
 
-		/*console.log("USER IS LOGIN; friendList:", this.friendList);
-		await db.each(`SELECT id_friend,id_self FROM friends`, (err:any, row:any) => {console.log("RS:", row)});*/
+	}
+	send(obj:any)
+	{
+		this.socket.send(JSON.stringify(obj));
 	}
 
 	async user(name: string, db:any)
@@ -31,6 +33,7 @@ export class Client
 		{
 			this.friendList.push([row.id_friend, row.flag, row.username]);
 		});
+		//TODO prepare SQL
 
 		await db.each(`SELECT msg,id_from,id_to FROM msgs WHERE id_from = ? OR id_to = ? ORDER BY date`, [this.id, this.id ], async (err:any, row:any) => {
 			await this.sendOldMsg(row.msg, row.id_from, row.id_to);
@@ -38,7 +41,7 @@ export class Client
 
 
 		this.sendBlockedList();
-		this.socket.send(`endDb+x+x+end of stored msg`);
+		this.send({type:"endDb"});
 	}
 
 	sendBlockedList()
@@ -46,13 +49,14 @@ export class Client
 		for (let fr of this.friendList)
 		{
 			if (fr[1] == 0)
-				this.socket.send(`blocked+${fr[2]}+x+x`);
+				this.send({type: "blocked", name: fr[2]});
 		}
 	}
 
-	send(message:string, from:Client)
+
+	sendMsg(message:string, from:Client)
 	{
-		this.socket.send(`msg+${from.username}+${this.username}+${message}`)
+		this.send({type: "msg", from: from.username, to:this.username, content: message});
 	}
 
 	async sendOldMsg(message:string, id_from:number, id_to:number)
@@ -77,7 +81,7 @@ export class Client
 			[_,flag,from] = get_name(id_from);
 		}
 		if (flag == 1)
-			this.socket.send(`msg+${from}+${to}+${message}`);
+			this.send({type: "msg", from: from, to:to, content: message});
 	}
 
 	setRoomId(id: number | null)

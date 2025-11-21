@@ -82,13 +82,13 @@ export async function insertMatchs(type:string, id1:number, id2:number, s1:numbe
 
 export async function insertFriend(idFrom:number, idTo:number, flag:number=1, db:any)
 {
-	const stmt = await db.prepare(`INSERT INTO friends(id_self, if_friend, flag) VALUES (?, ?, ?)`);
+	const stmt = await db.prepare(`INSERT INTO friends(id_self, id_friend, flag) VALUES (?, ?, ?)`);
 	await stmt.run([idFrom, idTo, flag]);
 }
 
 export async function insertMsg(msg: string, idFrom:number, idTo:number, db:any)
 {
-	const stmt = await db.prepare(`INSERT INTO msgs(msg, id_from, if_to) VALUES (?, ?, ?)`);
+	const stmt = await db.prepare(`INSERT INTO msgs(msg, id_from, id_to) VALUES (?, ?, ?)`);
 	await stmt.run([msg, idFrom, idTo]);
 }
 

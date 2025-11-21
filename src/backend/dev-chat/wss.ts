@@ -238,7 +238,7 @@ class WsServ
 		if (nb == undefined)
 			return ;
 		if (nb == 0)
-			await insertFriend(from.id, id, 0, this.db);
+			await insertFriend(from.id, id, 1, this.db);
 	}
 
 	async sendTo(message:string, to:string, from:Client)
@@ -251,7 +251,7 @@ class WsServ
 		if (nb == undefined)
 			return ;
 		if (nb == 0 && id != from.id) //TODO suppr c pour les tests; tu peux pas etre amis avec toi meme
-			await insertFriend(id, from.id, 0, this.db);
+			await insertFriend(id, from.id, 1, this.db);
 
 
 		await insertMsg(message, from.id, id, this.db);

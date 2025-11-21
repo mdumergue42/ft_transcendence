@@ -4,6 +4,7 @@ import {Player} from './pongLib/player.js'
 import {Ball} from './pongLib/ball.js'
 import {Vector2} from './pongLib/vector2.js'
 import {ARoom} from './Aroom.js'
+import {insertMatchs} from './sqlGet.js'
 
 export class MMRoom extends ARoom {
 	assignPlayer()
@@ -53,7 +54,6 @@ export class MMRoom extends ARoom {
 
 	async addMatch(p1: Client, p2: Client, score_p1: number, score_p2: number, type: string)
 	{
-		await this.db.run(`INSERT INTO matchs(match_type, id_p1, id_p2, score_p1, score_p2) VALUES (?, ?, ?, ?, ?)`,
-			[type, p1.id, p2.id, score_p1, score_p2]);
+		await insertMatchs(type, p1.id, p2.id, score_p1, score_p2, this.db);
 	}
 }

@@ -82,22 +82,30 @@ export class ChatUser
 		this.historic.addGame(msg);
 	}
 
+	_createFriend(name:string, flag:number)
+	{
+		var conv = this._getConv(name);
+		if (!conv)
+		{
+			conv = new Conv(name, flag)
+			this.friendList.push(conv);
+			return null;
+		}
+		return conv;
+	}
+
 	receiveMsg(msg: any)
 	{
 		const other = (msg.from != this.username) ? msg.from : msg.to;
-		var conv = this._getConv(other);
+		var conv = this._createFriend(other, 1);
 		if (!conv)
-		{
-			conv = new Conv(other, 1)
-			this.friendList.push(conv);
 			this.reRenderFriendList();
-			return ;
-		}
-		conv.HTMLAddMsg(`${msg.from}: ${msg.content}`);
+		else
+			conv.HTMLAddMsg(`${msg.from}: ${msg.content}`);
 	}
-	receiveBlocked(msg: any)
+	receiveFriendList(msg: any)
 	{
-		this.friendList.push(new Conv(msg.name, 0));
+		this._createFriend(msg.name, msg.flag);
 	}
 	receiveInvite(msg: any)
 	{
@@ -136,8 +144,8 @@ export class ChatUser
 			case 'add':
 				this.receiveAdd(msg);
 				break
-			case 'blocked':
-				this.receiveBlocked(msg);
+			case 'friendList':
+				this.receiveFriendList(msg);
 				break
 			case 'historic':
 				this.receiveHistoric(msg);

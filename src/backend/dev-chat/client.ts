@@ -34,23 +34,20 @@ export class Client
 			this.friendList.push([friend.id_friend, friend.flag, friend.username]);
 		}
 
+		this.sendFriendList();
 		const msgs = await getAllMsg(this.id, db);
 		for (let msg of msgs)
 		{
 			await this.sendOldMsg(msg.msg, msg.id_from, msg.id_to);
 		}
-
-
-		this.sendBlockedList();
 		this.send({type:"endDb"});
 	}
 
-	sendBlockedList()
+	sendFriendList()
 	{
 		for (let fr of this.friendList)
 		{
-			if (fr[1] == 0)
-				this.send({type: "blocked", name: fr[2]});
+			this.send({type: "friendList", flag:fr[1], name: fr[2]});
 		}
 	}
 

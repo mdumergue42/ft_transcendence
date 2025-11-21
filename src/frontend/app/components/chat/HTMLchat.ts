@@ -27,9 +27,15 @@ export function HTMLChatListElement(name:string, isBlocked:number)
 	btn3.className = "";
 	btn3.innerHTML = `⛔`;
 
+	var btn4 = document.createElement('button');
+	btn3.id = `profile-peer-${name}`;
+	btn3.className = "";
+	btn3.innerHTML = `👤`;
+
 	li.appendChild(btn1);
 	li.appendChild(btn2);
 	li.appendChild(btn3);
+	li.appendChild(btn4);
 	return li;
 }
 

@@ -171,21 +171,24 @@ class WsServ
 	{
 		const id = await getIdByName(name, this.db);
 		if (id == undefined)
+		{
+			client.socket.send(`historic+noUser+user not found+x`);
 			return ;
+		}
 
 		const games = await getHistoricById(id, this.db);
-		if (games == undefined)
-			return ;
-
-		for (let game of games)
+		if (games != undefined)
 		{
-			const p1_name = await getNameById(game.id_p1, this.db);
-			var p2_name;
-			if (game.id_p2)
-				p2_name = await getNameById(game.id_p2, this.db);
-			else
-				p2_name = "-";
-			client.socket.send(`historic+${game.match_type}+${p1_name}#${p2_name}+${game.score_p1}#${game.score_p2}`);
+			for (let game of games)
+			{
+				const p1_name = await getNameById(game.id_p1, this.db);
+				var p2_name;
+				if (game.id_p2)
+					p2_name = await getNameById(game.id_p2, this.db);
+				else
+					p2_name = "-";
+				client.socket.send(`historic+${game.match_type}+${p1_name}#${p2_name}+${game.score_p1}#${game.score_p2}`);
+			}
 		}
 		client.socket.send(`historic+endb+x+x`);
 	}

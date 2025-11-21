@@ -39,6 +39,7 @@ class HistoricGame
 export class Historic
 {
 	name:string | null = null;
+	error:string | null = null;
 	games: HistoricGame[] = [];
 
 	reset(name:string)
@@ -57,7 +58,7 @@ export class Historic
 			const game = this.games[this.games.length - Number(indx) - 1];
 			if (game._win())
 			{
-				win += 1;
+				win += 1;https://192:168:0:19/
 				winStreak += 1;
 			}
 			else
@@ -77,8 +78,16 @@ export class Historic
 
 	addGame(def:string, names:string, scores:string)
 	{
+		console.log("ADD GAME:", def, names);
 		if (def == "endb")
 		{
+			this.error = null;
+			this.HTMLrenderHistoric();
+			return ;
+		}
+		if (def == "noUser")
+		{
+			this.error = "user not found";
 			this.HTMLrenderHistoric();
 			return ;
 		}
@@ -96,6 +105,16 @@ export class Historic
 		if (!matchList)
 			return ;
 		matchList.innerHTML = "";
+
+
+		if (this.error)
+		{
+			console.log(this.error);
+			matchList.innerHTML = this.error;
+			return ;
+		}
+
+
 		for (let game of this.games)
 			game.HTMLrenderGame(matchList);
 
@@ -108,7 +127,7 @@ export class Historic
 			statLose.innerText = `${lose}`;
 		const statWR = document.getElementById("stat-win-rate");
 		if (statWR)
-			statWR.innerText = `${wr}`;
+			statWR.innerText = `${wr}%`;
 		const statWS = document.getElementById("stat-win-streak");
 		if (statWS)
 			statWS.innerText = `${ws}`;

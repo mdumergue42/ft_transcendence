@@ -11,34 +11,38 @@ import { ChatUser } from './components/chat/chat.js'
 export function initRouter() {
 	const root = document.getElementById('app')!;
 	const user = new ChatUser("bastien");
-	console.log("CREATING USER");
 
-	function render(path: string) {
+	function render(allpath: string) {
+		let [_, path, ...arg]: string[] = allpath.split('/');
+
 		switch (path) {
-			case '/':
+			case '':
 				root.innerHTML = renderHome();
 				break;
-			case '/match':
+			case 'match':
 				root.innerHTML = renderMatch();
 				DevGame(user);
 				break;
-			case '/history':
+			case 'history':
 				root.innerHTML = renderHistory();
-				DevHistory(user, user.username); //TODO
+				if (arg.length == 1)
+					DevHistory(user, arg[0]);
+				else
+					DevHistory(user, user.username);
 				break;
-			case '/ai':
+			case 'ai':
 				root.innerHTML = '<app-navbar></app-navbar><main style="margin-left: 100px; padding: 20px; background: black; color: #00ff00; min-height: 100vh;"><h1>🤖 IA Mode - Coming Soon!</h1></main>';
 				break;
-			case '/tournament':
+			case 'tournament':
 				root.innerHTML = '<app-navbar></app-navbar><main style="margin-left: 100px; padding: 20px; background: black; color: #00ff00; min-height: 100vh;"><h1>🏆 Tournois - Coming Soon!</h1></main>';
 				break;
-			case '/stats':
+			case 'stats':
 				root.innerHTML = '<app-navbar></app-navbar><main style="margin-left: 100px; padding: 20px; background: black; color: #00ff00; min-height: 100vh;"><h1>📈 Statistiques - Coming Soon!</h1></main>';
 				break;
-			case '/profil':
+			case 'profil':
 				root.innerHTML = '<app-navbar></app-navbar><main style="margin-left: 100px; padding: 20px; background: black; color: #00ff00; min-height: 100vh;"><h1>👤 Profil - Coming Soon!</h1></main>';
 				break;
-			case '/dev-test':
+			case 'dev-test':
 				root.innerHTML = renderDevTest();
 				setTimeout(() => initDevTest(), 100);
 				break;

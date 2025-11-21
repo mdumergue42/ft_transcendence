@@ -32,19 +32,19 @@ export function renderHistory() {
 				<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 30px;">
 					<div style="background: linear-gradient(135deg, #4caf50 0%, #66bb6a 100%); padding: 20px; border-radius: 12px; color: white; box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);">
 						<div style="font-size: 0.9rem; opacity: 0.9; margin-bottom: 5px;">Total Victoires</div>
-						<div id="stat-win" style="font-size: 2.5rem; font-weight: bold;">28</div>
+						<div id="stat-win" style="font-size: 2.5rem; font-weight: bold;">-</div>
 					</div>
 					<div style="background: linear-gradient(135deg, #f44336 0%, #e57373 100%); padding: 20px; border-radius: 12px; color: white; box-shadow: 0 4px 12px rgba(244, 67, 54, 0.3);">
 						<div style="font-size: 0.9rem; opacity: 0.9; margin-bottom: 5px;">Total Défaites</div>
-						<div  id="stat-lose" style="font-size: 2.5rem; font-weight: bold;">15</div>
+						<div  id="stat-lose" style="font-size: 2.5rem; font-weight: bold;">-</div>
 					</div>
 					<div style="background: linear-gradient(135deg, #2196f3 0%, #64b5f6 100%); padding: 20px; border-radius: 12px; color: white; box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3);">
 						<div style="font-size: 0.9rem; opacity: 0.9; margin-bottom: 5px;">Win Rate</div>
-						<div id="stat-win-rate" style="font-size: 2.5rem; font-weight: bold;">65%</div>
+						<div id="stat-win-rate" style="font-size: 2.5rem; font-weight: bold;">-%</div>
 					</div>
 					<div style="background: linear-gradient(135deg, #ff9800 0%, #ffb74d 100%); padding: 20px; border-radius: 12px; color: white; box-shadow: 0 4px 12px rgba(255, 152, 0, 0.3);">
 						<div style="font-size: 0.9rem; opacity: 0.9; margin-bottom: 5px;">Série actuelle</div>
-						<div id="stat-win-streak"style="font-size: 2.5rem; font-weight: bold;">+5 🔥</div>
+						<div id="stat-win-streak"style="font-size: 2.5rem; font-weight: bold;">-</div>
 					</div>
 				</div>
 				<div id="match-list" style="display: flex; flex-direction: column; gap: 15px;">
@@ -54,7 +54,6 @@ export function renderHistory() {
 }
 
 export function DevHistory(user:ChatUser, name:string) {
-	console.log("TEST");
 	//TODO implement flag option!
 	//victory only
 	//lose only

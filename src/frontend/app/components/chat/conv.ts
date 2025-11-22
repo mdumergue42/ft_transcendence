@@ -6,12 +6,14 @@ export class Conv
 	msgList:string[]
 	chatBox:HTMLElement | null
 	flag:number
+	status:number;
 	constructor(_user:string, _flag:number)
 	{
 		this.penPal = _user;
 		this.msgList = [];
 		this.chatBox = null;
 		this.flag = _flag;
+		this.status = 0;
 	}
 
 	setChatBox(_div:HTMLElement | null)
@@ -34,7 +36,7 @@ export class Conv
 
 	HTMLAddInvite()
 	{
-		this._addMsg("you invatation was send!", 1);
+		this._addMsg("you invitation was send!", 1);
 	}
 
 	HTMLRenderConv()
@@ -56,7 +58,7 @@ export class Conv
 
 	HTMLChoosePeer()
 	{
-		return HTMLChatListElement(this.penPal, 1 - this.flag);
+		return HTMLChatListElement(this.penPal, 1 - this.flag, this.status);
 	}
 }
 

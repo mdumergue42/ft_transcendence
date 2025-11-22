@@ -125,8 +125,6 @@ export class ChatUser
 
 		const newFriend = new Conv(msg.name, 1);
 		this.friendList.push(newFriend);
-		if (log)
-			log.innerHTML = "accpeted";
 		this.reRenderFriendList();
 	}
 
@@ -205,8 +203,6 @@ export class ChatUser
 			return ;
 		}
 		this.wsSend({type:"add", name: name});
-		if (log)
-			log.innerHTML = "searching"
 	}
 
 	HTMLChooseBtn(conv: Conv, chatBox: HTMLElement, chatHeader: HTMLElement, chooseBtn: HTMLElement)

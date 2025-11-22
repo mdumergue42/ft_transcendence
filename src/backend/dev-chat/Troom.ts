@@ -9,11 +9,7 @@ export class TRoom extends ARoom {
 	assignPlayer()
 	{
 		this.p1 = this.players[0];
-		this.p1!.send({type: "game", tag: "start", dir:"Left"});
-
 		this.p2 = this.players[1];
-		this.p2!.send({type: "game", tag: "start", dir:"Right"});
-
 		//game+start+Streaming+x
 	}
 

@@ -5,8 +5,6 @@ export class AppChat extends HTMLElement {
 	}
 
 	async connectedCallback() {
-
-
 		const chat = document.createElement('chat');
 		chat.className = `chat-dev`;
 

@@ -3,6 +3,7 @@ import { renderHistory, DevHistory } from './pages/history.js';
 import { renderMatch, DevGame } from './pages/match.js';
 import './ui/navbar.js';
 import './ui/chat.js';
+import './ui/match.js';
 
 import { devChat } from './pages/chat.js';
 import { renderDevTest, initDevTest } from './pages/dev-test.js';

@@ -1,5 +1,4 @@
-import '../ui/navbar.js';
-import '../ui/chat.js';
+import '../ui/def.js';
 import { ChatUser } from '../components/chat/chat.js'
 
 //TODO dashboard/profile/historic = 1thing; need to acces other player profile 2
@@ -36,43 +35,38 @@ function profile() {
 
 export function renderHistory() {
 	return `
-		<app-navbar></app-navbar>
-		<app-chat></app-chat>
-		<main class="ml-[80px] min-h-screen bg-black text-green-400 overflow-x-hidden relative font-mono">
-			<div style="max-width: 1200px; margin: 0 auto;">
-				${profile()}
-				<div class="text-center mb-8 p-6 border-2 border-green-400 bg-black/80 shadow-[inset_0_0_20px_rgba(0,255,0,0.1)]">
-					<div style="display: flex; gap: 15px; flex-wrap: wrap; align-items: center;">
-						<select id="type-filter" class="bg-black/80 border-green-400 border-2" style="padding: 10px 15px; font-size: 14px; cursor: pointer;">
-							<option value="all">Tous les matchs</option>
-							<option value="pvp">PvP uniquement</option>
-							<option value="ai">vs IA uniquement</option>
-						</select>
-						<select id="limit-filter" class="bg-black/80 border-green-400 border-2" style="padding: 10px 15px; font-size: 14px; cursor: pointer;">
-							<option value="10">Last 10</option>
-							<option value="30">Last 30</option>
-							<option value="100">Last 100</option>
-						</select>
-						<button id="valid-filters" class="bg-black/80 border-green-400 border-2" style="padding: 8px 15px;font-size: 14px; cursor: pointer;">
-							[Update]
-						</button>
-					</div>
-				</div>
-				<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 30px;">
-				${statSquare("total Win", "stat-win")}
-				${statSquare("total Lost", "stat-lose")}
-				${statSquare("Win rate", "stat-win-rate")}
-				${statSquare("Win streak", "stat-win-streak")}
-				${statSquare("K/D", "stat-kd")}
-				</div>
-				<div class="mb-8 p-6 border-2 border-green-400 bg-black/80 shadow-[inset_0_0_20px_rgba(0,255,0,0.1)]">
-				<div class="text-sm text-green-300 mb-2">HISTORIC:</div>
-
-				<div id="match-list" style="display: flex; flex-direction: column; gap: 15px;">
-				</div>
-				</div>
+	<app-def>
+		${profile()}
+		<div class="text-center mb-8 p-6 border-2 border-green-400 bg-black/80 shadow-[inset_0_0_20px_rgba(0,255,0,0.1)]">
+			<div style="display: flex; gap: 15px; flex-wrap: wrap; align-items: center;">
+				<select id="type-filter" class="bg-black/80 border-green-400 border-2" style="padding: 10px 15px; font-size: 14px; cursor: pointer;">
+					<option value="all">Tous les matchs</option>
+					<option value="pvp">PvP uniquement</option>
+					<option value="ai">vs IA uniquement</option>
+				</select>
+				<select id="limit-filter" class="bg-black/80 border-green-400 border-2" style="padding: 10px 15px; font-size: 14px; cursor: pointer;">
+					<option value="10">Last 10</option>
+					<option value="30">Last 30</option>
+					<option value="100">Last 100</option>
+				</select>
+				<button id="valid-filters" class="bg-black/80 border-green-400 border-2" style="padding: 8px 15px;font-size: 14px; cursor: pointer;">
+				[Update]
+				</button>
 			</div>
-		</main>`;
+		</div>
+		<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 30px;">
+			${statSquare("total Win", "stat-win")}
+			${statSquare("total Lost", "stat-lose")}
+			${statSquare("Win rate", "stat-win-rate")}
+			${statSquare("Win streak", "stat-win-streak")}
+			${statSquare("K/D", "stat-kd")}
+		</div>
+		<div class="mb-8 p-6 border-2 border-green-400 bg-black/80 shadow-[inset_0_0_20px_rgba(0,255,0,0.1)]">
+			<div class="text-sm text-green-300 mb-2">HISTORIC:</div>
+
+			<div id="match-list" style="display: flex; flex-direction: column; gap: 15px;">
+		</div>
+	</app-def>`
 }
 
 function _getHistory(user: ChatUser, name:string) {

@@ -11,10 +11,12 @@ export class MMRoom extends ARoom {
 	{
 		var keys = Object.keys(this.players);
 		this.p1 = this.players[Number(keys[0])];
-		this.p1!.send({type: "game", tag: "start", dir:"Left"});
-
 		this.p2 = this.players[Number(keys[1])];
-		this.p2!.send({type: "game", tag: "start", dir:"Right"});
+
+		this.p1!.send({type: "game", tag: "start", dir:"Left",
+		names:[this.p1!.username, this.p2!.username], def:"pvp"});
+		this.p2!.send({type: "game", tag: "start", dir:"Right",
+		names:[this.p1!.username, this.p2!.username], def:"pvp"});
 	}
 
 	addPlayer(user:Client, _:string)

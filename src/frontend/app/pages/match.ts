@@ -1,14 +1,15 @@
 import {Pong} from '../components/pong/game.js'
 import {ChatUser} from '../components/chat/chat.js'
 import {DevPongGame} from '../components/pongLib/game.js'
+import '../ui/match.js'
+import '../ui/def.js'
 
 export function renderMatch() {
 	return `
-	<app-navbar></app-navbar>
-	<main style="margin-left: 100px; padding: 20px; background: black; color: #00ff00; min-height: 100vh;">
-	<canvas id="pong-canvas" width="1200" height="800"></canvas>
+	<app-def>
+	<app-match></app-match>
 	<button id="join-match-making">Join Matchmaking</button>
-	</main>
+	</app-def>
 	`;
 }
 
@@ -26,7 +27,16 @@ function devBtnMM(user: ChatUser) {
 export function DevGame(user: ChatUser) {
 	//check if not already in game!
 	devBtnMM(user);
-	user.pongGame.setCanvas(<HTMLCanvasElement>document.getElementById("pong-canvas"));
+	user.pongGame.setCanvas(
+		<HTMLCanvasElement>document.getElementById("pong-canvas"),
+		{
+			p1: document.getElementById("match-header-p1"),
+			p2: document.getElementById("match-header-p2"),
+			s1: document.getElementById("match-header-s1"),
+			s2: document.getElementById("match-header-s2"),
+			def: document.getElementById("match-header-def")
+		}
+	);
 
 	//Pong()
 }

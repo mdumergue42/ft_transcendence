@@ -6,21 +6,13 @@ import {CANVAS_WIDTH, CANVAS_HEIGHT} from './global.js'
 
 export class DevPongGame
 {
-	canvas:HTMLCanvasElement | null
-	p1: Player | null
-	p2: Player | null
-	ball: Ball | null
-	score: Vector2 | null
-	ws: WebSocket | null
-	constructor()
-	{
-		this.canvas = null;
-		this.p1 = null;
-		this.p2 = null;
-		this.ball = null;
-		this.score = null;
-		this.ws = null;
-	}
+	canvas:HTMLCanvasElement | null = null
+	header:any = null
+	p1: Player | null = null
+	p2: Player | null = null
+	ball: Ball | null = null
+	score: Vector2 | null = null
+	ws: WebSocket | null = null
 
 	setWs(ws:WebSocket | null)
 	{
@@ -33,6 +25,7 @@ export class DevPongGame
 			case 'start':
 				this.initGame();
 				this.initInput();
+				this.initCanvas(msg);
 				break ;
 			case 'state':
 				this.p1!.racket.x = msg.p1.x;
@@ -53,11 +46,22 @@ export class DevPongGame
 		}
 	}
 
+	initCanvas(msg: any)
+	{
+		if (!this.canvas)
+			return ;
+		this.header!.p1!.innerHTML = msg.names[0];
+		this.header!.p2!.innerHTML = msg.names[1];
+		this.header!.def!.innerHTML = msg.def;
+	}
+
 	redraw() //quand je recois les infos (balle)
 	{
 		if (!this.canvas)
 			return ;
-		draw(this.canvas, this.p1!, this.p2!, this.ball!, this.score!);
+		draw(this.canvas, this.p1!, this.p2!, this.ball!);
+		this.header!.s1!.innerHTML = `${this.score!.x}`;
+		this.header!.s2!.innerHTML = `${this.score!.y}`;
 	}
 
 	newFrame()
@@ -79,9 +83,10 @@ export class DevPongGame
 		}
 	}
 
-	setCanvas(canvas:HTMLCanvasElement)
+	setCanvas(canvas:HTMLCanvasElement, header:any)
 	{
 		this.canvas = canvas;
+		this.header = header;
 	}
 
 	setGame(p1:Player, p2:Player, ball:Ball, score:Vector2)
@@ -131,6 +136,13 @@ export class DevPongGame
 		this.score = null;
 
 		if (this.canvas)
+		{
+			this.header!.p1!.innerHTML = `P1`;
+			this.header!.p2!.innerHTML = `P2`;
+			this.header!.s1!.innerHTML = `0`;
+			this.header!.s2!.innerHTML = `0`;
+			this.header!.def!.innerHTML = `match def`;
 			resetCanvas(this.canvas!);
+		}
 	}
 }

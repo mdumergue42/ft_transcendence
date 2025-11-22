@@ -56,7 +56,7 @@ export abstract class ARoom
 	gameState()
 	{
 		this.game.newFrame();
-		if (this.game.score!.x == 1 || this.game.score!.y == 1)
+		if (this.game.score!.x == 3 || this.game.score!.y == 3)
 		{
 			this.endGame();
 			return ;

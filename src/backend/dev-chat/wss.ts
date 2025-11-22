@@ -4,7 +4,7 @@ import {Client} from './client.js';
 import {ARoom} from './Aroom.js';
 import {MMRoom} from './MMroom.js';
 import {TRoom} from './Troom.js';
-import {getIdByName, getNameById, getFlagFriendShip, getHistoricById, insertUser, insertMatchs, insertMsg, insertFriend, updateFlagFriend, getCountFriend} from './sqlGet.js'
+import {getIdByName, getNameById, getFlagFriendShip, getHistoricById, getAvatarByName ,insertUser, insertMatchs, insertMsg, insertFriend, updateFlagFriend, getCountFriend} from './sqlGet.js'
 
 
 interface Dictionary<T> {
@@ -186,7 +186,7 @@ class WsServ
 		const id = await getIdByName(name, this.db);
 		if (id == undefined)
 		{
-			client.send({type: "historic", error: "noUser"});
+			client.send({type: "historic", error: "noUser", avatar: "default/404.png"});
 			return ;
 		}
 
@@ -204,7 +204,11 @@ class WsServ
 				client.send({type: "historic", matchName: game.match_type, p1: p1_name, p2: p2_name, s1: game.score_p1, s2: game.score_p2, date: game.date});
 			}
 		}
-		client.send({type: "historic", error: "endDb", isOnline: this.isOnline(name)});
+
+		var avatar = await getAvatarByName(name, this.db);
+		if (avatar == undefined)
+			avatar = "default/404.png";
+		client.send({type: "historic", error: "endDb", isOnline: this.isOnline(name), avatar: avatar});
 	}
 
 	async block(client: Client, name:string, flag:number)

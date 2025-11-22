@@ -13,7 +13,7 @@ export async function getNameById(id : number, db: any) {
 	return result;
 }
 export async function getAvatarByName(name : string, db: any) {
-	const stmt = await db.prepare(`SELECT avatar as id FROM users WHERE username = ?`);
+	const stmt = await db.prepare(`SELECT avatar as avatar FROM users WHERE username = ?`);
 	let result = await stmt.get([name])
 	if (result)
 		result = result.avatar;
@@ -70,7 +70,7 @@ export async function getAllMsg(id: number, db:any)
 export async function insertUser(name:string, email:string, pass:string, db:any)
 {
 	const stmt = await db.prepare(`INSERT INTO users(username, email, password, avatar) VALUES(?, ?, ?, ?)`);
-	await stmt.run([name, email, pass, 'cara.jpg']);
+	await stmt.run([name, email, pass, 'default/cara.jpg']);
 }
 
 export async function insertMatchs(type:string, id1:number, id2:number, s1:number, s2:number, db:any)

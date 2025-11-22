@@ -44,10 +44,12 @@ export class Historic
 	error:string | null = null;
 	isOnline:number = 0;
 	games: HistoricGame[] = [];
+	avatar:string | null = null;
 
 	reset(name:string)
 	{
 		this.name = name;
+		this.avatar = null;
 		this.isOnline = 0;
 		this.games = [];
 	}
@@ -93,10 +95,12 @@ export class Historic
 			{
 				this.error = null;
 				this.isOnline = msg.isOnline;
+				this.avatar = msg.avatar;
 			}
 			if (msg.error == "noUser")
 			{
 				this.error = "user not found";
+				this.avatar = msg.avatar;
 				this.isOnline = 1;
 			}
 			this.HTMLrenderHistoric();
@@ -130,7 +134,9 @@ export class Historic
 			dotOnline.style.opacity = `${this.isOnline * 100}`;
 			ringOnline.style.opacity = `${(1 - this.isOnline) * 100}`;
 		}
-
+		var avatar = <HTMLImageElement>document.getElementById("avatar");
+		if (avatar)
+			avatar.src = `/image/avatar/${this.avatar}`;
 
 		if (this.error)
 		{

@@ -38,9 +38,9 @@ class WsServ
 	async tmp()
 	{
 		await insertUser('bastien','a@mail.com','123', this.db);
-		await insertUser('youenn','b@mail.com','123', this.db);
 		await insertUser('gaby','c@mail.com','123', this.db);
 		await insertUser('maelys','d@mail.com','123', this.db);
+		await insertUser('youenn','b@mail.com','123', this.db);
 
 		const idB = await getIdByName('bastien', this.db);
 		const idM = await getIdByName('maelys', this.db);
@@ -134,7 +134,7 @@ class WsServ
 
 	isOnline(name: string)
 	{
-		return (this.getClientS(name) != null);
+		return Number((this.getClientS(name) != null));
 	}
 
 	msg(message:any, socket:WebSocket)
@@ -305,10 +305,7 @@ class WsServ
 		}
 		else
 		{
-			const client = this.getClientN(id);
-			var status = 0;
-			if (client && client.isFriend(from))
-				status = 1;
+			var status = this.isOnline(name);
 			from.send({type: "add", name: name, status: status});
 		}
 

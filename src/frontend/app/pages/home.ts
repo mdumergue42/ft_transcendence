@@ -116,26 +116,3 @@ export function renderHome() {
 			</div>
 		</main>`;
 }
-
-export function initHome() {
-    
-    const bubbleButton = document.getElementById('chat-bubble-toggle');
-    const sidebar = document.getElementById('chat-sidebar');
-    const closeButton = document.getElementById('chat-close-btn');
-
-    if (!bubbleButton || !sidebar || !closeButton) {
-        console.warn('Éléments du chat (bulle/sidebar) non trouvés.');
-        return;
-    }
-
-    const openChat = () => {
-        sidebar.classList.remove('translate-x-full');
-    };
-
-    const closeChat = () => {
-        sidebar.classList.add('translate-x-full');
-    };
-
-    bubbleButton.addEventListener('click', openChat);
-    closeButton.addEventListener('click', closeChat);
-}

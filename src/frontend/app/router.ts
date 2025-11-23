@@ -20,7 +20,6 @@ export function initRouter() {
 		switch (path) {
 			case '':
 				root.innerHTML = renderHome();
-				initHome();
 				break;
 			case 'match':
 				root.innerHTML = renderMatch();

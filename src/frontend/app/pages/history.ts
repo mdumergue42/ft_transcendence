@@ -79,8 +79,10 @@ function _getHistory(user: ChatUser, name:string) {
 	namePlate.innerHTML = name;
 }
 
-export function DevHistory(user:ChatUser, name:string)
+export function DevHistory(user:ChatUser, name:string | null)
 {
+	if (name == null)
+		return ;
 	_getHistory(user, name);
 
 	const btn = <HTMLButtonElement>document.getElementById("valid-filters");

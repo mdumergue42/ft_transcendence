@@ -15,7 +15,9 @@ interface Dictionary<T> {
 class WsServ
 {
 	server: WebSocketServer
-	clients: Client[] = [];
+	WaintingClients: Client[] = [];
+	ConnectedClients: Record<number, Client> ={};
+
 	rooms: Record<number, ARoom> = {};
 	roomsIds: number = 1;
 	db: any //need to find type!!!
@@ -52,31 +54,87 @@ class WsServ
 	connection(socket:WebSocket)
 	{
 		console.log('Client connected');
-		this.clients.push(new Client(socket));
+		this.WaintingClients.push(new Client(socket));
+	}
+
+	getClientWS(socket:WebSocket)
+	{
+		for (let indx in this.ConnectedClients)
+		{
+			let client = this.ConnectedClients[indx];
+			if (client.socket == socket)
+			{
+				return client;
+			}
+		}
+		for (let client of this.WaintingClients)
+		{
+			if (client.socket == socket)
+				return client;
+		}
+		return null;
+	}
+	getClientN(id: number)
+	{
+		var c = this.ConnectedClients[id];
+		return c;
+	}
+	getClientS(name:string)
+	{
+		for (let indx in this.ConnectedClients)
+		{
+			let client = this.ConnectedClients[indx];
+			if (client.username == name)
+				return client;
+		}
+		return null;
 	}
 
 	deco(socket:WebSocket)
 	{
 		console.log('Client disconnected')
-		for (let index = 0; index < this.clients.length; index++)
+		for (let index in this.ConnectedClients)
 		{
-			if (this.clients[index].socket == socket)
+			const client = this.ConnectedClients[index];
+			if (client.socket == socket)
 			{
-				this.clients.splice(index, 1);
+				for (let x in this.ConnectedClients)
+				{
+					const friend = this.ConnectedClients[x];
+					if (friend.isFriend(client))
+						friend.send({type:"friendCo", name:client.username, status: 0});
+				}
+
+				delete this.ConnectedClients[index];
 				return ;
 			}
 		}
-		//TODO clear rooms?
+		for (let index in this.WaintingClients)
+		{
+			if (this.WaintingClients[index].socket == socket)
+			{
+				this.WaintingClients.splice(Number(index), 1);
+				return ;
+			}
+		}
+	}
+
+	moveArrayClient(client: Client)
+	{
+		for (let index in this.WaintingClients)
+		{
+			if (this.WaintingClients[index] == client)
+			{
+				this.WaintingClients.splice(Number(index), 1);
+				break ;
+			}
+		}
+		this.ConnectedClients[client.id] = client;
 	}
 
 	isOnline(name: string)
 	{
-		for (let client of this.clients)
-		{
-			if (client.username == name)
-				return 1;
-		}
-		return 0;
+		return (this.getClientS(name) != null);
 	}
 
 	msg(message:any, socket:WebSocket)
@@ -88,29 +146,39 @@ class WsServ
 			socket.send(JSON.stringify({type: "pong"}));
 			return ;
 		}
-		for (let client of this.clients)
-		{
-			if (client.socket == socket)
-			{
-				this.parsing(msg, client);
-				return ;
-			}
-		}
+		var c = this.getClientWS(socket);
+		if (c)
+			this.parsing(msg, c);
+		else
+			console.log("ALERTE LA");
 	}
 
-	parsing(msg:any, client:Client)
+	async parsing(msg:any, client:Client)
 	{
 		var type = msg.type;
 		var arg;
-		var content;
 
 		switch (type) {
 			case 'user':
 			{
 				arg = msg.name;
-				if (this.clients.length == 2)
-					arg = "youenn"; //TODO
-				client.user(arg, this.db);
+				if (!arg) //C pas au back de le faire!
+				{
+					var x = ["bastien", "gaby", "maelys", "youenn"];
+					var y = 0;
+					for (let k = 0; k < 4; k++) {
+						if (!this.ConnectedClients[k + 1]) {
+							y = k;
+							break;
+						}
+					}
+					arg = x[y];
+					console.log("GETNAME:", arg, y)
+					client.send({type: "init", name: arg})
+				}
+				await client.user(arg, this.db);
+				await client.sendFriendList(this.ConnectedClients);
+				this.moveArrayClient(client);
 				break;
 			}
 			case 'msg':
@@ -124,7 +192,6 @@ class WsServ
 				break;
 			case 'invite':
 				break;
-
 			case 'roomCreate':
 				this.createRoom(client);
 				break;
@@ -225,6 +292,7 @@ class WsServ
 			await updateFlagFriend(client.id, id, flag, this.db)
 		else
 			await insertFriend(client.id, id, flag, this.db);
+		client.blockFriend(id, flag);
 	}
 
 	async addFriend(name:string, from:Client)
@@ -236,13 +304,21 @@ class WsServ
 			return ;
 		}
 		else
-			from.send({type: "add", name: name});
+		{
+			const client = this.getClientN(id);
+			var status = 0;
+			if (client && client.isFriend(from))
+				status = 1;
+			from.send({type: "add", name: name, status: status});
+		}
 
 		const nb = await getCountFriend(from.id, id, this.db);
 		if (nb == undefined)
 			return ;
 		if (nb == 0)
 			await insertFriend(from.id, id, 1, this.db);
+		from.addFriend(name, id, 1);
+
 	}
 
 	async sendTo(message:string, to:string, from:Client)
@@ -257,22 +333,13 @@ class WsServ
 		if (nb == 0 && id != from.id) //TODO suppr c pour les tests; tu peux pas etre amis avec toi meme
 			await insertFriend(id, from.id, 1, this.db);
 
-
 		await insertMsg(message, from.id, id, this.db);
 
 		const flag = await getFlagFriendShip(from.id, id, this.db);
 		if (flag == undefined)
 			return ;
 
-		var pal = null;
-		for (let client of this.clients)
-		{
-			if (client.username == to)
-			{
-				pal = client;
-				break ;
-			}
-		}
+		var pal = this.getClientN(id);
 		if (pal && flag == 1)
 			pal.sendMsg(message, from);
 		return ;

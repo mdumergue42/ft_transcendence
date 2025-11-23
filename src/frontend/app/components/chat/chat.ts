@@ -20,14 +20,14 @@ async function _waitWs (socket:WebSocket, loops:number = 100) {
 
 export class ChatUser
 {
-	username:string
+	username:string | null
 	ws: WebSocket
 	lastPeer:Conv | null
 	pingInterval:any
 	pongGame: DevPongGame
 	historic: Historic
 	friendList:Conv[] = [];
-	constructor(_name:string)
+	constructor(_name:string | null)
 	{
 		this.username = _name;
 		this.ws = new WebSocket(`wss://${window.location.hostname}/ws/`);
@@ -89,23 +89,45 @@ export class ChatUser
 		{
 			conv = new Conv(name, flag)
 			this.friendList.push(conv);
-			return null;
+			return conv;
 		}
 		return conv;
 	}
 
 	receiveMsg(msg: any)
 	{
-		const other = (msg.from != this.username) ? msg.from : msg.to;
-		var conv = this._createFriend(other, 1);
+		const other = msg.from;
+		var conv;
+		conv = this._getConv(other);
 		if (!conv)
+		{
+			conv = this._createFriend(other, 1);
+			conv.setStatus(1);
 			this.reRenderFriendList();
-		else
-			conv.HTMLAddMsg(`${msg.from}: ${msg.content}`);
+		}
+		conv.HTMLAddMsg(`${msg.from}: ${msg.content}`);
+	}
+	receiveOMsg(msg: any)
+	{
+		const other = (msg.from != this.username) ? msg.from : msg.to;
+		var conv;
+		conv = this._getConv(other);
+		if (!conv)
+			conv = this._createFriend(other, 1);
+		conv.HTMLAddMsg(`${msg.from}: ${msg.content}`);
 	}
 	receiveFriendList(msg: any)
 	{
-		this._createFriend(msg.name, msg.flag);
+		const conv = this._createFriend(msg.name, msg.flag);
+		conv.setStatus(msg.status);
+	}
+	receiveFriendCo(msg: any)
+	{
+		var conv = this._getConv(msg.name);
+		if (!conv)
+			return ;
+		conv.setStatus(msg.status);
+		this.reRenderFriendList();
 	}
 	receiveInvite(msg: any)
 	{
@@ -124,6 +146,7 @@ export class ChatUser
 		}
 
 		const newFriend = new Conv(msg.name, 1);
+		newFriend.setStatus(msg.status);
 		this.friendList.push(newFriend);
 		this.reRenderFriendList();
 	}
@@ -131,11 +154,24 @@ export class ChatUser
 	onMsg(message:any)
 	{
 		const msg = JSON.parse(message.data);
+		if (msg.type == "pong")
+			return ;
+		console.log(msg);
 
 		switch (msg.type) {
+			case 'init': //TODO c pas au back de le faire
+				this.username = msg.name;
+				console.log(`I'm ${msg.name}`);
+				break ;
 			case 'msg':
 				this.receiveMsg(msg);
 				break ;
+			case 'friendCo':
+				this.receiveFriendCo(msg);
+				break ;
+			case 'omsg':
+				this.receiveOMsg(msg);
+				break;
 			case 'invited':
 				this.receiveInvite(msg);
 				break ;
@@ -226,7 +262,7 @@ export class ChatUser
 				chatBox.innerHTML = "";
 				conv.setChatBox(null);
 				this.lastPeer = null;
-				chatHeader.textContent = "[CONV]";
+				chatHeader.textContent = "[NO_SIGNAL]";
 			}
 			this.sendBlock(conv);
 		}

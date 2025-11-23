@@ -16,6 +16,12 @@ export class Conv
 		this.status = 0;
 	}
 
+	setStatus(status: number)
+	{
+		this.status = status;
+		//actualisez
+	}
+
 	setChatBox(_div:HTMLElement | null)
 	{
 		this.chatBox = _div;
@@ -64,7 +70,6 @@ export class Conv
 
 export function Conv__lt__(self:Conv, other:Conv)
 {
-	console.log(self, other);
 	if (self.flag != other.flag)
 	{
 		return other.flag - self.flag;

@@ -11,7 +11,8 @@ import { ChatUser } from './components/chat/chat.js'
 
 export function initRouter() {
 	const root = document.getElementById('app')!;
-	const user = new ChatUser("bastien");
+	const username = null; //TODO 
+	const user = new ChatUser(username);
 
 	function render(allpath: string) {
 		let [_, path, ...arg]: string[] = allpath.split('/');

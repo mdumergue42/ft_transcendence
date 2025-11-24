@@ -46,7 +46,7 @@ export function initRouter() {
 				break;
 			case 'dev-test':
 				root.innerHTML = renderDevTest();
-				setTimeout(() => initDevTest(), 100);
+				initDevTest();
 				break;
 			default:
 				root.innerHTML = renderHome();

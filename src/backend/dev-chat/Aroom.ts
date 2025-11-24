@@ -3,19 +3,20 @@ import {DevPongGame} from './pongLib/game.js'
 import {Player} from './pongLib/player.js'
 import {Ball} from './pongLib/ball.js'
 import {Vector2} from './pongLib/vector2.js'
+import {ai} from './pongLib/ai.js'
 
 //TODO for now assume its a 1vs1 (no turnament)
 export abstract class ARoom
 {
 	id:number
 	flag:number
-	newFrameInterval:any
+	intervals: {state: any; ai: any };
 	game: DevPongGame
 	db: any
 	inGame: number = 0;
 	p1: Client | null = null;
 	p2: Client | null = null;
-	players: Record<number, Client> = {};
+	players: (Client | null)[] = [];
 	constructor(id:number, flag:number, db : any)
 	{
 		//flag:
@@ -24,6 +25,7 @@ export abstract class ARoom
 		this.id = id;
 		this.flag = flag;
 		this.db = db;
+		this.intervals = {state: null, ai:null};
 		this.game = new DevPongGame();
 	}
 
@@ -41,16 +43,20 @@ export abstract class ARoom
 	broadCast(obj: any)
 	{
 		for (let k in this.players)
-			this.players[k].send(obj);
+			if (this.players[k])
+				this.players[k].send(obj);
 	}
 
 	startGame()
 	{
 		this.inGame = 1;
 		this.assignPlayer();
-		this.game.initGame();
+		this.game.initGame(this.p2 == null);
 		this.gameState = this.gameState.bind(this);
-		this.newFrameInterval = setInterval(this.gameState, 32, this);
+		this.intervals = {
+			state: setInterval(this.gameState, 32, this),
+			ai: this.p2 == null ? setInterval(ai, 100, this.game.ball!, this.game.p2!) : null
+		}
 	}
 
 	gameState()
@@ -86,8 +92,9 @@ export abstract class ARoom
 	{
 		for (let k in this.players)
 		{
-			this.players[k].setRoomId(null);
-			delete this.players[k];
+			if (this.players[k])
+				this.players[k].setRoomId(null);
+			this.players.splice(Number(k), 1);
 		}
 	}
 }

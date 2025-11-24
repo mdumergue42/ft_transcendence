@@ -9,21 +9,21 @@ import {insertMatchs} from './sqlGet.js'
 export class MMRoom extends ARoom {
 	assignPlayer()
 	{
-		var keys = Object.keys(this.players);
-		this.p1 = this.players[Number(keys[0])];
-		this.p2 = this.players[Number(keys[1])];
+		this.p1 = this.players[0];
+		this.p2 = this.players[1];
 
+		const name = this.p2 ? this.p2.username : "CP";
 		this.p1!.send({type: "game", tag: "start", dir:"Left",
-		names:[this.p1!.username, this.p2!.username], def:"pvp"});
-		this.p2!.send({type: "game", tag: "start", dir:"Right",
-		names:[this.p1!.username, this.p2!.username], def:"pvp"});
+						names:[this.p1!.username, name], def:"pvp"});
+		if (this.p2)
+			this.p2.send({type: "game", tag: "start", dir:"Right",
+							names:[this.p1!.username, name], def:"pvp"});
 	}
 
-	addPlayer(user:Client, _:string)
+	addPlayer(user:Client | null, _:string)
 	{
-		this.players[user.id] = user;
-		
-		if (this.isOpenForMM() == 1 && Object.keys(this.players).length == 2)
+		this.players.push(user);
+		if (this.isOpenForMM() == 1 && this.players.length == 2)
 			this.startGame();
 	}
 
@@ -43,10 +43,12 @@ export class MMRoom extends ARoom {
 
 	endGame()
 	{
-		clearInterval(this.newFrameInterval);
+		clearInterval(this.intervals.ai);
+		clearInterval(this.intervals.state);
+		this.intervals = {ai: null, state: null};
 		this.inGame = 0;
 		this.broadCast({type: "game", tag: "end"}); //TODO (client side)
-		this.addMatch(this.p1!, this.p2!, this.game.score!.x, this.game.score!.y, "pvp");
+		this.addMatch(this.p1!, this.p2, this.game.score!.x, this.game.score!.y, this.p2 == null ? "pvp" : "ai");
 		this.p1 = null;
 		this.p2 = null;
 		this.game.endGame();
@@ -54,8 +56,9 @@ export class MMRoom extends ARoom {
 			this.kickAllPlayers();
 	}
 
-	async addMatch(p1: Client, p2: Client, score_p1: number, score_p2: number, type: string)
+	async addMatch(p1: Client, p2: Client | null, score_p1: number, score_p2: number, type: string)
 	{
-		await insertMatchs(type, p1.id, p2.id, score_p1, score_p2, this.db);
+		const id = p2 ? p2.id : -1;
+		await insertMatchs(type, p1.id, id, score_p1, score_p2, this.db);
 	}
 }

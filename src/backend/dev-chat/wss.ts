@@ -207,13 +207,28 @@ class WsServ
 				this.rooms[client.roomId!].gameInput(client, msg);
 				break;
 			case 'findGame':
-				this.findGame(client);
+				this.pvai(client);
+				//this.findGame(client);
 				break;
+			case 'pvai':
+				this.pvai(client);
+				break ;
 			case 'getHistoric':
 				this.getHistoric(client, msg.name, msg.flag);
 			default:
 				break;
 		}
+	}
+
+	pvai(client: Client)
+	{
+		var GameRoom;
+		GameRoom = new MMRoom(this.roomsIds, 0, this.db);
+		this.rooms[this.roomsIds] = GameRoom;
+		this.roomsIds += 1;
+		GameRoom.addPlayer(client, client.username);
+		GameRoom.addPlayer(null, "CP");
+		client.setRoomId(GameRoom.id);
 	}
 
 	createRoom(client: Client)
@@ -264,10 +279,10 @@ class WsServ
 			{
 				const p1_name = await getNameById(game.id_p1, this.db);
 				var p2_name;
-				if (game.id_p2)
+				if (game.id_p2 && game.id_p2 != -1)
 					p2_name = await getNameById(game.id_p2, this.db);
 				else
-					p2_name = "-";
+					p2_name = "CP";
 				client.send({type: "historic", matchName: game.match_type, p1: p1_name, p2: p2_name, s1: game.score_p1, s2: game.score_p2, date: game.date});
 			}
 		}

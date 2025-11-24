@@ -23,7 +23,7 @@ export class DevPongGame
 	{
 		switch (msg.tag) {
 			case 'start':
-				this.initGame();
+				this.initGame(false);
 				this.initInput();
 				this.initCanvas(msg);
 				break ;
@@ -119,11 +119,12 @@ export class DevPongGame
 			this.ws?.send(JSON.stringify({type: "gameInput", pressState: "up", dir:"down"}));
 	}
 
-	initGame()
+	initGame(p2isBot:boolean)
 	{
+		console.log("BOT?:", p2isBot);
 		var mid = new Vector2(CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2);
 		this.p1 = new Player(0, false);
-		this.p2 = new Player(CANVAS_WIDTH, false);
+		this.p2 = new Player(CANVAS_WIDTH, p2isBot);
 		this.ball = new Ball(mid);
 		this.score = new Vector2();
 	}
@@ -143,6 +144,8 @@ export class DevPongGame
 			this.header!.s2!.innerHTML = `0`;
 			this.header!.def!.innerHTML = `match def`;
 			resetCanvas(this.canvas!);
+			document.removeEventListener('keydown', this.inputDown);
+			document.removeEventListener('keyup', this.inputUp);
 		}
 	}
 }

@@ -156,8 +156,6 @@ export class ChatUser
 		const msg = JSON.parse(message.data);
 		if (msg.type == "pong")
 			return ;
-		console.log(msg);
-
 		switch (msg.type) {
 			case 'init': //TODO c pas au back de le faire
 				this.username = msg.name;

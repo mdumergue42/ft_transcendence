@@ -4,18 +4,14 @@ import {getIdByName, getNameById, getAllMsg, getAllFriends} from './sqlGet.js'
 export class Client
 {
 	socket: WebSocket
-	username: string
-	id: number
-	friendList: [number, number, string][]
-	roomId: number | null
+	username: string = "TBD"
+	id: number = 0;
+	friendList: [number, number, string][] = [];
+	roomId: number | null = null;
+	inQ: number = 0;
 	constructor(_socket:WebSocket)
 	{
 		this.socket = _socket;
-		this.username = "TBD";
-		this.id = 0
-		this.friendList = [];
-		this.roomId = null;
-
 	}
 	send(obj:any)
 	{
@@ -131,8 +127,8 @@ export class Client
 			this.send({type: "msg", from: from, to:to, content: message});
 	}
 
-	setRoomId(id: number | null)
-	{
+	setRoomId(id: number | null) {
 		this.roomId = id;
 	}
+	setinQ(v: number) {this.inQ = v;}
 }

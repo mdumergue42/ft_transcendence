@@ -19,7 +19,7 @@ class WsServ
 	ConnectedClients: Record<number, Client> ={};
 
 	rooms: Record<number, ARoom> = {};
-	roomsIds: number = 1;
+	roomIds: number = 1;
 	db: any //need to find type!!!
 	constructor(_port:number, SQLserver: FastifyInstance)
 	{
@@ -59,16 +59,12 @@ class WsServ
 
 	getClientWS(socket:WebSocket)
 	{
-		for (let indx in this.ConnectedClients)
-		{
+		for (let indx in this.ConnectedClients) {
 			let client = this.ConnectedClients[indx];
 			if (client.socket == socket)
-			{
 				return client;
-			}
 		}
-		for (let client of this.WaintingClients)
-		{
+		for (let client of this.WaintingClients) {
 			if (client.socket == socket)
 				return client;
 		}
@@ -81,8 +77,7 @@ class WsServ
 	}
 	getClientS(name:string)
 	{
-		for (let indx in this.ConnectedClients)
-		{
+		for (let indx in this.ConnectedClients) {
 			let client = this.ConnectedClients[indx];
 			if (client.username == name)
 				return client;
@@ -90,27 +85,28 @@ class WsServ
 		return null;
 	}
 
+	frendCo(client:Client, status:number)
+	{
+		for (let x in this.ConnectedClients) {
+			const friend = this.ConnectedClients[x];
+			if (friend.isFriend(client))
+				friend.send({type:"friendCo", name:client.username, status: status});
+		}
+	}
+
 	deco(socket:WebSocket)
 	{
 		console.log('Client disconnected')
-		for (let index in this.ConnectedClients)
-		{
+		for (let index in this.ConnectedClients) {
 			const client = this.ConnectedClients[index];
 			if (client.socket == socket)
 			{
-				for (let x in this.ConnectedClients)
-				{
-					const friend = this.ConnectedClients[x];
-					if (friend.isFriend(client))
-						friend.send({type:"friendCo", name:client.username, status: 0});
-				}
-
+				this.frendCo(client, 0);
 				delete this.ConnectedClients[index];
 				return ;
 			}
 		}
-		for (let index in this.WaintingClients)
-		{
+		for (let index in this.WaintingClients) {
 			if (this.WaintingClients[index].socket == socket)
 			{
 				this.WaintingClients.splice(Number(index), 1);
@@ -153,34 +149,51 @@ class WsServ
 			console.log("ALERTE LA");
 	}
 
-	async parsing(msg:any, client:Client)
+	async user(msg:any, client:Client)
+	{
+		var arg;
+		arg = msg.name;
+		if (arg == "TD") //C pas au back de le faire!
+		{
+			var x = ["bastien", "gaby", "maelys", "youenn"];
+			var y = 0;
+			for (let k = 0; k < 4; k++) {
+				if (!this.ConnectedClients[k + 1]) {
+					y = k;
+					break;
+				}
+			}
+			arg = x[y];
+			console.log("GETNAME:", arg, y)
+			client.send({type: "init", name: arg})
+		}
+		if (!arg)
+		{
+		//TODO => DECONNECTION
+		}
+		await client.user(arg, this.db);
+		await client.sendFriendList(this.ConnectedClients);
+		this.moveArrayClient(client);
+
+		for (let roomIndx in this.rooms)
+		{
+			const room = this.rooms[roomIndx];
+			if (room.reconnect(client))
+			{
+				client.setRoomId(room.id);
+				break ;
+			}
+		}
+	}
+
+	parsing(msg:any, client:Client)
 	{
 		var type = msg.type;
-		var arg;
 
 		switch (type) {
 			case 'user':
-			{
-				arg = msg.name;
-				if (!arg) //C pas au back de le faire!
-				{
-					var x = ["bastien", "gaby", "maelys", "youenn"];
-					var y = 0;
-					for (let k = 0; k < 4; k++) {
-						if (!this.ConnectedClients[k + 1]) {
-							y = k;
-							break;
-						}
-					}
-					arg = x[y];
-					console.log("GETNAME:", arg, y)
-					client.send({type: "init", name: arg})
-				}
-				await client.user(arg, this.db);
-				await client.sendFriendList(this.ConnectedClients);
-				this.moveArrayClient(client);
+				this.user(msg, client);
 				break;
-			}
 			case 'msg':
 				this.sendTo(msg.content, msg.name, client);
 				break;
@@ -197,22 +210,23 @@ class WsServ
 				break;
 			case 'roomAddPlayer':
 				break;
-			case 'roomAddBot':
-				break;
-			case 'roomKickPlayer':
-				break;
 			case 'roomJoin':
 				break;
 			case 'gameInput':
 				this.rooms[client.roomId!].gameInput(client, msg);
 				break;
 			case 'findGame':
-				this.pvai(client);
-				//this.findGame(client);
+				this.findGame(client);
 				break;
+			case 'pvp':
+				this.pvp(client);
+				break ;
 			case 'pvai':
 				this.pvai(client);
 				break ;
+			case 'cancel':
+				this.cancelGame(client);
+				break; 
 			case 'getHistoric':
 				this.getHistoric(client, msg.name, msg.flag);
 			default:
@@ -220,32 +234,62 @@ class WsServ
 		}
 	}
 
-	pvai(client: Client)
+	async pvai(client: Client)
 	{
+		var roomIds = this.roomIds;
+		this.roomIds += 1;
+
 		var GameRoom;
-		GameRoom = new MMRoom(this.roomsIds, 0, this.db);
-		this.rooms[this.roomsIds] = GameRoom;
-		this.roomsIds += 1;
-		GameRoom.addPlayer(client, client.username);
-		GameRoom.addPlayer(null, "CP");
+		GameRoom = new MMRoom(roomIds, 2, this.db);
+		this.rooms[roomIds] = GameRoom;
+		GameRoom.addPlayer(client);
+		GameRoom.addPlayer(null);
 		client.setRoomId(GameRoom.id);
+		var x = await GameRoom.startGame();
+		delete this.rooms[roomIds];
+	}
+	async pvp(client: Client)
+	{
+		var roomIds = this.roomIds;
+		this.roomIds += 1;
+
+		var GameRoom;
+		GameRoom = new MMRoom(roomIds, 1, this.db);
+		this.rooms[roomIds] = GameRoom;
+		GameRoom.addPlayer(client);
+		GameRoom.addPlayer(null);
+		client.setRoomId(GameRoom.id);
+		var x = await GameRoom.startGame();
+		delete this.rooms[roomIds];
 	}
 
 	createRoom(client: Client)
 	{
-		var GameRoom = new TRoom(this.roomsIds, 1, this.db);
-		this.rooms[this.roomsIds] = GameRoom;
-		this.roomsIds += 1;
-		GameRoom.addPlayer(client, client.username);
+		var GameRoom = new TRoom(this.roomIds, 3, this.db);
+		this.rooms[this.roomIds] = GameRoom;
+		this.roomIds += 1;
+		GameRoom.addPlayer(client);
 		client.setRoomId(GameRoom.id);
 	}
 
-	findGame(client: Client)
+	cancelGame(client: Client)
 	{
-		//TODO destroy rooms after using it!!  avec delete rooms[id]
-		//ATTENTION ID = index -> va causer de lourd degat!
-		//faire un dico ig?
+		var roomIds = client.roomId;
+		if (!roomIds)
+			return ;
+		var GameRoom = this.rooms[roomIds];
+		GameRoom.ff(client);
+		client.setinQ(0);
+	}
+
+	async findGame(client: Client)
+	{
+		var roomIds;
 		var GameRoom;
+		if (client.inQ)
+			return ;
+		client.setinQ(1);
+
 		find : {
 			for (let k in this.rooms)
 			{
@@ -253,14 +297,20 @@ class WsServ
 				if (room.isOpenForMM() == 0)
 					continue ;
 				GameRoom = room;
+				roomIds = Number(k);
 				break find;
 			}
-			GameRoom = new MMRoom(this.roomsIds, 0, this.db);
-			this.rooms[this.roomsIds] = GameRoom;
-			this.roomsIds += 1;
+			roomIds = this.roomIds;
+			this.roomIds += 1;
+			GameRoom = new MMRoom(roomIds, 0, this.db);
+			this.rooms[roomIds] = GameRoom;
 		}
-		GameRoom.addPlayer(client, client.username);
-		client.setRoomId(GameRoom.id);
+		client.setRoomId(roomIds);
+		if (GameRoom.addPlayer(client))
+		{
+			var x = await GameRoom.startGame();
+			delete this.rooms[roomIds];
+		}
 	}
 
 	async getHistoric(client: Client, name:string, flag:any)

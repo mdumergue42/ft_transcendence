@@ -8,6 +8,9 @@ export class DevPongGame
 {
 	canvas:HTMLCanvasElement | null = null
 	header:any = null
+	headerInfo:any = {p1: "p1", p2: "p2", def: ""};
+	vw:any = null
+
 	p1: Player | null = null
 	p2: Player | null = null
 	ball: Ball | null = null
@@ -46,13 +49,18 @@ export class DevPongGame
 		}
 	}
 
-	initCanvas(msg: any)
+	initCanvas(msg: any | null)
 	{
-		if (!this.canvas)
+		if (!this.canvas || !this.score)
 			return ;
-		this.header!.p1!.innerHTML = msg.names[0];
-		this.header!.p2!.innerHTML = msg.names[1];
-		this.header!.def!.innerHTML = msg.def;
+		this.vw!.vwMenu.style.display = "none";
+		this.vw!.vwTr.style.display = "none";
+		this.vw!.vwGame.style.display = "";
+		if (msg)
+			this.headerInfo = {p1: msg.names[0], p2: msg.names[1], def:msg.def};
+		this.header!.p1!.innerHTML = this.headerInfo.p1;
+		this.header!.p2!.innerHTML = this.headerInfo.p1;
+		this.header!.def!.innerHTML = this.headerInfo.def;
 	}
 
 	redraw() //quand je recois les infos (balle)
@@ -74,19 +82,25 @@ export class DevPongGame
 		if (res != 0)
 		{
 			if (res == 2)
+			{
 				this.score.x += 1;
+				this.ball.init(0);
+			}
 			else
+			{
 				this.score.y += 1;
-			this.ball.init();
+				this.ball.init(1);
+			}
 			this.p1.init();
 			this.p2.init();
 		}
 	}
 
-	setCanvas(canvas:HTMLCanvasElement, header:any)
+	setCanvas(canvas:HTMLCanvasElement, header:any, vw:any)
 	{
 		this.canvas = canvas;
 		this.header = header;
+		this.vw = vw;
 	}
 
 	setGame(p1:Player, p2:Player, ball:Ball, score:Vector2)
@@ -104,24 +118,40 @@ export class DevPongGame
 		document.addEventListener('keydown', this.inputDown);
 		document.addEventListener('keyup', this.inputUp);
 	}
+	sendGameInput(player:number, state:string, dir:string)
+	{
+		this.ws?.send(JSON.stringify({
+			type: "gameInput",
+			player: player,
+			pressState: state,
+			dir:dir
+		}));
+	}
 	inputDown(event : KeyboardEvent)
 	{
+		if (event.code == "KeyW")
+			this.sendGameInput(1, "down", "up");
+		if (event.code == "KeyS")
+			this.sendGameInput(1, "down", "down");
 		if (event.code == "ArrowUp")
-			this.ws?.send(JSON.stringify({type: "gameInput", pressState: "down", dir:"up"}));
+			this.sendGameInput(2, "down", "up");
 		if (event.code == "ArrowDown")
-			this.ws?.send(JSON.stringify({type: "gameInput", pressState: "down", dir:"down"}));
+			this.sendGameInput(2, "down", "down");
 	}
 	inputUp(event : KeyboardEvent)
 	{
+		if (event.code == "KeyW")
+			this.sendGameInput(1, "up", "up");
+		if (event.code == "KeyS")
+			this.sendGameInput(1, "up", "down");
 		if (event.code == "ArrowUp")
-			this.ws?.send(JSON.stringify({type: "gameInput", pressState: "up", dir:"up"}));
+			this.sendGameInput(2, "up", "up");
 		if (event.code == "ArrowDown")
-			this.ws?.send(JSON.stringify({type: "gameInput", pressState: "up", dir:"down"}));
+			this.sendGameInput(2, "up", "down");
 	}
 
 	initGame(p2isBot:boolean)
 	{
-		console.log("BOT?:", p2isBot);
 		var mid = new Vector2(CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2);
 		this.p1 = new Player(0, false);
 		this.p2 = new Player(CANVAS_WIDTH, p2isBot);
@@ -144,6 +174,10 @@ export class DevPongGame
 			this.header!.s2!.innerHTML = `0`;
 			this.header!.def!.innerHTML = `match def`;
 			resetCanvas(this.canvas!);
+			this.vw!.vwMenu.style.display = "";
+			this.vw!.vwTr.style.display = "none";
+			this.vw!.vwGame.style.display = "none";
+			this.vw!.vwCancel();
 			document.removeEventListener('keydown', this.inputDown);
 			document.removeEventListener('keyup', this.inputUp);
 		}

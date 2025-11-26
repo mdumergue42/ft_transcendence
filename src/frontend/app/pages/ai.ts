@@ -105,13 +105,13 @@ export class AIPage extends HTMLElement {
 			const level = activeBtn?.getAttribute('data-level') || 'hard';
 
 			try {
-				const { Pong } = await import('../components/pong/game.js');
+			/*	const { Pong } = await import('../components/pong/game.js');
 				const gameInstance = Pong();
 
 				if ((window as any).game && (window as any).game.p2) {
 					(window as any).game.p2.ia = true;
 					(window as any).game.p2.aiLevel = level;
-				}
+				}*/
 			} catch (error) {
 				console.error('Erreur lors du chargement du jeu:', error);
 			}

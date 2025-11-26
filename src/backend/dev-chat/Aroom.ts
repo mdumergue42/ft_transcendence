@@ -21,7 +21,9 @@ export abstract class ARoom
 	{
 		//flag:
 		//0 -> matchmaking
-		//1 -> room
+		//1 -> pvp (1keyboard)
+		//2 -> ai
+		//3 -> room
 		this.id = id;
 		this.flag = flag;
 		this.db = db;
@@ -29,10 +31,33 @@ export abstract class ARoom
 		this.game = new DevPongGame();
 	}
 
-	abstract addPlayer(user:Client, username:string): void;
+	abstract addPlayer(user:Client):number;
 	abstract gameInput(user:Client, msg:any): void;
 	abstract endGame(): void;
 	abstract assignPlayer(): void;
+	abstract reconnect(user: Client): number;
+
+	ff(user: Client)
+	{
+		for (let k in this.players)
+		{
+			var p = this.players[k];
+			if (p && p.id == user.id)
+			{
+				if (this.inGame) {
+					if (this.p1 && this.p1.id == user.id)
+						this.game.score!.y = 3;
+					if (this.p2 && this.p2.id == user.id)
+						this.game.score!.x = 3;
+					user.send({type: "game", tag:"end"});
+					this.players[k] = null;
+				}
+				else
+					this.players.splice(Number(k), 1);
+				user.setRoomId(null);
+			}
+		}
+	}
 
 	isOpenForMM()
 	{
@@ -43,20 +68,32 @@ export abstract class ARoom
 	broadCast(obj: any)
 	{
 		for (let k in this.players)
+		{
 			if (this.players[k])
 				this.players[k].send(obj);
+		}
 	}
 
-	startGame()
+	async _waitGameIsEnded()
+	{
+		while (this.inGame) {
+			await new Promise(resolve => setTimeout(resolve, 1000))
+		}
+		return 1;
+	}
+
+	async startGame()
 	{
 		this.inGame = 1;
 		this.assignPlayer();
-		this.game.initGame(this.p2 == null);
+		this.game.initGame(this.flag == 2);
 		this.gameState = this.gameState.bind(this);
 		this.intervals = {
 			state: setInterval(this.gameState, 32, this),
-			ai: this.p2 == null ? setInterval(ai, 100, this.game.ball!, this.game.p2!) : null
+			ai: this.flag == 2 ? setInterval(ai, 100, this.game.ball!, this.game.p2!) : null
 		}
+		var x = await this._waitGameIsEnded();
+		return 1;
 	}
 
 	gameState()

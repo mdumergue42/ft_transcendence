@@ -31,10 +31,10 @@ export class Ball
 		context.fill();
 	}
 
-	init()
+	init(side: number = 0.5)
 	{
 		this.center.copy(this.mid);
-		if (Math.random() >= 0.5)
+		if (Math.random() >= side)
 			this.speed.set(-5, 0);
 		else
 			this.speed.set(5, 0);

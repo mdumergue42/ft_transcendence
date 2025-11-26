@@ -2,22 +2,6 @@ import {Conv, Conv__lt__} from './conv.js'
 import {DevPongGame} from '../pongLib/game.js'
 import {Historic} from './historic.js'
 
-async function _waitWs (socket:WebSocket, loops:number = 100) {
-  const isOpened = () => (socket.readyState === WebSocket.OPEN)
-
-  if (socket.readyState !== WebSocket.CONNECTING) {
-    return isOpened();
-  }
-  else {
-    let loop = 0
-    while (socket.readyState === WebSocket.CONNECTING && loop < loops) {
-      await new Promise(resolve => setTimeout(resolve, 100))
-      loop++
-    }
-    return isOpened();
-  }
-}
-
 export class ChatUser
 {
 	username:string | null
@@ -38,15 +22,41 @@ export class ChatUser
 		this.historic = new Historic();
 	}
 
+	async _waitWs (socket:WebSocket) {
+	  const isOpened = () => (socket.readyState === WebSocket.OPEN)
+
+	  if (socket.readyState !== WebSocket.CONNECTING) {
+		return isOpened();
+	  }
+	  else {
+		let loops = 0;
+		while (socket.readyState === WebSocket.CONNECTING && loops < 200) {
+		  await new Promise(resolve => setTimeout(resolve, 500))
+		  loops += 1;
+		}
+		return isOpened();
+	  }
+	}
+
 	wsSend(obj:any)
 	{
 		this.ws.send(JSON.stringify(obj));
 	}
 
+	setUserName(name: string | null)
+	{
+		//TODO deconnection!
+		if (this.username && name)
+			return ;
+		this.username = name;
+		this.wsSend({type: "user", name:this.username});
+	}
+	isConnected() {return this.username != null;}
+
 	connect()
 	{
 		this.ws.onopen  = () => {
-			this.wsSend({type: "user", name:this.username});
+			this.wsSend({type: "user", name:"TD"});
 			this.pingInterval = setInterval(() => {
 				this.wsSend({type: "ping"});
 			}, 1000);
@@ -70,9 +80,6 @@ export class ChatUser
 
 	async askHistoric(username:string, flag:any)
 	{
-		const isopen = await _waitWs(this.ws);
-		if (!isopen)
-			return ;
 		this.historic.reset(username);
 		this.wsSend({type: "getHistoric", name: username, flag: flag});
 	}
@@ -205,10 +212,10 @@ export class ChatUser
 		conv?.HTMLAddMsg(`${this.username}: ${content}`);
 	}
 
-	sendFindGame()
-	{
-		this.wsSend({type: "findGame"});
-	}
+	sendFindGame() { this.wsSend({type: "findGame"}); }
+	sendPvAI() { this.wsSend({type: "pvai"}); }
+	sendPvP() { this.wsSend({type: "pvp"}); }
+	sendCancel() { this.wsSend({type: "cancel"}); }
 
 	sendInvite(conv:Conv)
 	{

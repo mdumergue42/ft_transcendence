@@ -13,9 +13,9 @@ export class TRoom extends ARoom {
 		//game+start+Streaming+x
 	}
 
-	addPlayer(user:Client, name:string)
+	addPlayer(user:Client)
 	{
-
+		return 0;
 	}
 
 	gameInput(client: Client, msg:any)
@@ -27,4 +27,8 @@ export class TRoom extends ARoom {
 	{
 
 	}
+	reconnect(user: Client)
+	{
+		return 0;
+	}	
 }

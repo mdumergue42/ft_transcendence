@@ -25,7 +25,7 @@ function profile() {
 	return `
 	<div class="text-center mb-8 p-6 border-2 border-green-400 bg-black/80 shadow-[inset_0_0_20px_rgba(0,255,0,0.1)]" style="margin-top: 24px">
 		<div style="text-align: center; display: flex">
-			<img id="avatar" src="/image/avatar/default/404.jpg" style="width:128px;height:128px;">
+			<img id="avatar" src="/image/avatar/default/404.png" style="width:128px;height:128px;">
 			<h1 id="name-plate" style="font-size: 2.5rem; padding-left: 15px; margin-bottom: 10px; color: green-400;">Profile Page</h1>
 			${dotIsOnline()}
 		</div>

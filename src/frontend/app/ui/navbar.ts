@@ -6,6 +6,19 @@ export class AppNavbar extends HTMLElement {
 		this.shadow = this.attachShadow({ mode: 'open' });
 	}
 
+	navBarEle(show: boolean, ref: string, dataPage:string, title:string, emojy:string) {
+		if (!show)
+			return `<li class="w-full flex justify-center relative"></li>`;
+		return `
+			<li class="w-full flex justify-center relative">
+				<a href="${ref}" class="menu w-14 h-14 flex items-center justify-center bg-black/30 border-2 border-green-400 rounded-xl text-green-400 text-2xl cursor-pointer transition-all duration-300 no-underline hover:bg-green-400 hover:scale-110 hover:shadow-[0_0_15px_rgba(0,255,0,0.5)] group" data-page="${dataPage}" title="${title}">
+					${emojy}
+				</a>
+				<span class="absolute left-20 bg-black/90 text-green-400 border border-green-400 px-3 py-2 rounded-md text-xs whitespace-nowrap opacity-0 pointer-events-none transition-opacity duration-200 z-[51] font-mono group-hover:opacity-100">${title}</span>
+			</li>
+		`;
+	}
+
 	async connectedCallback() {
 		let isLoggedIn = false;
 		try {
@@ -16,6 +29,7 @@ export class AppNavbar extends HTMLElement {
 		} catch {
 			console.warn('Erreur fetch auth, on part du principe non connecté.');
 		}
+		isLoggedIn = true; //TODO supr cette ligne
 
 		const linkElement = document.createElement('link');
 		linkElement.rel = 'stylesheet';
@@ -24,59 +38,16 @@ export class AppNavbar extends HTMLElement {
 
 		const nav = document.createElement('nav');
 		nav.className = 'fixed left-0 top-0 w-20 h-screen bg-black flex flex-col items-center py-5 z-50 border-r-2 border-green-400 font-mono';		nav.innerHTML = `
-		<ul class="list-none p-0 m-0 w-full flex flex-col gap-4">
-			<li class="w-full flex justify-center relative">
-				<a href="/" class="menu w-14 h-14 flex items-center justify-center bg-black/30 border-2 border-green-400 rounded-xl text-green-400 text-2xl cursor-pointer transition-all duration-300 no-underline hover:bg-green-400 hover:scale-110 hover:shadow-[0_0_15px_rgba(0,255,0,0.5)] group" data-page="home" title="Accueil">
-					🏠
-				</a>
-				<span class="absolute left-20 bg-black/90 text-green-400 border border-green-400 px-3 py-2 rounded-md text-xs whitespace-nowrap opacity-0 pointer-events-none transition-opacity duration-200 z-[51] font-mono group-hover:opacity-100">Accueil</span>
-			</li>
-			<li class="w-full flex justify-center relative">
-				<a href="/match" class="menu w-14 h-14 flex items-center justify-center bg-black/30 border-2 border-green-400 rounded-xl text-green-400 text-2xl cursor-pointer transition-all duration-300 no-underline hover:bg-green-400 hover:scale-110 hover:shadow-[0_0_15px_rgba(0,255,0,0.5)] group" data-page="match" title="Jouer">
-					🎮
-				</a>
-				<span class="absolute left-20 bg-black/90 text-green-400 border border-green-400 px-3 py-2 rounded-md text-xs whitespace-nowrap opacity-0 pointer-events-none transition-opacity duration-200 z-[51] font-mono group-hover:opacity-100">Jouer</span>
-			</li>
-			<li class="w-full flex justify-center relative">
-				<a href="/ai" class="menu w-14 h-14 flex items-center justify-center bg-black/30 border-2 border-green-400 rounded-xl text-green-400 text-2xl cursor-pointer transition-all duration-300 no-underline hover:bg-green-400 hover:scale-110 hover:shadow-[0_0_15px_rgba(0,255,0,0.5)] group" data-page="ai" title="IA">
-					🤖
-				</a>
-				<span class="absolute left-20 bg-black/90 text-green-400 border border-green-400 px-3 py-2 rounded-md text-xs whitespace-nowrap opacity-0 pointer-events-none transition-opacity duration-200 z-[51] font-mono group-hover:opacity-100">Affronter l'IA</span>
-			</li>
-			<li class="w-full flex justify-center relative">
-				<a href="/history" class="menu w-14 h-14 flex items-center justify-center bg-black/30 border-2 border-green-400 rounded-xl text-green-400 text-2xl cursor-pointer transition-all duration-300 no-underline hover:bg-green-400 hover:scale-110 hover:shadow-[0_0_15px_rgba(0,255,0,0.5)] group" data-page="history" title="Historique">
-					📊
-				</a>
-				<span class="absolute left-20 bg-black/90 text-green-400 border border-green-400 px-3 py-2 rounded-md text-xs whitespace-nowrap opacity-0 pointer-events-none transition-opacity duration-200 z-[51] font-mono group-hover:opacity-100">Historique</span>
-			</li>
-			<li class="w-full flex justify-center relative">
-				<a href="/tournament" class="menu w-14 h-14 flex items-center justify-center bg-black/30 border-2 border-green-400 rounded-xl text-green-400 text-2xl cursor-pointer transition-all duration-300 no-underline hover:bg-green-400 hover:scale-110 hover:shadow-[0_0_15px_rgba(0,255,0,0.5)] group" data-page="tournament" title="Tournois">
-					🏆
-				</a>
-				<span class="absolute left-20 bg-black/90 text-green-400 border border-green-400 px-3 py-2 rounded-md text-xs whitespace-nowrap opacity-0 pointer-events-none transition-opacity duration-200 z-[51] font-mono group-hover:opacity-100">Tournois</span>
-			</li>
-			<li class="w-full flex justify-center relative">
-				<a href="/stats" class="menu w-14 h-14 flex items-center justify-center bg-black/30 border-2 border-green-400 rounded-xl text-green-400 text-2xl cursor-pointer transition-all duration-300 no-underline hover:bg-green-400 hover:scale-110 hover:shadow-[0_0_15px_rgba(0,255,0,0.5)] group" data-page="stats" title="Statistiques">
-					📈
-				</a>
-				<span class="absolute left-20 bg-black/90 text-green-400 border border-green-400 px-3 py-2 rounded-md text-xs whitespace-nowrap opacity-0 pointer-events-none transition-opacity duration-200 z-[51] font-mono group-hover:opacity-100">Statistiques</span>
-			</li>
-			<li class="w-full flex justify-center relative">
-				<a href="/dev-test" class="menu w-14 h-14 flex items-center justify-center bg-black/30 border-2 border-green-400 rounded-xl text-green-400 text-2xl cursor-pointer transition-all duration-300 no-underline hover:bg-green-400 hover:scale-110 hover:shadow-[0_0_15px_rgba(251,146,60,0.5)] group" data-page="dev-test" title="Tests Dev">
-					⚡
-				</a>
-				<span class="absolute left-20 bg-black/90 text-green-400 border border-green-400 px-3 py-2 rounded-md text-xs whitespace-nowrap opacity-0 pointer-events-none transition-opacity duration-200 z-[51] font-mono group-hover:opacity-100">Tests Dev</span>
-			</li>
+		<ul class="list-none p-0 m-0 w-full flex flex-col gap-4" style="height:100%; display: grid; grid-template-rows: repeat(4, auto) 1fr ;">
+			${this.navBarEle(true, "/", "home", "Accueil", "🏠")}
+			${this.navBarEle(isLoggedIn,"/match", "match", "Jouer", "🎮")}
+			${this.navBarEle(isLoggedIn,"/history", "history", "Historique", "📊")}
+			${this.navBarEle(isLoggedIn,"/settings", "settings", "Settings", "⚙️")}
 			<li class="w-full flex justify-center mt-auto relative">
-				${isLoggedIn
-				? `<a href="/profil" class="menu w-14 h-14 flex items-center justify-center bg-black/30 border-2 border-green-400 rounded-xl text-green-400 text-2xl cursor-pointer transition-all duration-300 no-underline hover:bg-green-400 hover:scale-110 hover:shadow-[0_0_15px_rgba(0,255,0,0.5)] group" data-page="profil" title="Profil">
-					👤
-				</a>
-				<span class="absolute left-20 bg-black/90 text-green-400 border border-green-400 px-3 py-2 rounded-md text-xs whitespace-nowrap opacity-0 pointer-events-none transition-opacity duration-200 z-[51] font-mono group-hover:opacity-100">Profil</span>`
-				: `<button id="login-btn" class="menu w-14 h-14 flex items-center justify-center bg-black/30 border-2 border-green-400 rounded-xl text-green-400 text-2xl cursor-pointer transition-all duration-300 no-underline hover:bg-green-400 hover:scale-110 hover:shadow-[0_0_15px_rgba(0,255,0,0.5)] group" title="Connexion">
+				<button id="login-btn" class="menu w-14 h-14 flex items-center justify-center bg-black/30 border-2 border-green-400 rounded-xl text-green-400 text-2xl cursor-pointer transition-all duration-300 no-underline hover:bg-green-400 hover:scale-110 hover:shadow-[0_0_15px_rgba(0,255,0,0.5)] group" title="Connexion">
 					👤
 				</button>
-				<span class="absolute left-20 bg-black/90 text-green-400 border border-green-400 px-3 py-2 rounded-md text-xs whitespace-nowrap opacity-0 pointer-events-none transition-opacity duration-200 z-[51] font-mono group-hover:opacity-100">Se connecter</span>`}
+				<span class="absolute left-20 bg-black/90 text-green-400 border border-green-400 px-3 py-2 rounded-md text-xs whitespace-nowrap opacity-0 pointer-events-none transition-opacity duration-200 z-[51] font-mono group-hover:opacity-100">Se connecter</span>
 			</li>
 		</ul>`;
 		this.shadow.appendChild(nav);

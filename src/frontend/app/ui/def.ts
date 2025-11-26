@@ -28,9 +28,9 @@ export class AppDef extends HTMLElement {
 				</div>
 			</div>
 			<div id="mid-home" class="relative z-10 max-w-5xl mx-auto p-4">
-			${childNodes}
+				${childNodes}
 			</div>
-		</div>
+		</main>
 		`;
 
 		this.appendChild(def);

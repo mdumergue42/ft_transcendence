@@ -90,6 +90,7 @@ function render(root: HTMLElement, user: ChatUser | null, allpath: string) {
 
 export async function initRouter() {
 	const root = document.getElementById('app')!;
+
 	root.innerHTML = renderWaitScreen();
 	var [isOpen, user] = await connection(document.getElementById('logs-waiting-screen')!);
 

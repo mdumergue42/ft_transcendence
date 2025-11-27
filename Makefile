@@ -8,7 +8,7 @@ up:
 down:
 	docker compose down
 
-flcean:
+fclean:
 	docker system prune -a --volumes
 
 .PHONY: all re up down fclean

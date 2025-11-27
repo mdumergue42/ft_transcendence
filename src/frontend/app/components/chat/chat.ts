@@ -1,6 +1,7 @@
 import {Conv, Conv__lt__} from './conv.js'
 import {DevPongGame} from '../pongLib/game.js'
 import {Historic} from './historic.js'
+import { renderWaitScreen } from '../../pages/waitScreen.js'
 
 export class ChatUser
 {
@@ -62,6 +63,9 @@ export class ChatUser
 			}, 1000);
 		}
 		this.ws.onclose = () => {
+			const root = document.getElementById('app')!;
+			root.innerHTML = renderWaitScreen();
+
 			clearInterval(this.pingInterval);
 			this.pongGame.setWs(null);
 		}

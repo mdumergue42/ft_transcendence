@@ -37,7 +37,7 @@ export function renderWaitScreen() {
 		<div class="PText text-sm mb-4">
 			>>> COPYRIGHT 1982-2025 ARCADE CORP <<<
 		</div>
-		<a class="PText" style="opacity:50%" id="logs-waiting-screen">Waiting for Connection</a>
+		<a class="PText" style="opacity:50%" id="logs-waiting-screen">Disconnected; The server may be down</a>
 		<div class="relative" style="height:150px">
 			<div class="loader absolute" style="transform:translate(-50%, 0%); top:50%; left:50%"></div>
 		</div>	

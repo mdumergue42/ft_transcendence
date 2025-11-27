@@ -6,18 +6,18 @@ export function HTMLColorBlocked(btn: HTMLElement, isBlocked: number)
     if (isBlocked)
 	{
         btn.classList.add('text-red-500', 'line-through', 'opacity-50');
-        btn.classList.remove('text-green-400');
+        btn.classList.remove('PText');
     }
 	else
 	{
         btn.classList.remove('text-red-500', 'line-through', 'opacity-50');
-        btn.classList.add('text-green-400');
+        btn.classList.add('PText');
     }
 }
 
 export function HTMLChatListElement(name: string, isBlocked: number, status: number = 0) {
     const li = document.createElement('li');
-    li.className = "chat-list flex items-center justify-between p-2 border-b border-green-900/50 hover:bg-green-900/20 transition-colors group";
+    li.className = "chat-list flex items-center justify-between p-2 border-b PDarkBorder PDarkBoxHover transition-colors group";
 
     const btn1 = document.createElement('button');
     btn1.id = `choose-peer-${name}`;
@@ -25,9 +25,9 @@ export function HTMLChatListElement(name: string, isBlocked: number, status: num
     
     const statusDot = document.createElement('span');
     if (status === 1)
-        statusDot.className = "w-2 h-2 rounded-full bg-green-600 shadow-[0_0_5px_rgba(22,163,74,0.8)]";
+        statusDot.className = "w-2 h-2 rounded-full PBoxBg shadow-[0_0_5px_rgba(22,163,74,0.8)]";
     else
-    	statusDot.className = "w-2 h-2 rounded-full border border-green-600 bg-transparent opacity-50";
+    	statusDot.className = "w-2 h-2 rounded-full border PBorder bg-transparent opacity-50";
 
     
     const nameSpan = document.createElement('span');
@@ -42,7 +42,7 @@ export function HTMLChatListElement(name: string, isBlocked: number, status: num
 
     const btn2 = document.createElement('button');
     btn2.id = `invite-peer-${name}`;
-    btn2.className = "text-green-400 hover:text-white hover:scale-110 transition-transform px-1";
+    btn2.className = "PText hover:text-white hover:scale-110 transition-transform px-1";
     btn2.innerHTML = `🎮`;
     btn2.title = "Inviter";
 
@@ -82,11 +82,11 @@ export function HTMLChatMsg(name: string, msg: string, flagColor: number)
     let baseClass = "p-2 rounded text-xs font-mono break-words max-w-[85%] mb-1 shadow-sm";
 
     if (colorNb === 2)
-        newMsg.className = "text-center text-[10px] text-green-600/70 italic my-2 w-full border-t border-b border-green-900/30 py-1";
+        newMsg.className = "text-center text-[10px] PText italic my-2 w-full border-t border-b PDarkBox py-1";
     else if (colorNb)
-        newMsg.className = `${baseClass} ml-auto bg-green-600 text-black rounded-br-none`;
+		newMsg.className = `${baseClass} mr-auto border PBoxBorder PText rounded-bl-none`;
     else
-        newMsg.className = `${baseClass} mr-auto bg-black border border-green-600 text-green-400 rounded-bl-none`;
+		newMsg.className = `${baseClass} ml-auto PBoxBg text-black rounded-br-none`;
 
     newMsg.appendChild(content);
     return newMsg;

@@ -25,9 +25,9 @@ class HistoricGame
 	{
 		var newGame = document.createElement('div');
 		if (this._win())
-			newGame.className = "block p-3 text-center relative border border-green-400/50 bg-green-400 text-black";
+			newGame.className = "block p-3 text-center relative border PBoxBg PBorder text-black";
 		else
-			newGame.className = "block p-3 text-center relative border border-green-400/50 bg-black/50 text-green-400";
+			newGame.className = "block p-3 text-center relative border PBoxBorder PText";
 		newGame.innerHTML = `
 		<div class="absolute top-1 left-1" style="font-size: 0.9rem; opacity: 0.9; margin-bottom: 5px; text-transform: uppercase;">${this.def} - ${this.date}</div>
 
@@ -130,7 +130,7 @@ export class Historic
 			if (this.error)
 				dotOnline.style.backgroundColor = "red";
 			else
-				dotOnline.style.backgroundColor = "green";
+				dotOnline.style.backgroundColor = "";
 			dotOnline.style.opacity = `${this.isOnline * 100}`;
 			ringOnline.style.opacity = `${(1 - this.isOnline) * 100}`;
 		}

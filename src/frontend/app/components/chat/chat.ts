@@ -243,6 +243,8 @@ export class ChatUser
 				log.innerHTML = "your already friend with him!";
 			return ;
 		}
+		if (log)
+			log.innerHTML = "";
 		this.wsSend({type:"add", name: name});
 	}
 

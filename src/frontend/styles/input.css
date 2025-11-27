@@ -13,8 +13,78 @@ html {
   background-color: black;
 }
 
+[data-theme="green"] {
+  --prim-color: green;
+  --border-color: rgb(74 222 128 / var(--tw-border-opacity, 1));
+  --background-color: rgb(74 222 128 / var(--tw-border-opacity, 1));
+  --obj-color: var(--border-color);
+  --text-color: rgb(74 222 128 / var(--tw-text-opacity, 1));
+  --somber-color: rgb(22 163 74 / var(--tw-text-opacity, 1));
+  --dark-color: rgb(20 83 45 / 0.2);
+  --light-gb-color: rgb(20 83 45 / 0.4);
+}
+
+[data-theme="blue"] {
+  --prim-color: blue;
+  --border-color: rgb(96 165 250 / var(--tw-border-opacity, 1));
+  --background-color: rgb(96 165 250 / var(--tw-border-opacity, 1));
+  --obj-color: var(--border-color);
+  --text-color: rgb(96 165 250 / var(--tw-text-opacity, 1));
+  --somber-color: rgb(37 99 235 / var(--tw-text-opacity, 1));
+  --dark-color: rgb(30 58 138 / 0.2);
+  --light-gb-color: rgb(30 58 138 / 0.4);
+}
+
+.PBorder {
+	border-color: var(--border-color);
+}
+.PBoxBorder {
+	border-color: var(--border-color);
+	background-color: rgb(0 0 0 / 0.8);
+}
+.PDarkBox {
+	border-color: var(--border-color);
+	background-color: var(--dark-color);
+}
+.PLightBox {
+	background-color: var(--light-bg-color);
+}
+.PBoxBg {
+	background-color: var(--background-color);
+}
+
+.PDarkBorder {
+	border-color: var(--dark-color);
+}
+.PBoxHover:Hover {
+	background-color: var(--background-color);
+}
+.PDarkBoxHover:Hover {
+	background-color: var(--dark-color);
+}
+
+.PText {
+	color: var(--text-color);
+}
+.PDarkText {
+	color: var(--somber-color);
+}
+.PTextHover:Hover {
+	color: black;
+}
+.PRevTextHover:Hover {
+	color: var(--text-color);
+}
+
+.PBorderFocus {
+	border-color: var(--somber-color);
+}
+.PBorderFocus:focus {
+	border-color: var(--border-color);
+}
+
 .dot-online {
-	background-color: green;
+	background-color: var(--obj-color);
 	border-radius: 50%;
     width: 20px;
     height: 20px;
@@ -25,7 +95,7 @@ html {
 }
 
 .ring-online {
-    border: 3px solid green;
+    border: 3px solid var(--obj-color);
     border-radius: 50%;
     height: 20px;
     width: 20px;
@@ -41,9 +111,9 @@ html {
 	padding: 0 8px;
 	box-sizing: border-box;
 	background:
-	linear-gradient(lime 0 0) 0    0/8px 20px,
-	linear-gradient(lime 0 0) 100% 0/8px 20px,
-	radial-gradient(farthest-side,lime 90%,#0000) 0 5px/8px 8px content-box,
+	linear-gradient(var(--obj-color) 0 0) 0    0/8px 20px,
+	linear-gradient(var(--obj-color) 0 0) 100% 0/8px 20px,
+	radial-gradient(farthest-side,var(--obj-color) 90%,#0000) 0 5px/8px 8px content-box,
 	#000;
 	background-repeat: no-repeat; 
 	animation: l3 2s infinite linear;

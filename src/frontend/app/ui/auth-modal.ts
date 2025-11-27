@@ -11,101 +11,101 @@ export class AuthModal extends HTMLElement {
     render() {
         this.innerHTML = `
             <div id="auth-modal" class="modal-overlay fixed inset-0 bg-black/90 flex items-center justify-center z-50 opacity-0 pointer-events-none transition-opacity duration-300 backdrop-blur-sm">
-                <div class="bg-black border-2 border-green-400 rounded-xl p-8 max-w-md w-full mx-4 transform scale-95 transition-transform duration-300 shadow-[0_0_30px_rgba(0,255,0,0.2)]">
+                <div class="bg-black border-2 PBorder rounded-xl p-8 max-w-md w-full mx-4 transform scale-95 transition-transform duration-300 shadow-[0_0_30px_rgba(0,255,0,0.2)]">
                     <div class="flex items-center justify-between mb-6">
-                        <h2 class="text-2xl font-bold text-green-400 font-mono tracking-wider">
+                        <h2 class="text-2xl font-bold PText font-mono tracking-wider">
                             <span id="modal-title">CONNEXION</span>
                         </h2>
-                        <button id="close-modal" class="text-green-400 hover:text-red-500 transition-colors duration-300 text-2xl font-bold">
+                        <button id="close-modal" class="PText hover:text-red-500 transition-colors duration-300 text-2xl font-bold">
                             ✕
                         </button>
                     </div>
-                    <div class="flex mb-6 bg-black rounded-xl p-1 border border-green-400/30">
-                        <button id="login-tab" class="auth-tab flex-1 py-2 px-4 rounded-lg font-mono text-sm font-semibold transition-all duration-300 text-black bg-green-400 border border-green-400">
+                    <div class="flex mb-6 bg-black rounded-xl p-1 border PBorder">
+                        <button id="login-tab" class="auth-tab flex-1 py-2 px-4 rounded-lg font-mono text-sm font-semibold transition-all duration-300 text-black PBoxBg border PBorder">
                             CONNEXION
                         </button>
-                        <button id="register-tab" class="auth-tab flex-1 py-2 px-4 rounded-lg font-mono text-sm font-semibold transition-all duration-300 text-green-400/50 hover:text-green-400">
+                        <button id="register-tab" class="auth-tab flex-1 py-2 px-4 rounded-lg font-mono text-sm font-semibold transition-all duration-300 PText">
                             INSCRIPTION
                         </button>
                     </div>
                     <form id="login-form" class="auth-form space-y-4">
                         <div>
-                            <label class="block text-green-400 font-mono text-sm mb-2">IDENTIFIANT</label>
+                            <label class="block PText font-mono text-sm mb-2">IDENTIFIANT</label>
                             <input
                                 type="text"
                                 name="username"
                                 required
-                                class="w-full bg-black border-2 border-green-400/50 rounded-lg px-4 py-3 text-green-400 font-mono focus:border-green-400 focus:outline-none transition-colors duration-300 placeholder-green-400/30 focus:shadow-[0_0_15px_rgba(0,255,0,0.2)]"
+                                class="w-full bg-black border-2 PBorder rounded-lg px-4 py-3 PText font-mono focus:PBorder focus:outline-none transition-colors duration-300 focus:shadow-[0_0_15px_rgba(0,255,0,0.2)]"
                                 placeholder="Votre nom d'utilisateur"
                             >
                         </div>
                         <div>
-                            <label class="block text-green-400 font-mono text-sm mb-2">MOT DE PASSE</label>
+                            <label class="block PText font-mono text-sm mb-2">MOT DE PASSE</label>
                             <input
                                 type="password"
                                 name="password"
                                 required
-                                class="w-full bg-black border-2 border-green-400/50 rounded-lg px-4 py-3 text-green-400 font-mono focus:border-green-400 focus:outline-none transition-colors duration-300 placeholder-green-400/30 focus:shadow-[0_0_15px_rgba(0,255,0,0.2)]"
+                                class="w-full bg-black border-2 PBorder rounded-lg px-4 py-3 PText font-mono focus:PBorder focus:outline-none transition-colors duration-300 focus:shadow-[0_0_15px_rgba(0,255,0,0.2)]"
                                 placeholder="••••••••"
                             >
                         </div>
                         <button
                             type="submit"
-                            class="w-full bg-black border-2 border-green-400 text-green-400 hover:bg-green-400 hover:text-black font-mono font-bold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 hover:shadow-[0_0_20px_rgba(0,255,0,0.4)] uppercase tracking-wider"
+                            class="w-full bg-black border-2 PBorder PText PBoxHover hover:text-black font-mono font-bold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 hover:shadow-[0_0_20px_rgba(0,255,0,0.4)] uppercase tracking-wider"
                         >
                             SE CONNECTER
                         </button>
                     </form>
                     <form id="register-form" class="auth-form space-y-4 hidden">
                         <div>
-                            <label class="block text-green-400 font-mono text-sm mb-2">IDENTIFIANT</label>
+                            <label class="block PText font-mono text-sm mb-2">IDENTIFIANT</label>
                             <input
                                 type="text"
                                 name="username"
                                 required
-                                class="w-full bg-black border-2 border-green-400/50 rounded-lg px-4 py-3 text-green-400 font-mono focus:border-green-400 focus:outline-none transition-colors duration-300 placeholder-green-400/30 focus:shadow-[0_0_15px_rgba(0,255,0,0.2)]"
+                                class="w-full bg-black border-2 PBorder rounded-lg px-4 py-3 PText font-mono focus:PBorder focus:outline-none transition-colors duration-300 focus:shadow-[0_0_15px_rgba(0,255,0,0.2)]"
                                 placeholder="Choisir un nom d'utilisateur"
                             >
                         </div>
                         <div>
-                            <label class="block text-green-400 font-mono text-sm mb-2">EMAIL</label>
+                            <label class="block PText font-mono text-sm mb-2">EMAIL</label>
                             <input
                                 type="email"
                                 name="email"
                                 required
-                                class="w-full bg-black border-2 border-green-400/50 rounded-lg px-4 py-3 text-green-400 font-mono focus:border-green-400 focus:outline-none transition-colors duration-300 placeholder-green-400/30 focus:shadow-[0_0_15px_rgba(0,255,0,0.2)]"
+                                class="w-full bg-black border-2 PBorder rounded-lg px-4 py-3 PText font-mono focus:PBorder focus:outline-none transition-colors duration-300 focus:shadow-[0_0_15px_rgba(0,255,0,0.2)]"
                                 placeholder="votre@email.com"
                             >
                         </div>
                         <div>
-                            <label class="block text-green-400 font-mono text-sm mb-2">MOT DE PASSE</label>
+                            <label class="block PText font-mono text-sm mb-2">MOT DE PASSE</label>
                             <input
                                 type="password"
                                 name="password"
                                 required
-                                class="w-full bg-black border-2 border-green-400/50 rounded-lg px-4 py-3 text-green-400 font-mono focus:border-green-400 focus:outline-none transition-colors duration-300 placeholder-green-400/30 focus:shadow-[0_0_15px_rgba(0,255,0,0.2)]"
+                                class="w-full bg-black border-2 PBorder rounded-lg px-4 py-3 PText font-mono focus:PBorder focus:outline-none transition-colors duration-300 focus:shadow-[0_0_15px_rgba(0,255,0,0.2)]"
                                 placeholder="••••••••"
                             >
                         </div>
                         <div>
-                            <label class="block text-green-400 font-mono text-sm mb-2">CONFIRMER LE MOT DE PASSE</label>
+                            <label class="block PText font-mono text-sm mb-2">CONFIRMER LE MOT DE PASSE</label>
                             <input
                                 type="password"
                                 name="confirmPassword"
                                 required
-                                class="w-full bg-black border-2 border-green-400/50 rounded-lg px-4 py-3 text-green-400 font-mono focus:border-green-400 focus:outline-none transition-colors duration-300 placeholder-green-400/30 focus:shadow-[0_0_15px_rgba(0,255,0,0.2)]"
+                                class="w-full bg-black border-2 PBorder rounded-lg px-4 py-3 PText font-mono focus:PBorder focus:outline-none transition-colors duration-300 focus:shadow-[0_0_15px_rgba(0,255,0,0.2)]"
                                 placeholder="••••••••"
                             >
                         </div>
                         <button
                             type="submit"
-                            class="w-full bg-black border-2 border-green-400 text-green-400 hover:bg-green-400 hover:text-black font-mono font-bold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 hover:shadow-[0_0_20px_rgba(0,255,0,0.4)] uppercase tracking-wider"
+                            class="w-full bg-black border-2 PBorder PText PBoxHover hover:text-black font-mono font-bold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 hover:shadow-[0_0_20px_rgba(0,255,0,0.4)] uppercase tracking-wider"
                         >
                             S'INSCRIRE
                         </button>
                     </form>
                     <div class="mt-6 text-center">
-                        <p class="text-green-400/40 font-mono text-xs">
+                        <p class="PDarkText font-mono text-xs">
                             🏓 TRANSCENDENCE v2.0 🏓
                         </p>
                     </div>
@@ -151,9 +151,9 @@ export class AuthModal extends HTMLElement {
         const registerForm = this.querySelector('#register-form') as HTMLFormElement;
         const modalTitle = this.querySelector('#modal-title') as HTMLElement;
 
-        const inactiveClass = 'auth-tab flex-1 py-2 px-4 rounded-lg font-mono text-sm font-semibold transition-all duration-300 text-green-400/50 hover:text-green-400 border border-transparent';
+        const inactiveClass = 'auth-tab flex-1 py-2 px-4 rounded-lg font-mono text-sm font-semibold transition-all duration-300 PText border border-transparent';
         
-        const activeClass = 'auth-tab flex-1 py-2 px-4 rounded-lg font-mono text-sm font-semibold transition-all duration-300 text-black bg-green-400 border border-green-400 shadow-[0_0_10px_rgba(0,255,0,0.3)]';
+        const activeClass = 'auth-tab flex-1 py-2 px-4 rounded-lg font-mono text-sm font-semibold transition-all duration-300 text-black PBoxBg border PBorder shadow-[0_0_10px_rgba(0,255,0,0.3)]';
 
         if (tab === 'login') {
             modalTitle.textContent = 'CONNEXION';

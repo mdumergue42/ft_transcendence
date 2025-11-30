@@ -33,7 +33,7 @@ export class AppMatch extends HTMLElement {
 			> START TOURNAMENT
 			</button>
 
-			<div id="select-list-tr" style="min-height:50px;margin-top:40px;width:100%;display:none; text-align: left;" class="block p-3 border PBoxBorder bg-black/50 PText PBoxHover hover:text-black transition-all duration-200 uppercase tracking-wide mt-1">
+			<div id="select-list-tr" style="min-height:50px;margin-top:40px;width:100%;display:none; text-align: left;" class="block p-3 border PBoxBorder bg-black/50 PText PBoxHover hover:text-black transition-all duration-200 tracking-wide mt-1">
 			</div>
 		</div>
 		`;

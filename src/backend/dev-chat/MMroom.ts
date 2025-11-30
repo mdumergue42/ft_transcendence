@@ -68,7 +68,7 @@ export class MMRoom extends ARoom {
 					this.p2 = user;
 					this.sendStartInfo(this.p2, [this.p1!.username, name], def);
 				}
-				else if (this.flag >= 3)
+				else if (this.flag >= 3 && this.inGame)
 					this.stream({type: "game",tag:"start",names:[this.p1!.username, name], def:`Watching: ${def}`});
 				user.setinQ(1);
 				return 1;
@@ -82,6 +82,15 @@ export class MMRoom extends ARoom {
 		this.players.push(user);
 		if (this.isOpenForMM() == 1 && this.players.length == 2)
 			return 1;
+		if (this.flag == 3) {
+			let names = [];
+			for (let k in this.players) {
+				if (this.players[k]) {
+					names.push(this.players[k].username);
+				}
+			}
+			this.broadCast({type: "game", tag:"trList", list:names})
+		}
 		return 0;
 	}
 

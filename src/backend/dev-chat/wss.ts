@@ -434,6 +434,7 @@ class WsServ
 			return ;
 		var GameRoom = this.rooms[roomIds];
 		GameRoom.ff(client);
+		client.send({type:"game", tag:"cancel"});
 		this.exitQ(client);
 	}
 
@@ -453,8 +454,6 @@ class WsServ
 
 		this.enterQ(client);
 
-		//TODO dont reset invation if tr for pal!
-		//TODO join a tournament
 		var roomIds;
 		var GameRoom;
 		roomIds = pal.roomId
@@ -472,12 +471,16 @@ class WsServ
 		}
 		client.setRoomId(roomIds);
 		GameRoom.addPlayer(client);
-		console.log("JOIN:", GameRoom.flag);
 		if (GameRoom.flag < 3) {
 			var x = await GameRoom.startGame();
 			delete this.rooms[roomIds];
 			this.exitQ(client);
 			this.exitQ(pal);
+		}
+		else {
+			client.send({type: "game", tag:"trJoin"});
+			var x = await GameRoom.waitGameEnd(); //TODO cancel should stop this wait
+			this.exitQ(client);
 		}
 	}
 

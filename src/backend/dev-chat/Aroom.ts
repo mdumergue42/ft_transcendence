@@ -32,6 +32,7 @@ export abstract class ARoom
 
 	ff(user: Client)
 	{
+		//if tr broadcast player leaving 
 		for (let k in this.players)
 		{
 			var p = this.players[k];
@@ -145,8 +146,10 @@ export abstract class ARoom
 	{
 		for (let k in this.players)
 		{
-			if (this.players[k])
+			if (this.players[k]) {
+				this.players[k].send({type: "game", tag: "cancel"});
 				this.players[k].setRoomId(null);
+			}
 		}
 		this.players = [];
 	}

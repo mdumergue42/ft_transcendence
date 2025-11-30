@@ -11,6 +11,7 @@ export class PongGame
 	headerInfo:any = {p1: "p1", p2: "p2", def: ""};
 	vw:any = null
 	trList: string[] = [];
+	trState: number = 0;
 
 	p1: Player | null = null
 	p2: Player | null = null
@@ -22,11 +23,32 @@ export class PongGame
 	setWs(ws:WebSocket | null) { this.ws = ws; }
 	setTrList(l: string[]) { this.trList = l; }
 	showTrList() {
+		if (this.canvas == null)
+			return ;
+		this.vw.vwTrList.innerHTML = `<h1 style="margin-bottom:10px">Room:</h1>`;
 		for (let name of this.trList) {
 			let d = document.createElement('div');
+			d.style.fontSize = "80%"
 			d.innerHTML = name;
 			this.vw.vwTrList.appendChild(d);
 		}
+	}
+
+	trJoin() {
+		this.trState = 1;
+
+		this.showTrList();
+		if (this.canvas) {
+			document.getElementById("select-mm")!.style.display = "none";
+			document.getElementById("select-ai")!.style.display = "none";
+			document.getElementById("select-pvp")!.style.display = "none";
+			document.getElementById("select-start")!.style.display = "none";
+			document.getElementById("match-header-ff")!.style.display = "none";
+			document.getElementById("select-tr")!.style.display = "";
+			document.getElementById("select-cancel")!.style.display = "";
+			document.getElementById("select-list-tr")!.style.display = "";
+		}
+
 	}
 
 	onMsg(msg:any)
@@ -52,6 +74,9 @@ export class PongGame
 				this.endGame(msg);
 				break ;
 			case 'trJoin':
+				this.trJoin();
+				break ;
+			case 'trTree':
 				this.vw!.vwMenu.style.display = "none";
 				this.vw!.vwTr.style.display = "";
 				this.vw!.vwGame.style.display = "none";
@@ -60,6 +85,9 @@ export class PongGame
 				this.setTrList(msg.list);
 				this.showTrList();
 				break ;
+			case 'cancel':
+				this.trState = 0;
+				break
 			default:
 				break
 		}
@@ -70,7 +98,13 @@ export class PongGame
 		if (msg)
 			this.headerInfo = {p1: msg.names[0], p2: msg.names[1], def:msg.def};
 		if (!this.canvas || !this.score)
+		{
+			if (this.trState == 1) {
+				this.trJoin();
+				this.showTrList();
+			}
 			return ;
+		}
 		this.vw!.vwMenu.style.display = "none";
 		this.vw!.vwTr.style.display = "none";
 		this.vw!.vwGame.style.display = "";

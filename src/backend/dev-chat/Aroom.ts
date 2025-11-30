@@ -1,5 +1,5 @@
 import {Client} from './client.js';
-import {DevPongGame} from './pongLib/game.js'
+import {PongGame} from './backGame.js'
 import {Player} from './pongLib/player.js'
 import {Ball} from './pongLib/ball.js'
 import {Vector2} from './pongLib/vector2.js'
@@ -11,7 +11,7 @@ export abstract class ARoom
 	id:number
 	flag:number
 	intervals: {state: any; ai: any };
-	game: DevPongGame
+	game: PongGame
 	db: any
 	inGame: number = 0;
 	p1: Client | null = null;
@@ -28,7 +28,7 @@ export abstract class ARoom
 		this.flag = flag;
 		this.db = db;
 		this.intervals = {state: null, ai:null};
-		this.game = new DevPongGame();
+		this.game = new PongGame();
 	}
 
 	abstract addPlayer(user:Client):number;

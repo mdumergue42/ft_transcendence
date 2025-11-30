@@ -1,5 +1,5 @@
 import {Client} from './client.js';
-import {DevPongGame} from './pongLib/game.js'
+import {PongGame} from './backGame.js'
 import {Player} from './pongLib/player.js'
 import {Ball} from './pongLib/ball.js'
 import {Vector2} from './pongLib/vector2.js'

@@ -1,10 +1,10 @@
-import {Player} from './player.js'
-import {Ball} from './ball.js'
-import {Vector2} from './vector2.js'
-import {draw, resetCanvas} from './draw.js'
-import {CANVAS_WIDTH, CANVAS_HEIGHT} from './global.js'
+import {Player} from './pongLib/player.js'
+import {Ball} from './pongLib/ball.js'
+import {Vector2} from './pongLib/vector2.js'
+import {draw, resetCanvas} from './pongLib/draw.js'
+import {CANVAS_WIDTH, CANVAS_HEIGHT} from './pongLib/global.js'
 
-export class DevPongGame
+export class PongGame
 {
 	canvas:HTMLCanvasElement | null = null
 	header:any = null
@@ -63,37 +63,13 @@ export class DevPongGame
 		this.header!.def!.innerHTML = this.headerInfo.def;
 	}
 
-	redraw() //quand je recois les infos (balle)
+	redraw()
 	{
 		if (!this.canvas)
 			return ;
 		draw(this.canvas, this.p1!, this.p2!, this.ball!);
 		this.header!.s1!.innerHTML = `${this.score!.x}`;
 		this.header!.s2!.innerHTML = `${this.score!.y}`;
-	}
-
-	newFrame()
-	{
-		if (!this.p1 || !this.p2 || !this.ball || !this.score)
-			return ;
-		this.p1.move();
-		this.p2.move();
-		const res = this.ball.move(this.p1, this.p2);
-		if (res != 0)
-		{
-			if (res == 2)
-			{
-				this.score.x += 1;
-				this.ball.init(0);
-			}
-			else
-			{
-				this.score.y += 1;
-				this.ball.init(1);
-			}
-			this.p1.init();
-			this.p2.init();
-		}
 	}
 
 	setCanvas(canvas:HTMLCanvasElement, header:any, vw:any)

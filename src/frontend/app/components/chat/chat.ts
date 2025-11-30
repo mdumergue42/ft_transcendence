@@ -1,5 +1,5 @@
 import {Conv, Conv__lt__} from './conv.js'
-import {DevPongGame} from '../pongLib/game.js'
+import {PongGame} from '../pong/frontGame.js'
 import {Historic} from './historic.js'
 import { renderWaitScreen } from '../../pages/waitScreen.js'
 
@@ -9,7 +9,7 @@ export class ChatUser
 	ws: WebSocket
 	lastPeer:Conv | null
 	pingInterval:any
-	pongGame: DevPongGame
+	pongGame: PongGame
 	historic: Historic
 	friendList:Conv[] = [];
 	inQ: number = 0;
@@ -19,7 +19,7 @@ export class ChatUser
 		this.ws = new WebSocket(`wss://${window.location.hostname}/ws/`);
 		this.connect();
 		this.lastPeer = this.friendList[0];
-		this.pongGame = new DevPongGame();
+		this.pongGame = new PongGame();
 		this.pongGame.setWs(this.ws);
 		this.historic = new Historic();
 	}

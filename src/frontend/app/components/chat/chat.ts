@@ -12,6 +12,7 @@ export class ChatUser
 	pongGame: DevPongGame
 	historic: Historic
 	friendList:Conv[] = [];
+	inQ: number = 0;
 	constructor(_name:string | null)
 	{
 		this.username = _name;
@@ -173,6 +174,12 @@ export class ChatUser
 		this.reRenderFriendList();
 	}
 
+	receiveEnterQ(flag: number)
+	{
+		this.inQ = flag;
+		this.reRenderFriendList();
+	}
+
 	onMsg(message:any)
 	{
 		const msg = JSON.parse(message.data);
@@ -190,6 +197,9 @@ export class ChatUser
 				break ;
 			case 'friendStatus':
 				this.receiveFriendStatus(msg);
+				break ;
+			case 'enterQ':
+				this.receiveEnterQ(msg.flag)
 				break ;
 			case 'omsg':
 				this.receiveOMsg(msg);
@@ -242,6 +252,7 @@ export class ChatUser
 		content:`${this.username} has invite you`});
 		conv.HTMLAddInvite("INVITATION SEND");
 
+		//TR -> inQ = 2
 		//need the user to be online
 		//
 		//_addInvite()
@@ -331,7 +342,9 @@ export class ChatUser
 
 	HTMLRenderPeer(conv: Conv, friendDiv: HTMLElement, chatBox: HTMLElement, chatHeader: HTMLElement)
 	{
-		var li = conv.HTMLChoosePeer();
+		if (this.inQ == 1)
+			conv.setJoinFlag(0);
+		var li = conv.HTMLChoosePeer(this.inQ);
 		friendDiv.appendChild(li);
 
 		const chooseBtn = document.getElementById(`choose-peer-${conv.penPal}`);

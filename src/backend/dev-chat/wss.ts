@@ -16,7 +16,7 @@ class WsServ
 {
 	server: WebSocketServer
 	WaintingClients: Client[] = [];
-	ConnectedClients: Record<number, Client> ={};
+	connectedClients: Record<number, Client> ={};
 
 	rooms: Record<number, ARoom> = {};
 	roomIds: number = 1;
@@ -59,8 +59,8 @@ class WsServ
 
 	getClientWS(socket:WebSocket)
 	{
-		for (let indx in this.ConnectedClients) {
-			let client = this.ConnectedClients[indx];
+		for (let indx in this.connectedClients) {
+			let client = this.connectedClients[indx];
 			if (client.socket == socket)
 				return client;
 		}
@@ -72,13 +72,13 @@ class WsServ
 	}
 	getClientN(id: number)
 	{
-		var c = this.ConnectedClients[id];
+		var c = this.connectedClients[id];
 		return c;
 	}
 	getClientS(name:string)
 	{
-		for (let indx in this.ConnectedClients) {
-			let client = this.ConnectedClients[indx];
+		for (let indx in this.connectedClients) {
+			let client = this.connectedClients[indx];
 			if (client.username == name)
 				return client;
 		}
@@ -87,22 +87,24 @@ class WsServ
 
 	friendStatusUp(client:Client, status:number)
 	{
-		for (let x in this.ConnectedClients) {
-			const friend = this.ConnectedClients[x];
-			if (friend.isFriend(client))
+		for (let x in this.connectedClients) {
+			const friend = this.connectedClients[x];
+			if (friend.isFriend(client)) {
+				console.log("FRIENDSTATUS UP", status);
 				friend.send({type:"friendStatus", name:client.username, status: status});
+			}
 		}
 	}
 
 	deco(socket:WebSocket)
 	{
 		console.log('Client disconnected')
-		for (let index in this.ConnectedClients) {
-			const client = this.ConnectedClients[index];
+		for (let index in this.connectedClients) {
+			const client = this.connectedClients[index];
 			if (client.socket == socket)
 			{
 				this.friendStatusUp(client, 0);
-				delete this.ConnectedClients[index];
+				delete this.connectedClients[index];
 				return ;
 			}
 		}
@@ -125,7 +127,7 @@ class WsServ
 				break ;
 			}
 		}
-		this.ConnectedClients[client.id] = client;
+		this.connectedClients[client.id] = client;
 	}
 
 	isOnline(name: string)
@@ -158,7 +160,7 @@ class WsServ
 			var x = ["bastien", "gaby", "maelys", "youenn"];
 			var y = 0;
 			for (let k = 0; k < 4; k++) {
-				if (!this.ConnectedClients[k + 1]) {
+				if (!this.connectedClients[k + 1]) {
 					y = k;
 					break;
 				}
@@ -172,7 +174,7 @@ class WsServ
 		//TODO => DECONNECTION
 		}
 		await client.user(arg, this.db);
-		await client.sendFriendList(this.ConnectedClients);
+		await client.sendFriendList(this.connectedClients);
 		this.moveArrayClient(client);
 
 		for (let roomIndx in this.rooms)
@@ -239,10 +241,16 @@ class WsServ
 
 	enterQ(client: Client) {
 		client.resetInviteList();
+		client.send({type: "enterQ", flag: 1});
+		client.inQ = 1;
 		this.friendStatusUp(client, 2);
 	}
 	exitQ(client: Client) {
-		this.friendStatusUp(client, 1);
+		if (this.connectedClients[client.id] == client) {
+			client.inQ = 0;
+			client.send({type: "enterQ", flag: 0});
+			this.friendStatusUp(client, 1);
+		}
 	}
 
 	async pvai(client: Client)
@@ -288,7 +296,6 @@ class WsServ
 			return ;
 		var GameRoom = this.rooms[roomIds];
 		GameRoom.ff(client);
-		client.setinQ(0);
 		this.exitQ(client);
 	}
 
@@ -299,7 +306,6 @@ class WsServ
 		if (client.inQ)
 			return ;
 		this.enterQ(client);
-		client.setinQ(1);
 
 		find : {
 			for (let k in this.rooms)
@@ -325,7 +331,7 @@ class WsServ
 		else
 			var x = await GameRoom.waitGameEnd();
 		if (client)
-			this.exitQ(client); //TODO not if offline xd
+			this.exitQ(client);
 	}
 
 	async getHistoric(client: Client, name:string, flag:any)
@@ -397,7 +403,8 @@ class WsServ
 			return ;
 		if (nb == 0)
 			await insertFriend(from.id, id, 1, this.db);
-		from.addFriend(name, id, 1);
+		const c = this.getClientN(id);
+		from.addFriend(name, id, c ? c.inQ : 0);
 
 	}
 
@@ -436,6 +443,7 @@ class WsServ
 			if (flags[1]) {
 				pal.send({type:"friendList", name:client.username, status: 1});
 				pal.send({type:"enDb"});
+				pal.addFriend(client.username, client.id, client.inQ);
 			}
 			pal.sendMsg(message, client);
 		}
@@ -454,8 +462,10 @@ class WsServ
 
 		var pal = this.getClientN(id);
 		if (pal && flags[0] == 1) {
-			if (flags[1])
+			if (flags[1]) {
 				pal.send({type:"friendList", name:client.username, status: 1});
+				pal.addFriend(client.username, client.id, client.inQ);
+			}
 			pal.send({type:"invite", content:msg, from:client.username});
 			client.addInviteList(id);
 		}
@@ -476,8 +486,8 @@ class WsServ
 		if (flags[0] != 1)
 			return ;
 
-		client.resetInviteList();
-		pal.resetInviteList();
+		this.enterQ(client);
+		this.enterQ(pal);
 		//TODO dont reset invation if tr for pal!
 		//TODO join a tournament
 		var roomIds;
@@ -492,6 +502,9 @@ class WsServ
 		GameRoom.addPlayer(pal);
 		var x = await GameRoom.startGame();
 		delete this.rooms[roomIds];
+
+		this.exitQ(client);
+		this.exitQ(pal);
 	}
 }
 

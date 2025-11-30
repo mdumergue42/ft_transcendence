@@ -53,9 +53,9 @@ export class Conv
 		this._addMsg(msg, 0);
 	}
 
-	HTMLChoosePeer()
+	HTMLChoosePeer(inQFlag: number)
 	{
-		return HTMLChatListElement(this.penPal, 1 - this.flag, this.status, this.joinFlag);
+		return HTMLChatListElement(this.penPal, 1 - this.flag, this.status, this.joinFlag, inQFlag);
 	}
 }
 

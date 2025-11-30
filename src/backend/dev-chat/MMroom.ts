@@ -13,7 +13,6 @@ export class MMRoom extends ARoom {
 			return 
 		user.send({type: "game", tag: "start",
 				  names:names, def:def});
-		user.setinQ(0);
 	}
 
 	assignPlayer()
@@ -47,6 +46,7 @@ export class MMRoom extends ARoom {
 					this.p2 = user;
 					this.sendStartInfo(this.p2, [this.p1!.username, name], def);
 				}
+				user.setinQ(1);
 				return 1;
 			}
 		}

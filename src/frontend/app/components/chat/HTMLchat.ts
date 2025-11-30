@@ -15,16 +15,16 @@ export function HTMLColorBlocked(btn: HTMLElement, isBlocked: number)
     }
 }
 
-export function HTMLChatListElement(name: string, isBlocked: number, status: number = 0) {
+export function HTMLChatListElement(name: string, isBlocked: number, status: number = 0, joinFlag: number = 0) {
     const li = document.createElement('li');
     li.className = "chat-list flex items-center justify-between p-2 border-b PDarkBorder PDarkBoxHover transition-colors group";
 
-    const btn1 = document.createElement('button');
-    btn1.id = `choose-peer-${name}`;
-    btn1.className = "flex-1 flex items-center gap-2 text-left font-mono text-sm truncate transition-all group-hover:translate-x-1";
+    const btn0 = document.createElement('button');
+    btn0.id = `choose-peer-${name}`;
+    btn0.className = "flex-1 flex items-center gap-2 text-left font-mono text-sm truncate transition-all group-hover:translate-x-1";
     
     const statusDot = document.createElement('span');
-    if (status === 1)
+    if (status)
         statusDot.className = "w-2 h-2 rounded-full PBoxBg shadow-[0_0_5px_rgba(22,163,74,0.8)]";
     else
     	statusDot.className = "w-2 h-2 rounded-full border PBorder bg-transparent opacity-50";
@@ -33,18 +33,32 @@ export function HTMLChatListElement(name: string, isBlocked: number, status: num
     const nameSpan = document.createElement('span');
     nameSpan.textContent = `> ${name}`;
 
-    btn1.appendChild(statusDot);
-    btn1.appendChild(nameSpan);
-	HTMLColorBlocked(btn1, isBlocked);
+    btn0.appendChild(statusDot);
+    btn0.appendChild(nameSpan);
+	HTMLColorBlocked(btn0, isBlocked);
 
     const actionDiv = document.createElement('div');
     actionDiv.className = "flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity";
+
+    const btn1 = document.createElement('button');
+    btn1.id = `join-peer-${name}`;
+    btn1.className = "PText hover:text-white hover:scale-110 transition-transform px-1";
+    btn1.innerHTML = `➜]`;
+    btn1.title = "Join";
+    if (joinFlag === 1)
+		btn1.style.visibility = "visible";
+	else 
+		btn1.style.visibility = "hidden";
 
     const btn2 = document.createElement('button');
     btn2.id = `invite-peer-${name}`;
     btn2.className = "PText hover:text-white hover:scale-110 transition-transform px-1";
     btn2.innerHTML = `🎮`;
     btn2.title = "Inviter";
+    if (status === 1)
+		btn2.style.visibility = "visible";
+	else 
+		btn2.style.visibility = "hidden";
 
     const btn3 = document.createElement('button');
     btn3.id = `block-peer-${name}`;
@@ -58,11 +72,12 @@ export function HTMLChatListElement(name: string, isBlocked: number, status: num
     btn4.innerHTML = `👤`;
     btn4.title = "Profil";
 
+    actionDiv.appendChild(btn1);
     actionDiv.appendChild(btn2);
     actionDiv.appendChild(btn4);
     actionDiv.appendChild(btn3);
 
-    li.appendChild(btn1);
+    li.appendChild(btn0);
     li.appendChild(actionDiv);
     
     return li;

@@ -26,7 +26,10 @@ function profile() {
 	<div class="text-center mb-8 p-6 border-2 PBoxBorder shadow-[inset_0_0_20px_rgba(0,255,0,0.1)]" style="margin-top: 24px">
 		<div style="text-align: center; display: flex">
 			<img id="avatar" src="/image/avatar/default/404.png" style="width:128px;height:128px;">
-			<h1 id="name-plate" class="PText" style="font-size: 2.5rem; padding-left: 15px; margin-bottom: 10px;">Profile Page</h1>
+			<div class="relative" style="padding-left: 15px; margin-bottom: 10px;">
+				<h1 id="name-plate" class="PText" style="font-size: 2.5rem">Profile Page</h1>
+				<div id="about-me" class="absolute PText text-s"></div>
+			</div>
 			${dotIsOnline()}
 		</div>
 	</div>

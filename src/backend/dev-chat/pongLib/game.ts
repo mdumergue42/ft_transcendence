@@ -27,8 +27,8 @@ export class DevPongGame
 		switch (msg.tag) {
 			case 'start':
 				this.initGame(false);
-				this.initInput();
 				this.initCanvas(msg);
+				this.initInput();
 				break ;
 			case 'state':
 				this.p1!.racket.x = msg.p1.x;
@@ -51,13 +51,13 @@ export class DevPongGame
 
 	initCanvas(msg: any | null)
 	{
+		if (msg)
+			this.headerInfo = {p1: msg.names[0], p2: msg.names[1], def:msg.def};
 		if (!this.canvas || !this.score)
 			return ;
 		this.vw!.vwMenu.style.display = "none";
 		this.vw!.vwTr.style.display = "none";
 		this.vw!.vwGame.style.display = "";
-		if (msg)
-			this.headerInfo = {p1: msg.names[0], p2: msg.names[1], def:msg.def};
 		this.header!.p1!.innerHTML = this.headerInfo.p1;
 		this.header!.p2!.innerHTML = this.headerInfo.p1;
 		this.header!.def!.innerHTML = this.headerInfo.def;

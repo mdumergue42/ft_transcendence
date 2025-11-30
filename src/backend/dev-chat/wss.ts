@@ -4,7 +4,7 @@ import {Client} from './client.js';
 import {ARoom} from './Aroom.js';
 import {MMRoom} from './MMroom.js';
 import {TRoom} from './Troom.js';
-import {getIdByName, getNameById, getFlagFriendShip, getHistoricById, getAvatarByName ,insertUser, insertMatchs, insertMsg, insertFriend, updateFlagFriend, getCountFriend} from './sqlGet.js'
+import {getIdByName, getNameById, getFlagFriendShip, getHistoricById, getAvatarByName, getDescByName ,insertUser, insertMatchs, insertMsg, insertFriend, updateFlagFriend, getCountFriend} from './sqlGet.js'
 
 
 interface Dictionary<T> {
@@ -85,12 +85,12 @@ class WsServ
 		return null;
 	}
 
-	frendCo(client:Client, status:number)
+	friendStatusUp(client:Client, status:number)
 	{
 		for (let x in this.ConnectedClients) {
 			const friend = this.ConnectedClients[x];
 			if (friend.isFriend(client))
-				friend.send({type:"friendCo", name:client.username, status: status});
+				friend.send({type:"friendStatus", name:client.username, status: status});
 		}
 	}
 
@@ -101,7 +101,7 @@ class WsServ
 			const client = this.ConnectedClients[index];
 			if (client.socket == socket)
 			{
-				this.frendCo(client, 0);
+				this.friendStatusUp(client, 0);
 				delete this.ConnectedClients[index];
 				return ;
 			}
@@ -204,13 +204,16 @@ class WsServ
 				this.block(client, msg.name, msg.flag)
 				break;
 			case 'invite':
+				this.invite(client, msg.content, msg.name);
 				break;
-			case 'roomCreate':
-				this.createRoom(client);
+			case 'join':
+				this.join(client, msg.name);
 				break;
-			case 'roomAddPlayer':
+			case 'createTr':
+				//TODO
 				break;
-			case 'roomJoin':
+			case 'startTr':
+				//TODO
 				break;
 			case 'gameInput':
 				this.rooms[client.roomId!].gameInput(client, msg);
@@ -234,8 +237,17 @@ class WsServ
 		}
 	}
 
+	enterQ(client: Client) {
+		client.resetInviteList();
+		this.friendStatusUp(client, 2);
+	}
+	exitQ(client: Client) {
+		this.friendStatusUp(client, 1);
+	}
+
 	async pvai(client: Client)
 	{
+		this.enterQ(client);
 		var roomIds = this.roomIds;
 		this.roomIds += 1;
 
@@ -247,9 +259,11 @@ class WsServ
 		client.setRoomId(GameRoom.id);
 		var x = await GameRoom.startGame();
 		delete this.rooms[roomIds];
+		this.exitQ(client);
 	}
 	async pvp(client: Client)
 	{
+		this.enterQ(client);
 		var roomIds = this.roomIds;
 		this.roomIds += 1;
 
@@ -261,25 +275,21 @@ class WsServ
 		client.setRoomId(GameRoom.id);
 		var x = await GameRoom.startGame();
 		delete this.rooms[roomIds];
-	}
-
-	createRoom(client: Client)
-	{
-		var GameRoom = new TRoom(this.roomIds, 3, this.db);
-		this.rooms[this.roomIds] = GameRoom;
-		this.roomIds += 1;
-		GameRoom.addPlayer(client);
-		client.setRoomId(GameRoom.id);
+		this.exitQ(client);
 	}
 
 	cancelGame(client: Client)
 	{
+		//TODO Creating Tournament -> cancel + kick other
+		//TODO Tournament -> ff + other continue
+		//TODO in game -> ff + stop
 		var roomIds = client.roomId;
 		if (!roomIds)
 			return ;
 		var GameRoom = this.rooms[roomIds];
 		GameRoom.ff(client);
 		client.setinQ(0);
+		this.exitQ(client);
 	}
 
 	async findGame(client: Client)
@@ -288,6 +298,7 @@ class WsServ
 		var GameRoom;
 		if (client.inQ)
 			return ;
+		this.enterQ(client);
 		client.setinQ(1);
 
 		find : {
@@ -311,6 +322,10 @@ class WsServ
 			var x = await GameRoom.startGame();
 			delete this.rooms[roomIds];
 		}
+		else
+			var x = await GameRoom.waitGameEnd();
+		if (client)
+			this.exitQ(client); //TODO not if offline xd
 	}
 
 	async getHistoric(client: Client, name:string, flag:any)
@@ -340,7 +355,10 @@ class WsServ
 		var avatar = await getAvatarByName(name, this.db);
 		if (avatar == undefined)
 			avatar = "default/404.png";
-		client.send({type: "historic", error: "endDb", isOnline: this.isOnline(name), avatar: avatar});
+		var desc = await getDescByName(name, this.db);
+		if (desc == undefined)
+			desc = "";
+		client.send({type: "historic", error: "endDb", isOnline: this.isOnline(name), avatar: avatar, desc: desc});
 	}
 
 	async block(client: Client, name:string, flag:number)
@@ -383,28 +401,97 @@ class WsServ
 
 	}
 
-	async sendTo(message:string, to:string, from:Client)
+	async _getFlagMsg(idTo: number, idFrom: number)
+	{
+		const nb = await getCountFriend(idTo, idFrom, this.db);
+		if (nb == undefined)
+			return null;
+
+		var wasNotFriendWithYou = 0;
+		if (nb == 0) {
+			await insertFriend(idTo, idFrom, 1, this.db);
+			wasNotFriendWithYou = 1;
+		}
+
+		const flag = await getFlagFriendShip(idFrom, idTo, this.db);
+		if (flag == undefined)
+			return null;
+		return [flag, wasNotFriendWithYou];
+	}
+
+	async sendTo(message:string, to:string, client:Client)
 	{
 		const id = await getIdByName(to, this.db);
 		if (id == undefined)
 			return ;
 
-		const nb = await getCountFriend(id, from.id, this.db);
-		if (nb == undefined)
+		const flags = await this._getFlagMsg(id, client.id);
+		if (flags == null)
 			return ;
-		if (nb == 0 && id != from.id) //TODO suppr c pour les tests; tu peux pas etre amis avec toi meme
-			await insertFriend(id, from.id, 1, this.db);
 
-		await insertMsg(message, from.id, id, this.db);
+		await insertMsg(message, client.id, id, this.db);
 
-		const flag = await getFlagFriendShip(from.id, id, this.db);
-		if (flag == undefined)
+		var pal = this.getClientN(id);
+		if (pal && flags[0] == 1) {
+			if (flags[1]) {
+				pal.send({type:"friendList", name:client.username, status: 1});
+				pal.send({type:"enDb"});
+			}
+			pal.sendMsg(message, client);
+		}
+		return ;
+	}
+
+	async invite(client: Client, msg:string, name: string)
+	{
+		const id = await getIdByName(name, this.db);
+		if (id == undefined)
+			return ;
+
+		const flags = await this._getFlagMsg(id, client.id);
+		if (flags == null)
 			return ;
 
 		var pal = this.getClientN(id);
-		if (pal && flag == 1)
-			pal.sendMsg(message, from);
+		if (pal && flags[0] == 1) {
+			if (flags[1])
+				pal.send({type:"friendList", name:client.username, status: 1});
+			pal.send({type:"invite", content:msg, from:client.username});
+			client.addInviteList(id);
+		}
 		return ;
+	}
+
+	async join(client: Client, name: string)
+	{
+		const id = await getIdByName(name, this.db);
+		if (id == undefined)
+			return ;
+
+		const flags = await this._getFlagMsg(id, client.id);
+		if (flags == null)
+			return ;
+
+		var pal = this.getClientN(id);
+		if (flags[0] != 1)
+			return ;
+
+		client.resetInviteList();
+		pal.resetInviteList();
+		//TODO dont reset invation if tr for pal!
+		//TODO join a tournament
+		var roomIds;
+		var GameRoom;
+		roomIds = this.roomIds;
+		this.roomIds += 1;
+		GameRoom = new MMRoom(roomIds, 0, this.db);
+		this.rooms[roomIds] = GameRoom;
+		client.setRoomId(roomIds);
+		pal.setRoomId(roomIds);
+		GameRoom.addPlayer(client);
+		GameRoom.addPlayer(pal);
+		var x = await GameRoom.startGame();
+		delete this.rooms[roomIds];
 	}
 }
 

@@ -12,6 +12,7 @@ export async function initDb(server: FastifyInstance) {
 	username TEXT UNIQUE NOT NULL,
 	email TEXT UNIQUE NOT NULL,
 	password TEXT NOT NULL,
+	about_me TEXT,
 	avatar TEXT NOT NULL);
 
 	CREATE TABLE IF NOT EXISTS friends (

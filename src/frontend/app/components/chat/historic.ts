@@ -45,11 +45,13 @@ export class Historic
 	isOnline:number = 0;
 	games: HistoricGame[] = [];
 	avatar:string | null = null;
+	about: string | null = null;
 
 	reset(name:string)
 	{
 		this.name = name;
 		this.avatar = null;
+		this.about = null;
 		this.isOnline = 0;
 		this.games = [];
 	}
@@ -96,11 +98,13 @@ export class Historic
 				this.error = null;
 				this.isOnline = msg.isOnline;
 				this.avatar = msg.avatar;
+				this.about = msg.desc;
 			}
 			if (msg.error == "noUser")
 			{
 				this.error = "user not found";
 				this.avatar = msg.avatar;
+				this.about = "";
 				this.isOnline = 1;
 			}
 			this.HTMLrenderHistoric();
@@ -137,6 +141,10 @@ export class Historic
 		var avatar = <HTMLImageElement>document.getElementById("avatar");
 		if (avatar)
 			avatar.src = `/image/avatar/${this.avatar}`;
+		var about = <HTMLImageElement>document.getElementById("about-me");
+		if (about)
+			about.innerHTML = `${this.about}`;
+
 
 		if (this.error)
 		{

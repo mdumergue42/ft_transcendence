@@ -132,17 +132,28 @@ export class ChatUser
 		const conv = this._createFriend(msg.name, msg.flag);
 		conv.setStatus(msg.status);
 	}
-	receiveFriendCo(msg: any)
+	receiveFriendStatus(msg: any)
 	{
 		var conv = this._getConv(msg.name);
 		if (!conv)
 			return ;
 		conv.setStatus(msg.status);
+		conv.setJoinFlag(0);
 		this.reRenderFriendList();
 	}
 	receiveInvite(msg: any)
 	{
-		console.log(`${msg.name} invited you to his room`); //TODO
+		const other = msg.from;
+		var conv;
+		conv = this._getConv(other);
+		if (!conv)
+		{
+			conv = this._createFriend(other, 1);
+			conv.setStatus(1);
+		}
+		conv.setJoinFlag(1);
+		conv.HTMLAddInvite(msg.content);
+		this.reRenderFriendList();
 	}
 	receiveAdd(msg: any)
 	{
@@ -167,6 +178,8 @@ export class ChatUser
 		const msg = JSON.parse(message.data);
 		if (msg.type == "pong")
 			return ;
+		if (msg.type != "game" && msg.tag != "state")
+			console.log(msg);
 		switch (msg.type) {
 			case 'init': //TODO c pas au back de le faire
 				this.username = msg.name;
@@ -175,13 +188,13 @@ export class ChatUser
 			case 'msg':
 				this.receiveMsg(msg);
 				break ;
-			case 'friendCo':
-				this.receiveFriendCo(msg);
+			case 'friendStatus':
+				this.receiveFriendStatus(msg);
 				break ;
 			case 'omsg':
 				this.receiveOMsg(msg);
 				break;
-			case 'invited':
+			case 'invite':
 				this.receiveInvite(msg);
 				break ;
 			case 'add':
@@ -219,13 +232,15 @@ export class ChatUser
 	sendFindGame() { this.wsSend({type: "findGame"}); }
 	sendPvAI() { this.wsSend({type: "pvai"}); }
 	sendPvP() { this.wsSend({type: "pvp"}); }
-	sendCancel() { this.wsSend({type: "cancel"}); }
+	sendCancel() {
+		this.wsSend({type: "cancel"});
+	}
 
 	sendInvite(conv:Conv)
 	{
-		//need to create a room
-		this.wsSend({type: "invite", name:conv.penPal});
-		conv.HTMLAddInvite();
+		this.wsSend({type: "invite", name:conv.penPal,
+		content:`${this.username} has invite you`});
+		conv.HTMLAddInvite("INVITATION SEND");
 
 		//need the user to be online
 		//
@@ -235,10 +250,24 @@ export class ChatUser
 		//tournois/1VS1/ mutli (3+player)
 	}
 
+	sendJoin(conv:Conv)
+	{
+		this.wsSend({type: "join", name: conv.penPal});
+	}
+
+	createTR() {
+		this.wsSend({type: "createTR"});
+	}
+
 	addFriend(name:string)
 	{
-		//TODO refuse yourself
 		var log = document.getElementById("log-add-friend");
+		//TODO check username regex to block sql injection!
+		if (name == this.username) {
+			if (log)
+				log.innerHTML = "can't be friend with yourself";
+			return
+		}
 
 		const conv = this._getConv(name);
 		if (conv)
@@ -278,10 +307,16 @@ export class ChatUser
 			this.sendBlock(conv);
 		}
 	}
-	HTMLInviteBtn(conv: Conv, chatBox: HTMLElement, inviteBtn: HTMLElement)
+	HTMLInviteBtn(conv: Conv, inviteBtn: HTMLElement)
 	{
 		inviteBtn.onclick = () => {
 			this.sendInvite(conv);
+		}
+	}
+	HTMLJoinBtn(conv: Conv, joinBtn: HTMLElement)
+	{
+		joinBtn.onclick = () => {
+			this.sendJoin(conv);
 		}
 	}
 
@@ -302,15 +337,17 @@ export class ChatUser
 		const chooseBtn = document.getElementById(`choose-peer-${conv.penPal}`);
 		const blockBtn = document.getElementById(`block-peer-${conv.penPal}`);
 		const inviteBtn = document.getElementById(`invite-peer-${conv.penPal}`);
+		const joinBtn = document.getElementById(`join-peer-${conv.penPal}`);
 		const profileBtn = document.getElementById(`profile-peer-${conv.penPal}`);
-		if (!chooseBtn || !blockBtn || !inviteBtn || !profileBtn)
+		if (!chooseBtn || !blockBtn || !inviteBtn || !profileBtn ||!joinBtn)
 		{
 			console.warn("BTN ERROR:", chooseBtn, blockBtn, inviteBtn, profileBtn);
 			return ;
 		}
 		this.HTMLChooseBtn(conv, chatBox, chatHeader, chooseBtn);
 		this.HTMLBlockBtn(conv, chatBox, chatHeader, chooseBtn, blockBtn);
-		this.HTMLInviteBtn(conv, chatBox, inviteBtn);
+		this.HTMLInviteBtn(conv, inviteBtn);
+		this.HTMLJoinBtn(conv, joinBtn);
 		this.HTMLProfilePageBtn(conv, profileBtn);
 	}
 

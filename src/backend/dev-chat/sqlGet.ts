@@ -19,6 +19,13 @@ export async function getAvatarByName(name : string, db: any) {
 		result = result.avatar;
 	return result;
 }
+export async function getDescByName(name: string, db:any) {
+	const stmt = await db.prepare(`SELECT about_me as desc FROM users WHERE username = ?`);
+	let result = await stmt.get([name])
+	if (result)
+		result = result.desc;
+	return result;
+}
 
 export async function getFlagFriendShip(friendId:number, selfId:number, db:any)
 {
@@ -69,8 +76,8 @@ export async function getAllMsg(id: number, db:any)
 
 export async function insertUser(name:string, email:string, pass:string, db:any)
 {
-	const stmt = await db.prepare(`INSERT INTO users(username, email, password, avatar) VALUES(?, ?, ?, ?)`);
-	await stmt.run([name, email, pass, 'default/cara.jpg']);
+	const stmt = await db.prepare(`INSERT INTO users(username, email, password, avatar, about_me) VALUES(?, ?, ?, ?, ?)`);
+	await stmt.run([name, email, pass, 'default/cara.jpg', 'aboutMe TODO']);
 }
 
 export async function insertMatchs(type:string, id1:number, id2:number, s1:number, s2:number, db:any)
@@ -97,6 +104,13 @@ export async function updateFlagFriend(idFrom:number, idTo:number, flag:number, 
 
 	const stmt = await db.prepare(`UPDATE friends SET flag = ? WHERE id_self = ? AND id_friend = ?`);
 	await stmt.run([flag, idFrom, idTo]);
+}
+
+export async function updateUser(avatar:string, descr:string, id:number, db:any)
+{
+
+	const stmt = await db.prepare(`UPDATE users SET avatar = ?, about_me = ? WHERE id_user = ?`);
+	await stmt.run([avatar, descr, id]);
 }
 
 export async function getCountFriend(idFrom: number, idTo:number, db:any)

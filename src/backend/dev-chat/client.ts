@@ -6,7 +6,8 @@ export class Client
 	socket: WebSocket
 	username: string = "TBD"
 	id: number = 0;
-	friendList: [number, number, string][] = [];
+	friendList: {id:number, flag:number, name:string}[] = [];
+	inviteList: number[] = [];
 	roomId: number | null = null;
 	inQ: number = 0;
 	constructor(_socket:WebSocket)
@@ -53,9 +54,9 @@ export class Client
 		}
 		for (let fr of this.friendList)
 		{
-			const client = clientConnected(fr[2], clients);
-			this.send({type: "friendList", flag:fr[1],
-					  name: fr[2], status: Number(client != null)});
+			const client = clientConnected(fr.name, clients);
+			this.send({type: "friendList", flag:fr.flag,
+					  name: fr.name, status: Number(client != null)});
 		}
 		this.send({type:"endDb"});
 
@@ -63,7 +64,7 @@ export class Client
 		{
 			const client = clients[i];
 			if (client.isFriend(this))
-				client.send({type: "friendCo", name:this.username, status: 1});
+				client.send({type: "friendStatus", name:this.username, status: 1});
 		}
 	}
 
@@ -71,7 +72,7 @@ export class Client
 	{
 		for (let fr of this.friendList)
 		{
-			if (fr[0] == client.id)
+			if (fr.id == client.id)
 				return 1;
 		}
 		return 0;
@@ -80,18 +81,18 @@ export class Client
 	{
 		for (let fr of this.friendList)
 		{
-			if (fr[0] == id)
+			if (fr.id == id)
 				return ;
 		}
-		this.friendList.push([id, flag, name]);
+		this.friendList.push({id:id, flag:flag, name:name});
 	}
 	blockFriend(id: number, flag:number)
 	{
 		for (let fr of this.friendList)
 		{
-			if (fr[0] == id)
+			if (fr.id == id)
 			{
-				fr[1] = flag;
+				fr.flag = flag;
 				return ;
 			}
 		}
@@ -107,21 +108,26 @@ export class Client
 		var get_name = (id:number) => {
 			for (let fr of this.friendList)
 			{
-				if (fr[0] == id)
+				if (fr.id == id)
 					return fr;
 			}
-			return [-1, -1, "no"];
+			return {id:-1, flag:-1, name:"no"};
 		}
-		var from, to, _, flag;
+		var fr;
+		var from, to, flag;
 		if (id_from == this.id)
 		{
 			from = this.username;
-			[_,flag,to] = get_name(id_to);
+			fr = get_name(id_to);
+			flag = fr.flag;
+			to = fr.name;
 		}
 		else
 		{
 			to = this.username;
-			[_,flag,from] = get_name(id_from);
+			fr = get_name(id_from);
+			flag = fr.flag;
+			from = fr.name;
 		}
 		if (flag == 1)
 			this.send({type: "msg", from: from, to:to, content: message});
@@ -131,4 +137,18 @@ export class Client
 		this.roomId = id;
 	}
 	setinQ(v: number) {this.inQ = v;}
+
+	addInviteList(id: number) {
+		this.inviteList.push(id);
+	}
+	delInviteList(id: number) {
+		for (let index in this.inviteList) {
+			if (this.inviteList[index] == id) {
+				this.inviteList.splice(Number(index), 1);
+				return ;
+			}
+		}
+	}
+	resetInviteList() {this.inviteList = [];}
+	getInviteList() {return this.inviteList;}
 }

@@ -30,8 +30,10 @@ function reset() {
 		trStartBtn.style.display = "none";
 	if (cancelBtn)
 		cancelBtn.style.display = "none";
-	if (trList)
+	if (trList) {
 		trList.style.display = "none";
+		trList.innerHTML = "";
+	}
 }
 
 export function DevGame(user: ChatUser) {
@@ -67,8 +69,12 @@ export function DevGame(user: ChatUser) {
 		trStartBtn.style.display = "";
 		cancelBtn.style.display = "";
 		trList.style.display = "";
+		user.createTR();
 		//real tr xd
 	};
+	trStartBtn.onclick = () => {
+		return ;
+	}
 	aiBtn.onclick = () => {
 		user.sendPvAI();
 	};

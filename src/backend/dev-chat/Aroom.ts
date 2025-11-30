@@ -74,11 +74,17 @@ export abstract class ARoom
 		}
 	}
 
-	async _waitGameIsEnded()
+	async _waitGameStatus(value: number = 1)
 	{
-		while (this.inGame) {
-			await new Promise(resolve => setTimeout(resolve, 1000))
+		while (this.inGame == value) {
+			await new Promise(resolve => setTimeout(resolve, 2000))
 		}
+		return 1;
+	}
+	async waitGameEnd()
+	{
+		var _ = await this._waitGameStatus(0);
+		var _2 = await this._waitGameStatus(1);
 		return 1;
 	}
 
@@ -91,8 +97,8 @@ export abstract class ARoom
 		this.intervals = {
 			state: setInterval(this.gameState, 32, this),
 			ai: this.flag == 2 ? setInterval(ai, 100, this.game.ball!, this.game.p2!) : null
-		}
-		var x = await this._waitGameIsEnded();
+		};
+		var x = await this._waitGameStatus(1);
 		return 1;
 	}
 

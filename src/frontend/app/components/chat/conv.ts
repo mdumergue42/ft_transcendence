@@ -3,29 +3,21 @@ import {HTMLChatListElement, HTMLColorBlocked, HTMLChatMsg} from './HTMLchat.js'
 export class Conv
 {
 	penPal:string
-	msgList:string[]
-	chatBox:HTMLElement | null
 	flag:number
-	status:number;
+	msgList:{msg:string, flag:number}[] = [];
+	chatBox:HTMLElement | null = null;
+	status:number = 0;
+	joinFlag:number = 0;
 	constructor(_user:string, _flag:number)
 	{
 		this.penPal = _user;
-		this.msgList = [];
-		this.chatBox = null;
 		this.flag = _flag;
-		this.status = 0;
 	}
 
-	setStatus(status: number)
-	{
-		this.status = status;
-		//actualisez
-	}
+	setStatus(status: number) { this.status = status; }
+	setJoinFlag(flag: number) { this.joinFlag = flag; }
+	setChatBox(_div:HTMLElement | null) { this.chatBox = _div; }
 
-	setChatBox(_div:HTMLElement | null)
-	{
-		this.chatBox = _div;
-	}
 	toggleBlock(chooseBtn: HTMLElement | null)
 	{
 		this.flag = 1 - this.flag;
@@ -40,9 +32,10 @@ export class Conv
 		this.chatBox?.appendChild(HTMLChatMsg(this.penPal, msg, flagColor));
 	}
 
-	HTMLAddInvite()
+	HTMLAddInvite(msg:string)
 	{
-		this._addMsg("you invitation was send!", 1);
+		this.msgList.push({msg:msg, flag:1});
+		this._addMsg(msg, 1);
 	}
 
 	HTMLRenderConv()
@@ -51,20 +44,18 @@ export class Conv
 			return ;
 		this.chatBox.innerHTML = "";
 		for (let msg of this.msgList)
-			this._addMsg(msg, 0)
+			this._addMsg(msg.msg, msg.flag);
 	}
 
 	HTMLAddMsg(msg:string)
 	{
-		this.msgList.push(msg);
-		if (this.chatBox == null)
-			return ;
+		this.msgList.push({msg:msg, flag:0});
 		this._addMsg(msg, 0);
 	}
 
 	HTMLChoosePeer()
 	{
-		return HTMLChatListElement(this.penPal, 1 - this.flag, this.status);
+		return HTMLChatListElement(this.penPal, 1 - this.flag, this.status, this.joinFlag);
 	}
 }
 

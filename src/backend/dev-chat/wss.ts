@@ -3,7 +3,6 @@ import {FastifyInstance} from 'fastify';
 import {Client} from './client.js';
 import {ARoom} from './Aroom.js';
 import {MMRoom} from './MMroom.js';
-import {TRoom} from './Troom.js';
 import {getIdByName, getNameById, getFlagFriendShip, getHistoricById, getAvatarByName, getDescByName ,insertUser, insertMatchs, insertMsg, insertFriend, updateFlagFriend, getCountFriend} from './sqlGet.js'
 
 
@@ -211,11 +210,11 @@ class WsServ
 			case 'join':
 				this.join(client, msg.name);
 				break;
-			case 'createTr':
-				//TODO
+			case 'createTR':
+				this.createTR(client);
 				break;
-			case 'startTr':
-				//TODO
+			case 'startTR':
+				this.startTR(client);
 				break;
 			case 'gameInput':
 				this.rooms[client.roomId!].gameInput(client, msg);
@@ -237,101 +236,6 @@ class WsServ
 			default:
 				break;
 		}
-	}
-
-	enterQ(client: Client) {
-		client.resetInviteList();
-		client.send({type: "enterQ", flag: 1});
-		client.inQ = 1;
-		this.friendStatusUp(client, 2);
-	}
-	exitQ(client: Client) {
-		if (this.connectedClients[client.id] == client) {
-			client.inQ = 0;
-			client.send({type: "enterQ", flag: 0});
-			this.friendStatusUp(client, 1);
-		}
-	}
-
-	async pvai(client: Client)
-	{
-		this.enterQ(client);
-		var roomIds = this.roomIds;
-		this.roomIds += 1;
-
-		var GameRoom;
-		GameRoom = new MMRoom(roomIds, 2, this.db);
-		this.rooms[roomIds] = GameRoom;
-		GameRoom.addPlayer(client);
-		GameRoom.addPlayer(null);
-		client.setRoomId(GameRoom.id);
-		var x = await GameRoom.startGame();
-		delete this.rooms[roomIds];
-		this.exitQ(client);
-	}
-	async pvp(client: Client)
-	{
-		this.enterQ(client);
-		var roomIds = this.roomIds;
-		this.roomIds += 1;
-
-		var GameRoom;
-		GameRoom = new MMRoom(roomIds, 1, this.db);
-		this.rooms[roomIds] = GameRoom;
-		GameRoom.addPlayer(client);
-		GameRoom.addPlayer(null);
-		client.setRoomId(GameRoom.id);
-		var x = await GameRoom.startGame();
-		delete this.rooms[roomIds];
-		this.exitQ(client);
-	}
-
-	cancelGame(client: Client)
-	{
-		//TODO Creating Tournament -> cancel + kick other
-		//TODO Tournament -> ff + other continue
-		//TODO in game -> ff + stop
-		var roomIds = client.roomId;
-		if (!roomIds)
-			return ;
-		var GameRoom = this.rooms[roomIds];
-		GameRoom.ff(client);
-		this.exitQ(client);
-	}
-
-	async findGame(client: Client)
-	{
-		var roomIds;
-		var GameRoom;
-		if (client.inQ)
-			return ;
-		this.enterQ(client);
-
-		find : {
-			for (let k in this.rooms)
-			{
-				var room = this.rooms[k];
-				if (room.isOpenForMM() == 0)
-					continue ;
-				GameRoom = room;
-				roomIds = Number(k);
-				break find;
-			}
-			roomIds = this.roomIds;
-			this.roomIds += 1;
-			GameRoom = new MMRoom(roomIds, 0, this.db);
-			this.rooms[roomIds] = GameRoom;
-		}
-		client.setRoomId(roomIds);
-		if (GameRoom.addPlayer(client))
-		{
-			var x = await GameRoom.startGame();
-			delete this.rooms[roomIds];
-		}
-		else
-			var x = await GameRoom.waitGameEnd();
-		if (client)
-			this.exitQ(client);
 	}
 
 	async getHistoric(client: Client, name:string, flag:any)
@@ -441,7 +345,7 @@ class WsServ
 		var pal = this.getClientN(id);
 		if (pal && flags[0] == 1) {
 			if (flags[1]) {
-				pal.send({type:"friendList", name:client.username, status: 1});
+				pal.send({type:"friendList", name:client.username, status: 1 + client.inQ});
 				pal.send({type:"enDb"});
 				pal.addFriend(client.username, client.id, client.inQ);
 			}
@@ -463,13 +367,74 @@ class WsServ
 		var pal = this.getClientN(id);
 		if (pal && flags[0] == 1) {
 			if (flags[1]) {
-				pal.send({type:"friendList", name:client.username, status: 1});
+				pal.send({type:"friendList", name:client.username, status: 1 + client.inQ});
 				pal.addFriend(client.username, client.id, client.inQ);
 			}
 			pal.send({type:"invite", content:msg, from:client.username});
 			client.addInviteList(id);
 		}
 		return ;
+	}
+
+	enterQ(client: Client, Qtype: number = 1) {
+		client.resetInviteList();
+		client.send({type: "enterQ", flag: Qtype});
+		client.inQ = Qtype;
+		this.friendStatusUp(client, 1 + Qtype);
+	}
+	exitQ(client: Client) {
+		if (this.connectedClients[client.id] == client) {
+			client.inQ = 0;
+			client.send({type: "enterQ", flag: 0});
+			this.friendStatusUp(client, 1);
+		}
+	}
+
+	async pvai(client: Client)
+	{
+		this.enterQ(client);
+		var roomIds = this.roomIds;
+		this.roomIds += 1;
+
+		var GameRoom;
+		GameRoom = new MMRoom(roomIds, 2, this.db);
+		this.rooms[roomIds] = GameRoom;
+		GameRoom.addPlayer(client);
+		GameRoom.addPlayer(null);
+		client.setRoomId(GameRoom.id);
+		var x = await GameRoom.startGame();
+		delete this.rooms[roomIds];
+		this.exitQ(client);
+	}
+
+	async pvp(client: Client)
+	{
+		this.enterQ(client);
+		var roomIds = this.roomIds;
+		this.roomIds += 1;
+
+		var GameRoom;
+		GameRoom = new MMRoom(roomIds, 1, this.db);
+		this.rooms[roomIds] = GameRoom;
+		GameRoom.addPlayer(client);
+		GameRoom.addPlayer(null);
+		client.setRoomId(GameRoom.id);
+		var x = await GameRoom.startGame();
+		delete this.rooms[roomIds];
+		this.exitQ(client);
+	}
+
+	cancelGame(client: Client)
+	{
+		//TODO Creating Tournament -> cancel + kick other
+		//TODO Tournament -> ff + other continue
+		//TODO in game -> ff + stop
+		var roomIds = client.roomId;
+		if (!roomIds)
+			return ;
+		var GameRoom = this.rooms[roomIds];
+		GameRoom.ff(client);
+		this.exitQ(client);
 	}
 
 	async join(client: Client, name: string)
@@ -487,24 +452,89 @@ class WsServ
 			return ;
 
 		this.enterQ(client);
-		this.enterQ(pal);
+
 		//TODO dont reset invation if tr for pal!
 		//TODO join a tournament
 		var roomIds;
 		var GameRoom;
-		roomIds = this.roomIds;
-		this.roomIds += 1;
-		GameRoom = new MMRoom(roomIds, 0, this.db);
-		this.rooms[roomIds] = GameRoom;
+		roomIds = pal.roomId
+		if (!roomIds) {
+			roomIds = this.roomIds;
+			this.roomIds += 1;
+		}
+		GameRoom = this.rooms[roomIds];
+		if (!GameRoom) {
+			this.enterQ(pal);
+			GameRoom = new MMRoom(roomIds, 0, this.db);
+			this.rooms[roomIds] = GameRoom;
+			pal.setRoomId(roomIds);
+			GameRoom.addPlayer(pal);
+		}
 		client.setRoomId(roomIds);
-		pal.setRoomId(roomIds);
 		GameRoom.addPlayer(client);
-		GameRoom.addPlayer(pal);
-		var x = await GameRoom.startGame();
-		delete this.rooms[roomIds];
+		console.log("JOIN:", GameRoom.flag);
+		if (GameRoom.flag < 3) {
+			var x = await GameRoom.startGame();
+			delete this.rooms[roomIds];
+			this.exitQ(client);
+			this.exitQ(pal);
+		}
+	}
 
+	async createTR(client: Client)
+	{
+		console.log("CREATING TR");
+		this.enterQ(client, 2);
+
+		var roomIds = this.roomIds;
+		this.roomIds += 1;
+
+		var GameRoom;
+		GameRoom = new MMRoom(roomIds, 3, this.db);
+		this.rooms[roomIds] = GameRoom;
+		GameRoom.addPlayer(client);
+		client.setRoomId(GameRoom.id);
+		var x = await GameRoom.waitGameEnd();
+		delete this.rooms[roomIds];
 		this.exitQ(client);
-		this.exitQ(pal);
+	}
+	async startTR(client: Client)
+	{
+	}
+
+	async findGame(client: Client)
+	{
+		var roomIds;
+		var GameRoom;
+		if (client.inQ)
+			return ;
+		this.enterQ(client);
+
+		find : {
+			for (let k in this.rooms)
+			{
+				var room = this.rooms[k];
+				if (room.isOpenForMM() == 0)
+					continue ;
+				GameRoom = room;
+				roomIds = Number(k);
+				break find;
+			}
+			roomIds = this.roomIds;
+			this.roomIds += 1;
+			GameRoom = new MMRoom(roomIds, 0, this.db);
+			this.rooms[roomIds] = GameRoom;
+		}
+		client.setRoomId(roomIds);
+		if (GameRoom.addPlayer(client))
+		{
+			var x = await GameRoom.startGame();
+			delete this.rooms[roomIds];
+		}
+		else
+			var x = await GameRoom.waitGameEnd();
+		if (client)
+			this.exitQ(client);
 	}
 }
 

@@ -15,16 +15,38 @@ export class MMRoom extends ARoom {
 				  names:names, def:def});
 	}
 
+	getBothPlayer()
+	{
+		var p1, p2;
+		if (this.flag <= 3) {
+			p1 = this.players[0];
+			p2 = this.players[1];
+			return [p1, p2];
+		}
+		if (this.flag <= 5) {
+			p1 = this.players[2];
+			p2 = this.players[3];
+			return [p1, p2];
+		}
+		p1 = this.flag % 2 == 0 ? this.players[0] : this.players[1];
+		p2 = this.flag >= 8 ? this.players[3] : this.players[2];
+		return [p1, p2];
+	}
+
 	assignPlayer()
 	{
-		this.p1 = this.players[0];
-		this.p2 = this.players[1];
-		var name = ["-", "-", "CP"][this.flag];
+		[this.p1, this.p2] = this.getBothPlayer();
+		if ((Math.random() >= 0.5 || this.p1 == null) && this.p2 != null) {
+			const tmp = this.p1; this.p1 = this.p2; this.p2 = tmp;
+		}
+
+		var name = ["-", "-", "CP", this.p2 ? this.p2.username : "-"][Math.max(3, this.flag)];
 		if (this.flag == 0 && this.p2)
 			name = this.p2.username;
-		const def = this.flag < 2 ? "pvp" : "ai";
+		const def = ["Online pvp", "pvp", "ai", "tournament"][Math.max(3, this.flag)];
 		this.sendStartInfo(this.p1, [this.p1!.username, name], def);
 		this.sendStartInfo(this.p2, [this.p1!.username, name], def);
+		this.stream({type: "game",tag:"start",names:[this.p1!.username, name], def:`Watching: ${def}`});
 	}
 	reconnect(user:Client)
 	{
@@ -34,18 +56,20 @@ export class MMRoom extends ARoom {
 			if (p && user.id == p.id)
 			{
 				this.players[k] = user;
-				var name = ["-", "-", "CP"][this.flag];
+				var name = ["-", "-", "CP", this.p2 ? this.p2.username : "-"][Math.max(3, this.flag)];
 				if (this.flag == 0 && this.p2)
 					name = this.p2.username;
-				const def = this.flag < 2 ? "pvp" : "ai";
+				const def = ["Online pvp", "pvp", "ai", "tournament"][Math.max(3, this.flag)];
 				if (this.p1 && this.p1.id == user.id) {
 					this.p1 = user;
 					this.sendStartInfo(this.p1, [this.p1!.username, name], def);
 				}
-				if (this.p2 && this.p2.id == user.id) {
+				else if (this.p2 && this.p2.id == user.id) {
 					this.p2 = user;
 					this.sendStartInfo(this.p2, [this.p1!.username, name], def);
 				}
+				else if (this.flag >= 3)
+					this.stream({type: "game",tag:"start",names:[this.p1!.username, name], def:`Watching: ${def}`});
 				user.setinQ(1);
 				return 1;
 			}
@@ -84,17 +108,40 @@ export class MMRoom extends ARoom {
 
 	endGame()
 	{
+		//3 +1 L + 2 R
+		//4 5 + 2 L + 4 R
+		//L L 3 + 1 = 4 + 2 = 6
+		//L R 3 + 1 = 4 + 4 = 8
+		//R L 3 + 2 = 5 + 2 = 7
+		//R R 3 + 2 = 5 + 4 = 9
 		clearInterval(this.intervals.ai);
 		clearInterval(this.intervals.state);
 		this.intervals = {ai: null, state: null};
-		this.inGame = 0;
-		this.broadCast({type: "game", tag: "end"}); //TODO (client side)
+		const desc = this.flag < 3 ?
+			(this.flag < 2 ? "pvp" : "ai")
+			:this.flag < 8 ? "Tournament 1/2" : "Tournament final";
 		if (this.flag != 1)
-			this.addMatch(this.p1!, this.p2, this.game.score!.x, this.game.score!.y, this.flag < 2 ? "pvp" : "ai");
+			this.addMatch(this.p1!, this.p2, this.game.score!.x, this.game.score!.y, desc);
+		if (this.flag > 2) {
+			if (this.flag == 3)
+				this.flag += this.game.score!.x >= 3 ? 1 : 2;
+			else if (this.flag < 5)
+				this.flag += this.game.score!.x >= 3 ? 2 : 4;
+			else
+				this.inGame = 0;
+			this.broadCast({type: "game", tag: "end", trInfo: "XDD"});
+		}
+		else {
+			this.inGame = 0;
+			this.broadCast({type: "game", tag: "end"});
+		}
 		this.p1 = null;
 		this.p2 = null;
 		this.game.endGame();
-		this.kickAllPlayers();
+		if (this.inGame == 0)
+			this.kickAllPlayers();
+		else
+			this.startGame();
 	}
 
 	async addMatch(p1: Client, p2: Client | null, score_p1: number, score_p2: number, type: string)

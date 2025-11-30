@@ -94,10 +94,29 @@ export function DevGame(user: ChatUser) {
 		{
 			vwMenu: document.getElementById("pong-vw-menu"),
 			vwTr: document.getElementById("pong-vw-tournament"),
+			vwTrList: trList,
 			vwGame: document.getElementById("pong-vw-game"),
 			vwCancel: reset
 		}
 
 	);
+	if (user.inQ == 1)
+	{
+		aiBtn.style.display = "none";
+		pvpBtn.style.display = "none";
+		trBtn.style.display = "none";
+		cancelBtn.style.display = "";
+	}
+	if (user.inQ == 2)
+	{
+		mmBtn.style.display = "none";
+		aiBtn.style.display = "none";
+		pvpBtn.style.display = "none";
+		trBtn.style.display = "";
+		trStartBtn.style.display = "";
+		cancelBtn.style.display = "";
+		trList.style.display = "";
+		//see tournament players
+	}
 	user.pongGame.initCanvas(null);
 }

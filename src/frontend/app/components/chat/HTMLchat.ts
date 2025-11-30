@@ -45,7 +45,7 @@ export function HTMLChatListElement(name: string, isBlocked: number, status: num
     btn1.className = "PText hover:text-white hover:scale-110 transition-transform px-1";
     btn1.innerHTML = `➜]`;
     btn1.title = "Join";
-    if (joinFlag === 1 && inQFlag == 0)
+    if (joinFlag % 2 == 1 && inQFlag == 0)
 		btn1.style.visibility = "visible";
 	else 
 		btn1.style.visibility = "hidden";
@@ -55,7 +55,7 @@ export function HTMLChatListElement(name: string, isBlocked: number, status: num
     btn2.className = "PText hover:text-white hover:scale-110 transition-transform px-1";
     btn2.innerHTML = `🎮`;
     btn2.title = "Inviter";
-    if (status === 1 && inQFlag == 0)
+    if (status === 1 && inQFlag != 1)
 		btn2.style.visibility = "visible";
 	else 
 		btn2.style.visibility = "hidden";

@@ -10,16 +10,23 @@ export class PongGame
 	header:any = null
 	headerInfo:any = {p1: "p1", p2: "p2", def: ""};
 	vw:any = null
+	trList: string[] = [];
 
 	p1: Player | null = null
 	p2: Player | null = null
 	ball: Ball | null = null
 	score: Vector2 | null = null
+
 	ws: WebSocket | null = null
 
-	setWs(ws:WebSocket | null)
-	{
-		this.ws = ws;
+	setWs(ws:WebSocket | null) { this.ws = ws; }
+	setTrList(l: string[]) { this.trList = l; }
+	showTrList() {
+		for (let name of this.trList) {
+			let d = document.createElement('div');
+			d.innerHTML = name;
+			this.vw.vwTrList.appendChild(d);
+		}
 	}
 
 	onMsg(msg:any)
@@ -42,7 +49,16 @@ export class PongGame
 				this.redraw();
 				break ;
 			case 'end':
-				this.endGame();
+				this.endGame(msg);
+				break ;
+			case 'trJoin':
+				this.vw!.vwMenu.style.display = "none";
+				this.vw!.vwTr.style.display = "";
+				this.vw!.vwGame.style.display = "none";
+				break ;
+			case 'trList':
+				this.setTrList(msg.list);
+				this.showTrList();
 				break ;
 			default:
 				break
@@ -59,7 +75,7 @@ export class PongGame
 		this.vw!.vwTr.style.display = "none";
 		this.vw!.vwGame.style.display = "";
 		this.header!.p1!.innerHTML = this.headerInfo.p1;
-		this.header!.p2!.innerHTML = this.headerInfo.p1;
+		this.header!.p2!.innerHTML = this.headerInfo.p2;
 		this.header!.def!.innerHTML = this.headerInfo.def;
 	}
 
@@ -135,7 +151,7 @@ export class PongGame
 		this.score = new Vector2();
 	}
 
-	endGame()
+	endGame(msg: any | null = null)
 	{
 		this.p1 = null;
 		this.p2 = null;

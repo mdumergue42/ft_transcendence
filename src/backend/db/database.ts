@@ -11,7 +11,13 @@ export async function initDb(server: FastifyInstance) {
 	id_user INTEGER PRIMARY KEY AUTOINCREMENT,
 	username TEXT UNIQUE NOT NULL,
 	email TEXT UNIQUE NOT NULL,
-	password TEXT NOT NULL);
+	password TEXT NOT NULL,
+	email_verified INTEGER DEFAULT 0,
+	code_verif TEXT,
+	expire_code_verif DATETIME,
+	two_fa_enabled INTEGER DEFAULT 0,
+	two_fa_secret TEXT,
+	two_fa_method TEXT);
 
 	CREATE TABLE IF NOT EXISTS friends (
 	id_relationship INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -28,7 +34,16 @@ export async function initDb(server: FastifyInstance) {
 	id_to INTEGER NOT NULL,
 	date DATETIME DEFAULT CURRENT_TIMESTAMP,
 	FOREIGN KEY (id_from) REFERENCES users(id_user),
-	FOREIGN KEY (id_to) REFERENCES users(id_user))`);
+	FOREIGN KEY (id_to) REFERENCES users(id_user));
+
+	CREATE TABLE IF NOT EXISTS two_fa_code (
+	id_code INTEGER PRIMARY KEY AUTOINCREMENT,
+	id_user_2fa INTEGER NOT NULL,
+	code_2fa TEXT NOT NULL,
+	expire_at DATETIME NOT NULL,
+	attempts INTEGER DEFAULT 0,
+	FOREIGN KEY (id_user_2fa) REFERENCES users(id_user));
+	`)
 
 	console.log('✅ Base de données créer avec succés !')
 }

@@ -1,4 +1,5 @@
-import Fastify from 'fastify';
+import 'dotenv/config';
+import Fastify, { FastifyReply, FastifyRequest } from 'fastify';
 import fastifyStatic from '@fastify/static';
 import fastifyCors from '@fastify/cors';
 import { join, dirname } from 'path';
@@ -6,6 +7,7 @@ import { fileURLToPath } from 'url';
 import { WSServInit } from './dev-chat/wss.js';
 import { initDb } from './db/database.js'
 import { authRt } from './routes/auth.js'
+import fastifyJwt from '@fastify/jwt';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -60,6 +62,24 @@ server.addHook('onResponse', async (request, reply) => {
 
 	console.log(`${base} ${colors.gray}→ ${colors.reset}${statusColor}${status}${colors.reset} ${colors.dim}(${calculatedResponseTime}ms)${colors.reset}`);
 });
+
+await server.register(fastifyJwt, {
+	secret: process.env.JWT_SECRET!,
+	sign: { expiresIn: '24h' }
+});
+
+server.decorate('authenticate', async function(request: FastifyRequest, reply: FastifyReply): Promise<void> {
+	try {
+		//verif du JWT
+		await request.jwtVerify();
+	} catch (err) {
+		reply.code(401).send({
+			success: false,
+			error: 'Not authenticated, invalid or missing token'
+		});
+	}
+});
+
 
 server.register(fastifyCors, {
 	origin: true,

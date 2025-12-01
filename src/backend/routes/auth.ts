@@ -204,6 +204,8 @@ export async function authRt(server: FastifyInstance) {
 async function createUser(server: FastifyInstance, username: string, password: string, email: string) {
 	const hashPass = await hashPassword(password);
 
+	//TODO utilise le sqlGET.ts pour eviter les injections SQL
+	//
 	//je n'ai pas trouve le code pour un echec de hash de mdp ------ WARNING
 	//	if (hashPass) {
 	//		return reply.code() }

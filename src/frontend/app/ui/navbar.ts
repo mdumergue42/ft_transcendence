@@ -29,7 +29,6 @@ export class AppNavbar extends HTMLElement {
 		} catch {
 			console.warn('Erreur fetch auth, on part du principe non connecté.');
 		}
-		isLoggedIn = true; //TODO supr cette ligne
 
 		const linkElement = document.createElement('link');
 		linkElement.rel = 'stylesheet';

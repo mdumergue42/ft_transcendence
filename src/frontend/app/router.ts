@@ -38,14 +38,16 @@ async function connection(logs: HTMLElement): Promise<[boolean, ChatUser | null]
 		logs.style.color = "red";
 		return [false, null];
 	}
-	isLoggedIn = true; //TODO suppr cette ligne
 	
 	if (!isLoggedIn && location.pathname != '/') {
 		history.pushState({}, '', '/');
-		window.dispatchEvent(new PopStateEvent('popstate'))
+		window.dispatchEvent(new PopStateEvent('popstate'));
+		return [false, null];
 	}
 	await wait30ms();
-
+	
+	console.log("USERNAME:", username);
+	
 	logs.innerHTML = "Connection to WebSocket";
 	const user = new ChatUser(username);
 	const isOpen = await user._waitWs(user.ws);

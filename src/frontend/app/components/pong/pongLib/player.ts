@@ -7,10 +7,8 @@ export class Player
 	racket: Vector2
 	normal: Vector2
 	obj: number
-	keysPressed: [number, number] //TODO JSP
+	keysPressed: [number, number]
 	ia: boolean
-	//x = 0 or canvas.widht (column)
-	//ia = 0 or 1 (ia)
     constructor(x: number, ia:boolean)
     {
 		if (x != 0)

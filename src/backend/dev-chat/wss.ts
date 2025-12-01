@@ -31,7 +31,7 @@ class WsServ
 		});
 
 		this.db = SQLserver.db;
-		this.tmp() //TODO retirer car c sencer etre automatique!
+		//this.tmp() //TODO retirer car c sencer etre automatique!
 	}
 
 	async tmp()
@@ -173,6 +173,7 @@ class WsServ
 		if (!arg)
 		{
 		//TODO => DECONNECTION
+			return ;
 		}
 		await client.user(arg, this.db);
 		await client.sendFriendList(this.connectedClients);
@@ -267,7 +268,7 @@ class WsServ
 		}
 
 		var avatar = await getAvatarByName(name, this.db);
-		if (avatar == undefined)
+		if (avatar == undefined || !avatar)
 			avatar = "default/404.png";
 		var desc = await getDescByName(name, this.db);
 		if (desc == undefined)

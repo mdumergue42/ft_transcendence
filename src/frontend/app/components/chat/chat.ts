@@ -5,7 +5,7 @@ import { renderWaitScreen } from '../../pages/waitScreen.js'
 
 export class ChatUser
 {
-	username:string | null
+	username:string | null = null;
 	ws: WebSocket
 	lastPeer:Conv | null
 	pingInterval:any
@@ -15,7 +15,6 @@ export class ChatUser
 	inQ: number = 0;
 	constructor(_name:string | null)
 	{
-		this.username = _name;
 		this.ws = new WebSocket(`wss://${window.location.hostname}/ws/`);
 		this.connect();
 		this.lastPeer = this.friendList[0];
@@ -58,7 +57,8 @@ export class ChatUser
 	connect()
 	{
 		this.ws.onopen  = () => {
-			this.wsSend({type: "user", name:"TD"});
+			if (this.username)
+				this.wsSend({type: "user", name:this.username});
 			this.pingInterval = setInterval(() => {
 				this.wsSend({type: "ping"});
 			}, 1000);

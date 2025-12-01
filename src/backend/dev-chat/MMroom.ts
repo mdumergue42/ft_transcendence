@@ -36,18 +36,18 @@ export class MMRoom extends ARoom {
 	assignPlayer()
 	{
 		[this.p1, this.p2] = this.getBothPlayer();
-		if ((Math.random() >= 0.5 || this.p1 == null) && this.p2 != null) {
-			const tmp = this.p1; this.p1 = this.p2; this.p2 = tmp;
-		}
+		console.log("ASSIGN PLAYER:", this.p1!.username, this.p2!.username)
+		console.log(this.flag, Math.min(3, this.flag));
 
-		var name = ["-", "-", "CP", this.p2 ? this.p2.username : "-"][Math.max(3, this.flag)];
+		var name = ["-", "-", "CP", this.p2 ? this.p2.username : "-"][Math.min(3, this.flag)];
 		if (this.flag == 0 && this.p2)
 			name = this.p2.username;
-		const def = ["Online pvp", "pvp", "ai", "tournament"][Math.max(3, this.flag)];
+		const def = ["Online pvp", "pvp", "ai", "tournament"][Math.min(3, this.flag)];
 		this.sendStartInfo(this.p1, [this.p1!.username, name], def);
 		this.sendStartInfo(this.p2, [this.p1!.username, name], def);
 		this.stream({type: "game",tag:"start",names:[this.p1!.username, name], def:`Watching: ${def}`});
 	}
+
 	reconnect(user:Client)
 	{
 		for (let k in this.players)
@@ -56,10 +56,10 @@ export class MMRoom extends ARoom {
 			if (p && user.id == p.id)
 			{
 				this.players[k] = user;
-				var name = ["-", "-", "CP", this.p2 ? this.p2.username : "-"][Math.max(3, this.flag)];
+				var name = ["-", "-", "CP", this.p2 ? this.p2.username : "-"][Math.min(3, this.flag)];
 				if (this.flag == 0 && this.p2)
 					name = this.p2.username;
-				const def = ["Online pvp", "pvp", "ai", "tournament"][Math.max(3, this.flag)];
+				const def = ["Online pvp", "pvp", "ai", "tournament"][Math.min(3, this.flag)];
 				if (this.p1 && this.p1.id == user.id) {
 					this.p1 = user;
 					this.sendStartInfo(this.p1, [this.p1!.username, name], def);
@@ -117,28 +117,23 @@ export class MMRoom extends ARoom {
 
 	endGame()
 	{
-		//3 +1 L + 2 R
-		//4 5 + 2 L + 4 R
-		//L L 3 + 1 = 4 + 2 = 6
-		//L R 3 + 1 = 4 + 4 = 8
-		//R L 3 + 2 = 5 + 2 = 7
-		//R R 3 + 2 = 5 + 4 = 9
 		clearInterval(this.intervals.ai);
 		clearInterval(this.intervals.state);
 		this.intervals = {ai: null, state: null};
 		const desc = this.flag < 3 ?
 			(this.flag < 2 ? "pvp" : "ai")
-			:this.flag < 8 ? "Tournament 1/2" : "Tournament final";
+			:this.flag < 6 ? "Tournament 1/2" : "Tournament final";
 		if (this.flag != 1)
 			this.addMatch(this.p1!, this.p2, this.game.score!.x, this.game.score!.y, desc);
 		if (this.flag > 2) {
+			let win = this.game.score!.x >= 3;
 			if (this.flag == 3)
-				this.flag += this.game.score!.x >= 3 ? 1 : 2;
-			else if (this.flag < 5)
-				this.flag += this.game.score!.x >= 3 ? 2 : 4;
+				this.flag += win ? 1 : 2;
+			else if (this.flag <= 5)
+				this.flag += win ? 2 : 4;
 			else
 				this.inGame = 0;
-			this.broadCast({type: "game", tag: "end", trInfo: "XDD"});
+			this.broadCast({type: "game", tag: "end"});
 		}
 		else {
 			this.inGame = 0;

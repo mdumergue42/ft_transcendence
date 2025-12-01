@@ -32,7 +32,6 @@ export abstract class ARoom
 
 	ff(user: Client)
 	{
-		//if tr broadcast player leaving 
 		for (let k in this.players)
 		{
 			var p = this.players[k];
@@ -45,11 +44,26 @@ export abstract class ARoom
 						this.game.score!.x = 3;
 					user.send({type: "game", tag:"end"});
 				}
-				if (this.inGame || this.flag >= 3)
+				if (this.inGame)
 					this.players[k] = null;
-				else
+				else {
 					this.players.splice(Number(k), 1);
+					if (Number(k) == 0) {
+						this.inGame = 2;
+						this.kickAllPlayers();
+					}
+					else if (this.flag == 3) {
+						let names = [];
+						for (let k in this.players) {
+							if (this.players[k]) {
+								names.push(this.players[k].username);
+							}
+						}
+						this.broadCast({type: "game", tag:"trList", list:names})
+					}
+				}
 				user.setRoomId(null);
+				return ;
 			}
 		}
 	}
@@ -77,39 +91,44 @@ export abstract class ARoom
 		}
 	}
 
-	async _waitGameStatus(value: number = 1)
+	async _waitGameStatus(value: number = 0)
 	{
-		while (this.inGame != value) {
-			await new Promise(resolve => setTimeout(resolve, 2000))
+		while (this.inGame == value) {
+			await new Promise(resolve => setTimeout(resolve, 1500))
 		}
 		return 1;
 	}
 	async waitGameEnd()
 	{
-		var _ = await this._waitGameStatus(1);
-		var _2 = await this._waitGameStatus(0);
+		var _ = await this._waitGameStatus(0);
+		var _2 = await this._waitGameStatus(1);
 		return 1;
 	}
-	async wait3s()
+	async wait2s()
 	{
-		await new Promise(resolve => setTimeout(resolve, 3000));
+		await new Promise(resolve => setTimeout(resolve, 2000));
 		return 1;
 	}
 
 	async startGame()
 	{
 		this.inGame = 1;
+		if (this.flag >= 3) {
+			this.broadCast({type: "game", tag: "trTree",
+						   flag:this.flag - 3})
+			await this.wait2s();
+		}
 		this.assignPlayer();
 		this.game.initGame(this.flag == 2);
 		if (this.p2 == null && this.flag > 3)
-			this.game.score!.x == 3;
+			this.game.score!.x = 3;
 		this.gameState = this.gameState.bind(this);
 		this.intervals = {
 			state: setInterval(this.gameState, 32, this),
 			ai: this.flag == 2 ?
 				setInterval(ai, 100, this.game.ball!, this.game.p2!) : null
 		};
-		var x = await this._waitGameStatus(0);
+		var x = await this._waitGameStatus(1);
 		return 1;
 	}
 

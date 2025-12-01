@@ -89,7 +89,6 @@ class WsServ
 		for (let x in this.connectedClients) {
 			const friend = this.connectedClients[x];
 			if (friend.isFriend(client)) {
-				console.log("FRIENDSTATUS UP", status);
 				friend.send({type:"friendStatus", name:client.username, status: status});
 			}
 		}
@@ -97,13 +96,16 @@ class WsServ
 
 	deco(socket:WebSocket)
 	{
-		console.log('Client disconnected')
 		for (let index in this.connectedClients) {
 			const client = this.connectedClients[index];
 			if (client.socket == socket)
 			{
-				this.friendStatusUp(client, 0);
 				delete this.connectedClients[index];
+				this.friendStatusUp(client, 0);
+				if (client.roomId) {
+					if (this.rooms[client.roomId].inGame == 0)
+						this.rooms[client.roomId].ff(client);
+				}
 				return ;
 			}
 		}
@@ -179,6 +181,8 @@ class WsServ
 		for (let roomIndx in this.rooms)
 		{
 			const room = this.rooms[roomIndx];
+			if (room.inGame != 1)
+				continue ;
 			if (room.reconnect(client))
 			{
 				client.setRoomId(room.id);
@@ -478,7 +482,7 @@ class WsServ
 			this.exitQ(pal);
 		}
 		else {
-			client.send({type: "game", tag:"trJoin"});
+			client.send({type: "game", tag:"trJoin", op:0});
 			var x = await GameRoom.waitGameEnd(); //TODO cancel should stop this wait
 			this.exitQ(client);
 		}
@@ -486,7 +490,6 @@ class WsServ
 
 	async createTR(client: Client)
 	{
-		console.log("CREATING TR");
 		this.enterQ(client, 2);
 
 		var roomIds = this.roomIds;
@@ -496,6 +499,7 @@ class WsServ
 		GameRoom = new MMRoom(roomIds, 3, this.db);
 		this.rooms[roomIds] = GameRoom;
 		GameRoom.addPlayer(client);
+		client.send({type: "game", tag:"trJoin", op:1});
 		client.setRoomId(GameRoom.id);
 		var x = await GameRoom.waitGameEnd();
 		delete this.rooms[roomIds];
@@ -503,6 +507,12 @@ class WsServ
 	}
 	async startTR(client: Client)
 	{
+		var roomIds = client.roomId;
+		if (!roomIds)
+			return ;
+		var GameRoom = this.rooms[roomIds];
+		if (GameRoom.players.length >= 4)
+			GameRoom.startGame();
 	}
 
 	async findGame(client: Client)
@@ -536,8 +546,7 @@ class WsServ
 		}
 		else
 			var x = await GameRoom.waitGameEnd();
-		if (client)
-			this.exitQ(client);
+		this.exitQ(client);
 	}
 }
 

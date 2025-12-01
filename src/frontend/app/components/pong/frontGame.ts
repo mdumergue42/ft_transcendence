@@ -11,6 +11,7 @@ export class PongGame
 	headerInfo:any = {p1: "p1", p2: "p2", def: ""};
 	vw:any = null
 	trList: string[] = [];
+	trTree: {m1:string, m2:string} = {m1: "", m2: ""};
 	trState: number = 0;
 
 	p1: Player | null = null
@@ -22,6 +23,17 @@ export class PongGame
 
 	setWs(ws:WebSocket | null) { this.ws = ws; }
 	setTrList(l: string[]) { this.trList = l; }
+
+	setTrTree(t: number) {
+		if (t == 0) {
+			this.trTree = {m1: "", m2: ""};
+			return ;
+		}
+		var m1 = this.trList[Number(t % 2 == 1)];
+		var m2 = t > 2 ? this.trList[2 + Number(t > 4)] : "";
+		this.trTree = {m1: m1, m2: m2};
+	}
+
 	showTrList() {
 		if (this.canvas == null)
 			return ;
@@ -34,16 +46,34 @@ export class PongGame
 		}
 	}
 
-	trJoin() {
-		this.trState = 1;
+	showTrTree() {
+		console.log("TREE:", this.trTree);
+		if (!this.canvas)
+			return ;
+		this.vw!.vwMenu.style.display = "none";
+		this.vw!.vwTr.style.display = "";
+		this.vw!.vwGame.style.display = "none";
+		
+		var d;
+		for (let k in this.trList) {
+			d = document.getElementById(`tr-p${k}-name`)!; //TODO Scores
+			d.innerHTML = this.trList[k];
+		}
+		d = document.getElementById(`tr-m1-name`)!; //TODO Scores
+		d.innerHTML = this.trTree.m1;
+		d = document.getElementById(`tr-m2-name`)!; //TODO Scores
+		d.innerHTML = this.trTree.m2;
 
+	}
+
+	trJoin() {
 		this.showTrList();
 		if (this.canvas) {
 			document.getElementById("select-mm")!.style.display = "none";
 			document.getElementById("select-ai")!.style.display = "none";
 			document.getElementById("select-pvp")!.style.display = "none";
-			document.getElementById("select-start")!.style.display = "none";
-			document.getElementById("match-header-ff")!.style.display = "none";
+			console.log("SELECT-START:", this.trState);
+			document.getElementById("select-start")!.style.display = this.trState == 2 ? "" : "none";
 			document.getElementById("select-tr")!.style.display = "";
 			document.getElementById("select-cancel")!.style.display = "";
 			document.getElementById("select-list-tr")!.style.display = "";
@@ -71,15 +101,16 @@ export class PongGame
 				this.redraw();
 				break ;
 			case 'end':
-				this.endGame(msg);
+				this.endGame();
 				break ;
 			case 'trJoin':
+				this.trState = msg.op + 1;
 				this.trJoin();
 				break ;
 			case 'trTree':
-				this.vw!.vwMenu.style.display = "none";
-				this.vw!.vwTr.style.display = "";
-				this.vw!.vwGame.style.display = "none";
+				this.trState = 3;
+				this.setTrTree(msg.flag);
+				this.showTrTree();
 				break ;
 			case 'trList':
 				this.setTrList(msg.list);
@@ -87,6 +118,7 @@ export class PongGame
 				break ;
 			case 'cancel':
 				this.trState = 0;
+				this.vw!.vwCancel();
 				break
 			default:
 				break
@@ -102,6 +134,9 @@ export class PongGame
 			if (this.trState == 1) {
 				this.trJoin();
 				this.showTrList();
+			}
+			if (this.trState == 1) {
+				this.showTrTree();
 			}
 			return ;
 		}
@@ -185,7 +220,7 @@ export class PongGame
 		this.score = new Vector2();
 	}
 
-	endGame(msg: any | null = null)
+	endGame()
 	{
 		this.p1 = null;
 		this.p2 = null;

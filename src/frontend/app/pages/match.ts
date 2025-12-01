@@ -45,13 +45,9 @@ export function DevGame(user: ChatUser) {
 	const trStartBtn = <HTMLButtonElement>document.getElementById("select-start")!;
 	const cancelBtn = <HTMLButtonElement>document.getElementById("select-cancel")!;
 	const trList = <HTMLDivElement>document.getElementById("select-list-tr")!;
-	const FFBtn = <HTMLButtonElement>document.getElementById("match-header-ff")!;
 
 	cancelBtn.onclick = () => {
 		reset();
-		user.sendCancel();
-	};
-	FFBtn.onclick = () => {
 		user.sendCancel();
 	};
 	mmBtn.onclick = () => {
@@ -70,9 +66,9 @@ export function DevGame(user: ChatUser) {
 		cancelBtn.style.display = "";
 		trList.style.display = "";
 		user.createTR();
-		//real tr xd
 	};
 	trStartBtn.onclick = () => {
+		user.startTR();
 		return ;
 	}
 	aiBtn.onclick = () => {
@@ -100,23 +96,5 @@ export function DevGame(user: ChatUser) {
 		}
 
 	);
-	if (user.inQ == 1)
-	{
-		aiBtn.style.display = "none";
-		pvpBtn.style.display = "none";
-		trBtn.style.display = "none";
-		cancelBtn.style.display = "";
-	}
-	if (user.inQ == 2)
-	{
-		mmBtn.style.display = "none";
-		aiBtn.style.display = "none";
-		pvpBtn.style.display = "none";
-		trBtn.style.display = "";
-		trStartBtn.style.display = "";
-		cancelBtn.style.display = "";
-		trList.style.display = "";
-		//see tournament players
-	}
 	user.pongGame.initCanvas(null);
 }

@@ -185,7 +185,7 @@ export class ChatUser
 		const msg = JSON.parse(message.data);
 		if (msg.type == "pong")
 			return ;
-		if (msg.type != "game" && msg.tag != "state")
+		if (msg.type != "game" || msg.tag != "state")
 			console.log(msg);
 		switch (msg.type) {
 			case 'init': //TODO c pas au back de le faire
@@ -251,24 +251,12 @@ export class ChatUser
 		this.wsSend({type: "invite", name:conv.penPal,
 		content:`${this.username} has invite you`});
 		conv.HTMLAddInvite("INVITATION SEND");
-
-		//TR -> inQ = 2
-		//need the user to be online
-		//
-		//_addInvite()
-		//afficher les joueurs invite dans la room
-		//quand un jouer est dans la room: pouvoir lancer
-		//tournois/1VS1/ mutli (3+player)
+		//TODO msgs for types of Q
 	}
 
-	sendJoin(conv:Conv)
-	{
-		this.wsSend({type: "join", name: conv.penPal});
-	}
-
-	createTR() {
-		this.wsSend({type: "createTR"});
-	}
+	sendJoin(conv:Conv) { this.wsSend({type: "join", name: conv.penPal}); }
+	createTR() { this.wsSend({type: "createTR"}); }
+	startTR() { this.wsSend({type: "startTR"}); }
 
 	addFriend(name:string)
 	{

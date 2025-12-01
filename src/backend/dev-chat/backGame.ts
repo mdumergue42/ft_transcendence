@@ -22,12 +22,12 @@ export class PongGame
 			if (res == 2)
 			{
 				this.score.x += 1;
-				this.ball.init(0);
+				this.ball.init(1);
 			}
 			else
 			{
 				this.score.y += 1;
-				this.ball.init(1);
+				this.ball.init(0);
 			}
 			this.p1.init();
 			this.p2.init();

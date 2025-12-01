@@ -30,7 +30,7 @@ export class AppMatch extends HTMLElement {
 			</button>
 
 			<button id="select-start" style="width:100%;display:none; text-align: left;" class="block p-3 border PBoxBorder bg-black/50 PText PBoxHover hover:text-black transition-all duration-200 uppercase tracking-wide mt-1">
-			> START TOURNAMENT
+			> START TOURNAMENT [4players min]
 			</button>
 
 			<div id="select-list-tr" style="min-height:50px;margin-top:40px;width:100%;display:none; text-align: left;" class="block p-3 border PBoxBorder bg-black/50 PText PBoxHover hover:text-black transition-all duration-200 tracking-wide mt-1">
@@ -45,7 +45,6 @@ export class AppMatch extends HTMLElement {
 		return `
 		<div id="${id}" class="block p-3 border PBoxBorder bg-black/50 PText relative">
 			<div id="${id}-name">player's name</div>
-			<div id="${id}-score" class="absolute right-1" style="transform: translate(-50%, -50%); top:50%">0</div>
 		</div>
 		`;
 	}
@@ -54,19 +53,19 @@ export class AppMatch extends HTMLElement {
 		<div style="height:100%">
 			<div class="text-center" style="display: grid; grid-template-columns: auto auto auto; grid-gap: 20px; height:100%; padding: 40px">
 				<div style="display: grid; grid-template-rows: repeat(7, 1fr); height:100%; grid-template-columns: 100%">
-					<div style="grid-row: 1 / 2;">${this.case("tr-m1-p1")}</div>
-					<div style="grid-row: 3 / 4;">${this.case("tr-m1-p2")}</div>
-					<div style="grid-row: 5 / 6;">${this.case("tr-m2-p1")}</div>
-					<div style="grid-row: 7 / 8;">${this.case("tr-m2-p2")}</div>
+					<div style="grid-row: 1 / 2;">${this.case("tr-p0")}</div>
+					<div style="grid-row: 3 / 4;">${this.case("tr-p1")}</div>
+					<div style="grid-row: 5 / 6;">${this.case("tr-p2")}</div>
+					<div style="grid-row: 7 / 8;">${this.case("tr-p3")}</div>
 				</div>
 				<div style="display: grid; grid-template-rows: repeat(7, 1fr); height:100%; grid-template-columns: 100%">
-					<div style="grid-row: 2 / 3;">${this.case("tr-m3-p1")}</div>
-					<div style="grid-row: 6 / 7;">${this.case("tr-m3-p2")}</div>
+					<div style="grid-row: 2 / 3;">${this.case("tr-m1")}</div>
+					<div style="grid-row: 6 / 7;">${this.case("tr-m2")}</div>
 				</div>
 				<div style="display: grid; grid-template-rows: repeat(7, 1fr); height:100%; grid-template-columns: 100%">
 					<div style="grid-row: 4 / 5; ">
 						<div class="block p-3 border PBoxBorder PBoxBg text-black relative">
-							<div id="tr-winner-name">player's name</div>
+							<div id="tr-winner-name">WINNER</div>
 							<div class="absolute right-1" style="transform: translate(-50%, -50%);top:50%">🏆</div>
 						</div>
 					</div>
@@ -93,7 +92,6 @@ export class AppMatch extends HTMLElement {
 				<a>-</a>
 				<a id="match-header-s2">0</a>
 				<a id="match-header-p2">P2</a>
-				<button id="match-header-ff" class="PRevTextHover absolute right-0 top-0 PBoxBg text-black hover:bg-black transition-all duration-200 tracking-wide" style="font-size: 2.5rem; font-weight: bold; padding:0px 20px">FF</button>
 			</div>
 
 		</div>

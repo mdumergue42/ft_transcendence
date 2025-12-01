@@ -68,19 +68,6 @@ await server.register(fastifyJwt, {
 	sign: { expiresIn: '24h' }
 });
 
-server.decorate('authenticate', async function(request: FastifyRequest, reply: FastifyReply): Promise<void> {
-	try {
-		//verif du JWT
-		await request.jwtVerify();
-	} catch (err) {
-		reply.code(401).send({
-			success: false,
-			error: 'Not authenticated, invalid or missing token'
-		});
-	}
-});
-
-
 server.register(fastifyCors, {
 	origin: true,
 	credentials: true

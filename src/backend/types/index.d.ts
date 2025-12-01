@@ -5,3 +5,9 @@ export interface User {
 	losses: number;
 }
 
+export interface FastifyJWT {
+	id_user: number;
+	username: string;
+	email: string;
+}
+

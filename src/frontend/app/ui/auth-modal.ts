@@ -223,6 +223,8 @@ export class AuthModal extends HTMLElement {
             password: password
         };
 
+		console.log("donnees pour le backend", registerData);
+
         try {
             const response = await fetch('/api/auth/register', {
                 method: 'POST',

@@ -25,7 +25,7 @@ export function HTMLChatListElement(name: string, isBlocked: number, status: num
     
     const statusDot = document.createElement('span');
     if (status)
-        statusDot.className = "w-2 h-2 rounded-full PBoxBg shadow-[0_0_5px_rgba(22,163,74,0.8)]";
+        statusDot.className = "w-2 h-2 rounded-full PBoxBg";
     else
     	statusDot.className = "w-2 h-2 rounded-full border PBorder bg-transparent opacity-50";
 

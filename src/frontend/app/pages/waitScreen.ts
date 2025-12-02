@@ -1,6 +1,6 @@
 export function renderWaitScreen() {
 	return `
-	<div class="PBoxBorder border-2 text-center mb-8 p-6 shadow-[inset_0_0_20px_rgba(0,255,0,0.1)]">
+	<div class="PBoxBorder border-2 text-center mb-8 p-6 PInsetLowShadow">
 		<pre class="PText text-xs md:text-sm leading-tight mb-4 whitespace-pre-wrap relative">
 			<span class="PText absolute inset-0 animate-noise-anim opacity-80">
 ████████╗██████╗  █████╗ ███╗   ██╗███████╗
@@ -16,7 +16,7 @@ export function renderWaitScreen() {
 	██║     ╚██████╔╝██║ ╚████║╚██████╔╝
 	╚═╝      ╚═════╝ ╚═╝  ╚═══╝ ╚═════╝
 			</span>
-			<span class="relative z-10 animate-glitch-light">
+			<span class="relative z-10">
 ████████╗██████╗  █████╗ ███╗   ██╗███████╗
 ╚══██╔══╝██╔══██╗██╔══██╗████╗  ██║██╔════╝
    ██║   ██████╔╝███████║██╔██╗ ██║███████╗

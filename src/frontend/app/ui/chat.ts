@@ -19,19 +19,20 @@ export class AppChat extends HTMLElement
 
     render()
     {
+		//TODO attention isloggenIn = false
         this.innerHTML = `
         <button id="chat-bubble-toggle" 
             class="PBoxBorder PBoxHover PTextHover border-2 fixed bottom-4 right-4 w-16 h-16 
             text-3xl rounded-full z-50 
             transition-all duration-200 
-            hover:shadow-[0_0_20px_rgba(0,255,0,0.8)] animate-pulse">
+            PShadowHover animate-pulse">
             💬
         </button>
 
         <div id="chat-sidebar" 
             class="PBoxBorder border-l-2 fixed top-0 right-0 h-screen w-96 z-[60]
             transform transition-transform duration-300 ease-in-out translate-x-full
-            flex flex-col font-mono shadow-[-20px_0_50px_rgba(0,20,0,0.8)]">
+            flex flex-col font-mono PShadowSideBar">
             
             <div class="PDarkBox flex justify-between items-center p-4 border-b-2">
                 <h3 class="PText text-lg font-bold tracking-widest flex items-center gap-2">
@@ -49,7 +50,7 @@ export class AppChat extends HTMLElement
                 <div class="flex gap-2">
                     <input id="add-friend" type="text" placeholder="Name..." 
                         class="PText PDarkBox PBorderFocus flex-1 border rounded p-2 text-sm 
-                        focus:outline-none focus:shadow-[0_0_10px_rgba(0,255,0,0.2)] 
+                        focus:outline-none 
                         transition-all">
                     
                     <button id="send-add" 

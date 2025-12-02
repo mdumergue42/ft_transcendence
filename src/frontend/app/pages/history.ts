@@ -23,7 +23,7 @@ function dotIsOnline() {
 
 function profile() {
 	return `
-	<div class="text-center mb-8 p-6 border-2 PBoxBorder shadow-[inset_0_0_20px_rgba(0,255,0,0.1)]" style="margin-top: 24px">
+	<div class="text-center mb-8 p-6 border-2 PBoxBorder" style="margin-top: 24px">
 		<div style="text-align: center; display: flex">
 			<img id="avatar" src="/image/avatar/default/404.png" style="width:128px;height:128px;">
 			<div class="relative" style="padding-left: 15px; margin-bottom: 10px;">
@@ -40,7 +40,7 @@ export function renderHistory() {
 	return `
 	<app-def>
 		${profile()}
-		<div class="text-center mb-8 p-6 border-2 PBoxBorder shadow-[inset_0_0_20px_rgba(0,255,0,0.1)]">
+		<div class="text-center mb-8 p-6 border-2 PBoxBorder">
 			<div style="display: flex; gap: 15px; flex-wrap: wrap; align-items: center;">
 				<select id="type-filter" class="bg-black/80 PBorder border-2" style="padding: 10px 15px; font-size: 14px; cursor: pointer;">
 					<option value="all">Tous les matchs</option>
@@ -64,7 +64,7 @@ export function renderHistory() {
 			${statSquare("Win streak", "stat-win-streak")}
 			${statSquare("K/D", "stat-kd")}
 		</div>
-		<div class="mb-8 p-6 border-2 PBoxBorder shadow-[inset_0_0_20px_rgba(0,255,0,0.1)]">
+		<div class="mb-8 p-6 border-2 PBoxBorder">
 			<div class="text-sm PText mb-2">HISTORIC:</div>
 
 			<div id="match-list" style="display: flex; flex-direction: column; gap: 15px;">

@@ -22,6 +22,9 @@ html {
   --somber-color: rgb(22 163 74 / var(--tw-text-opacity, 1));
   --dark-color: rgb(20 83 45 / 0.2);
   --light-gb-color: rgb(20 83 45 / 0.4);
+  --shadow-color: rgba(0, 255, 0, 0.8);
+  --low-shadow-color: rgba(0, 255, 0, 0.2);
+  --deep-shadow-color: rgba(0, 20, 0, 0.8);
 }
 
 [data-theme="blue"] {
@@ -33,6 +36,9 @@ html {
   --somber-color: rgb(37 99 235 / var(--tw-text-opacity, 1));
   --dark-color: rgb(30 58 138 / 0.2);
   --light-gb-color: rgb(30 58 138 / 0.4);
+  --shadow-color: rgba(0, 0, 255, 0.8);
+  --low-shadow-color: rgba(0, 0, 255, 0.2);
+  --deep-shadow-color: rgba(0, 0, 20, 0.8);
 }
 
 .PBorder {
@@ -81,6 +87,28 @@ html {
 }
 .PBorderFocus:focus {
 	border-color: var(--border-color);
+}
+
+.PShadow {
+    box-shadow: 0 0 20px var(--shadow-color);
+}
+.PLowShadow {
+    box-shadow: 0 0 20px var(--low-shadow-color);
+}
+.PInsetLowShadow {
+    box-shadow: inset 0 0 20px var(--low-shadow-color);
+}
+.PShadowHover:Hover {
+	box-shadow: 0 0 15px var(--shadow-color);
+}
+.PLowShadowHover:Hover {
+	box-shadow: 0 0 15px var(--low-shadow-color);
+}
+.PLowShadowFocus:focus {
+	box-shadow: 0 0 15px var(--low-shadow-color);
+}
+.PShadowSideBar {
+	box-shadow: -20 0 50px var(--deep-shadow-color);
 }
 
 .dot-online {

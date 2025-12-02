@@ -11,7 +11,7 @@ export class AuthModal extends HTMLElement {
     render() {
         this.innerHTML = `
             <div id="auth-modal" class="modal-overlay fixed inset-0 bg-black/90 flex items-center justify-center z-50 opacity-0 pointer-events-none transition-opacity duration-300 backdrop-blur-sm">
-                <div class="bg-black border-2 PBorder rounded-xl p-8 max-w-md w-full mx-4 transform scale-95 transition-transform duration-300 shadow-[0_0_30px_rgba(0,255,0,0.2)]">
+                <div class="bg-black border-2 PBorder rounded-xl p-8 max-w-md w-full mx-4 transform scale-95 transition-transform duration-300 PLowShadow">
                     <div class="flex items-center justify-between mb-6">
                         <h2 class="text-2xl font-bold PText font-mono tracking-wider">
                             <span id="modal-title">CONNEXION</span>
@@ -35,7 +35,7 @@ export class AuthModal extends HTMLElement {
                                 type="text"
                                 name="username"
                                 required
-                                class="w-full bg-black border-2 PBorder rounded-lg px-4 py-3 PText font-mono focus:PBorder focus:outline-none transition-colors duration-300 focus:shadow-[0_0_15px_rgba(0,255,0,0.2)]"
+                                class="w-full bg-black border-2 PBorder rounded-lg px-4 py-3 PText font-mono focus:PBorder focus:outline-none transition-colors duration-300 PLowShadowFocus"
                                 placeholder="Votre nom d'utilisateur"
                             >
                         </div>
@@ -45,13 +45,13 @@ export class AuthModal extends HTMLElement {
                                 type="password"
                                 name="password"
                                 required
-                                class="w-full bg-black border-2 PBorder rounded-lg px-4 py-3 PText font-mono focus:PBorder focus:outline-none transition-colors duration-300 focus:shadow-[0_0_15px_rgba(0,255,0,0.2)]"
+                                class="w-full bg-black border-2 PBorder rounded-lg px-4 py-3 PText font-mono focus:PBorder focus:outline-none transition-colors duration-300 PLowShadowFocus"
                                 placeholder="••••••••"
                             >
                         </div>
                         <button
                             type="submit"
-                            class="w-full bg-black border-2 PBorder PText PBoxHover hover:text-black font-mono font-bold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 hover:shadow-[0_0_20px_rgba(0,255,0,0.4)] uppercase tracking-wider"
+                            class="w-full bg-black border-2 PBorder PText PBoxHover hover:text-black font-mono font-bold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 uppercase tracking-wider"
                         >
                             SE CONNECTER
                         </button>
@@ -63,7 +63,7 @@ export class AuthModal extends HTMLElement {
                                 type="text"
                                 name="username"
                                 required
-                                class="w-full bg-black border-2 PBorder rounded-lg px-4 py-3 PText font-mono focus:PBorder focus:outline-none transition-colors duration-300 focus:shadow-[0_0_15px_rgba(0,255,0,0.2)]"
+                                class="w-full bg-black border-2 PBorder rounded-lg px-4 py-3 PText font-mono focus:PBorder focus:outline-none transition-colors duration-300 PLowShadowFocus"
                                 placeholder="Choisir un nom d'utilisateur"
                             >
                         </div>
@@ -73,7 +73,7 @@ export class AuthModal extends HTMLElement {
                                 type="email"
                                 name="email"
                                 required
-                                class="w-full bg-black border-2 PBorder rounded-lg px-4 py-3 PText font-mono focus:PBorder focus:outline-none transition-colors duration-300 focus:shadow-[0_0_15px_rgba(0,255,0,0.2)]"
+                                class="w-full bg-black border-2 PBorder rounded-lg px-4 py-3 PText font-mono focus:PBorder focus:outline-none transition-colors duration-300 PLowShadowFocus"
                                 placeholder="votre@email.com"
                             >
                         </div>
@@ -83,7 +83,7 @@ export class AuthModal extends HTMLElement {
                                 type="password"
                                 name="password"
                                 required
-                                class="w-full bg-black border-2 PBorder rounded-lg px-4 py-3 PText font-mono focus:PBorder focus:outline-none transition-colors duration-300 focus:shadow-[0_0_15px_rgba(0,255,0,0.2)]"
+                                class="w-full bg-black border-2 PBorder rounded-lg px-4 py-3 PText font-mono focus:PBorder focus:outline-none transition-colors duration-300 PLowShadowFocus"
                                 placeholder="••••••••"
                             >
                         </div>
@@ -93,13 +93,13 @@ export class AuthModal extends HTMLElement {
                                 type="password"
                                 name="confirmPassword"
                                 required
-                                class="w-full bg-black border-2 PBorder rounded-lg px-4 py-3 PText font-mono focus:PBorder focus:outline-none transition-colors duration-300 focus:shadow-[0_0_15px_rgba(0,255,0,0.2)]"
+                                class="w-full bg-black border-2 PBorder rounded-lg px-4 py-3 PText font-mono focus:PBorder focus:outline-none transition-colors duration-300 PLowShadowFocus"
                                 placeholder="••••••••"
                             >
                         </div>
                         <button
                             type="submit"
-                            class="w-full bg-black border-2 PBorder PText PBoxHover hover:text-black font-mono font-bold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 hover:shadow-[0_0_20px_rgba(0,255,0,0.4)] uppercase tracking-wider"
+                            class="w-full bg-black border-2 PBorder PText PBoxHover hover:text-black font-mono font-bold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 PShadowHover uppercase tracking-wider"
                         >
                             S'INSCRIRE
                         </button>
@@ -153,7 +153,7 @@ export class AuthModal extends HTMLElement {
 
         const inactiveClass = 'auth-tab flex-1 py-2 px-4 rounded-lg font-mono text-sm font-semibold transition-all duration-300 PText border border-transparent';
         
-        const activeClass = 'auth-tab flex-1 py-2 px-4 rounded-lg font-mono text-sm font-semibold transition-all duration-300 text-black PBoxBg border PBorder shadow-[0_0_10px_rgba(0,255,0,0.3)]';
+        const activeClass = 'auth-tab flex-1 py-2 px-4 rounded-lg font-mono text-sm font-semibold transition-all duration-300 text-black PBoxBg border PBorder PLowShadow';
 
         if (tab === 'login') {
             modalTitle.textContent = 'CONNEXION';

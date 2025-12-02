@@ -2,7 +2,7 @@ import '../ui/auth-modal.js';
 
 export function renderHome() {
 	return `<app-def>
-				<div class="text-center mb-8 p-6 border-2 PBoxBorder shadow-[inset_0_0_20px_rgba(0,255,0,0.1)]">
+				<div class="text-center mb-8 p-6 border-2 PBoxBorder PInsetLowShadow">
 					<pre class="PText text-xs md:text-sm leading-tight mb-4 whitespace-pre-wrap relative">
 						<span class="absolute inset-0 animate-noise-anim PText opacity-80">
 ████████╗██████╗  █████╗ ███╗   ██╗███████╗
@@ -18,7 +18,7 @@ export function renderHome() {
     ██║     ╚██████╔╝██║ ╚████║╚██████╔╝
     ╚═╝      ╚═════╝ ╚═╝  ╚═══╝ ╚═════╝
 			</span>
-			<span class="relative z-10 animate-glitch-light">
+			<span class="relative z-10">
 ████████╗██████╗  █████╗ ███╗   ██╗███████╗
 ╚══██╔══╝██╔══██╗██╔══██╗████╗  ██║██╔════╝
    ██║   ██████╔╝███████║██╔██╗ ██║███████╗

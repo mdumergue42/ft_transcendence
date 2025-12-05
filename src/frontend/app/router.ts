@@ -38,6 +38,8 @@ async function connection(logs: HTMLElement): Promise<[boolean, ChatUser | null]
 		logs.style.color = "red";
 		return [false, null];
 	}
+	isLoggedIn = true;
+	username = "TD";
 	
 	if (!isLoggedIn && location.pathname != '/') {
 		history.pushState({}, '', '/');
@@ -46,7 +48,6 @@ async function connection(logs: HTMLElement): Promise<[boolean, ChatUser | null]
 	}
 	await wait30ms();
 	
-	console.log("USERNAME:", username);
 	
 	logs.innerHTML = "Connection to WebSocket";
 	const user = new ChatUser(username);
@@ -56,6 +57,7 @@ async function connection(logs: HTMLElement): Promise<[boolean, ChatUser | null]
 		logs.style.color = "red";
 	}
 	await wait30ms();
+	console.log("USERNAME:", user.username);
 	return [isOpen, user];
 }
 

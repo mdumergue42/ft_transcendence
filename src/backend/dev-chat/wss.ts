@@ -31,7 +31,7 @@ class WsServ
 		});
 
 		this.db = SQLserver.db;
-		//this.tmp() //TODO retirer car c sencer etre automatique!
+		this.tmp() //TODO retirer car c sencer etre automatique!
 	}
 
 	async tmp()

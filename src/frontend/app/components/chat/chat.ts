@@ -15,6 +15,7 @@ export class ChatUser
 	inQ: number = 0;
 	constructor(_name:string | null)
 	{
+		this.username = _name;
 		this.ws = new WebSocket(`wss://${window.location.hostname}/ws/`);
 		this.connect();
 		this.lastPeer = this.friendList[0];

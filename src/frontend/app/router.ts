@@ -6,6 +6,7 @@ import './ui/chat.js';
 import './ui/match.js';
 import { devChat } from './pages/chat.js';
 import { ChatUser } from './components/chat/chat.js'
+import { renderSettings } from './pages/settings.js';
 
 import { renderDevTest, initDevTest } from './pages/dev-test.js';
 import { renderWaitScreen } from './pages/waitScreen.js';
@@ -83,7 +84,7 @@ function render(root: HTMLElement, user: ChatUser | null, allpath: string) {
 			DevHistory(user, user.username);
 		break;
 		case 'settings':
-			root.innerHTML = '<app-def><main style="margin-left: 100px; padding: 20px; background: black; color: #00ff00; min-height: 100vh;"><h1>👤 settings - Coming Soon!</h1></main><app-def>';
+			root.innerHTML = renderSettings();
 		break;
 		default:
 			root.innerHTML = renderHome();

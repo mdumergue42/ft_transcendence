@@ -1,12 +1,12 @@
 import { renderHome} from './pages/home.js';
 import { renderHistory, DevHistory } from './pages/history.js';
 import { renderMatch, DevGame } from './pages/match.js';
+import { renderSettings, DevSettings } from './pages/settings.js';
 import './ui/navbar.js';
 import './ui/chat.js';
 import './ui/match.js';
 import { devChat } from './pages/chat.js';
 import { ChatUser } from './components/chat/chat.js'
-import { renderSettings } from './pages/settings.js';
 
 import { renderDevTest, initDevTest } from './pages/dev-test.js';
 import { renderWaitScreen } from './pages/waitScreen.js';
@@ -71,21 +71,22 @@ function render(root: HTMLElement, user: ChatUser | null, allpath: string) {
 	switch (path) {
 		case '':
 			root.innerHTML = renderHome();
-		break;
+			break;
 		case 'match':
 			root.innerHTML = renderMatch();
-		DevGame(user);
-		break;
+			DevGame(user);
+			break;
 		case 'history':
 			root.innerHTML = renderHistory();
-		if (arg.length == 1)
-			DevHistory(user, arg[0]);
-		else
-			DevHistory(user, user.username);
-		break;
+			if (arg.length == 1)
+				DevHistory(user, arg[0]);
+			else
+				DevHistory(user, user.username);
+			break;
 		case 'settings':
 			root.innerHTML = renderSettings();
-		break;
+			DevSettings(user);
+			break;
 		default:
 			root.innerHTML = renderHome();
 		break;

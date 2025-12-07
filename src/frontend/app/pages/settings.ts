@@ -1,10 +1,22 @@
+import {ChatUser} from '../components/chat/chat.js'
+
+function selectedColor(colorTxt: string, colorCircle: string, colorShadow: string, isSelected: boolean)
+{
+	return `
+		<div class="w-full flex items-center justify-between p-3 rounded cursor-pointer
+		${isSelected ? "border-2  PBoxBorder bg-white/5"
+			: "border PDarkBorder hover:bg-white/5 opacity-60 hover:opacity-100 transition-all"}">
+			<span class="uppercase ${isSelected ? 'font-bold' : ''}">> ${colorTxt} </span>
+			<div class="w-4 h-4 rounded-full ${colorCircle} ${isSelected ? colorShadow : ''}"></div>
+		</div>
+	`
+}
+
 export function renderSettings()
 {
     return `
-    <app-navbar></app-navbar>
+    <app-def>
     
-    <main class="ml-[80px] min-h-screen bg-black PText font-mono p-8 flex flex-col gap-8 relative overflow-hidden">
-        
         <div class="border-b-2 PDarkBorder pb-4 z-10">
             <h1 class="text-4xl font-bold tracking-widest flex items-center gap-4">
                 <span class="animate-spin-slow">⚙️</span>
@@ -29,12 +41,12 @@ export function renderSettings()
                     </div>
 
                     <div class="flex-1 space-y-3">
-                        <p class="text-xs opacity-70">Formats supportés: JPG, PNG, GIF.<br>Taille max: 5MB.</p>
+                        <p class="text-xs opacity-70">Supported formats: JPG, PNG, GIF.<br>Max size: 5MB.</p>
                         <button class="w-full border PBoxBorder PText px-4 py-2 rounded hover:bg-white/5 transition-colors uppercase text-xs font-bold tracking-wider flex items-center justify-center gap-2">
-                            <span></span> NOUVELLE PHOTO
+                            <span></span> NEW AVATAR
                         </button>
                         <button class="w-full border border-red-500 text-red-500 px-4 py-2 rounded hover:bg-red-500/10 transition-colors uppercase text-xs font-bold tracking-wider">
-                            X SUPPRIMER
+                            X DELETE
                         </button>
                     </div>
                 </div>
@@ -43,26 +55,22 @@ export function renderSettings()
             <section class="border-2 PBoxBorder bg-black/30 p-6 rounded-xl PDarkBoxHover transition-all flex flex-col">
                 <h2 class="text-xl font-bold mb-6 border-b PDarkBorder pb-2 flex justify-between items-center">
                     <span>[ THEME ]</span>
-                    <span class="text-xs opacity-50">COULEURS</span>
+                    <span class="text-xs opacity-50">COLORS</span>
                 </h2>
 
                 <div class="space-y-4 flex-1">
-                    <label class="text-xs uppercase opacity-70 block mb-2">> Sélectionner la couleur de l'interface</label>
+                    <label class="text-xs uppercase opacity-70 block mb-2">> Chose interface color </label>
                     
-                    <button class="w-full flex items-center justify-between p-3 border-2 PBoxBorder bg-white/5 rounded cursor-pointer group">
-                        <span class="font-bold">> VERT</span>
-                        <div class="w-4 h-4 rounded-full bg-green-500 shadow-[0_0_10px_#22c55e]"></div>
-                    </button>
+					<button id="green-btn" class="w-full flex items-center justify-between">
+						${selectedColor("green", "bg-green-500", "shadow-[0_0_10px_#22c55e]", true)}
+					</button>
+					<button id="blue-btn" class="w-full flex items-center justify-between">
+						${selectedColor("blue", "bg-cyan-500", "", false)}
+					</button>
+					<button id="red-btn" class="w-full flex items-center justify-between">
+						${selectedColor("red", "bg-red-500", "", false)}
+					</button>
 
-                    <button class="w-full flex items-center justify-between p-3 border PDarkBorder rounded cursor-pointer hover:bg-white/5 opacity-60 hover:opacity-100 transition-all">
-                        <span>> BLEU</span>
-                        <div class="w-4 h-4 rounded-full bg-cyan-500"></div>
-                    </button>
-
-                    <button class="w-full flex items-center justify-between p-3 border PDarkBorder rounded cursor-pointer hover:bg-white/5 opacity-60 hover:opacity-100 transition-all">
-                        <span>> ROUGE</span>
-                        <div class="w-4 h-4 rounded-full bg-red-500"></div>
-                    </button>
                 </div>
             </section>
 
@@ -74,22 +82,84 @@ export function renderSettings()
 
                 <div class="space-y-2">
                     <div class="flex justify-between text-xs opacity-70">
-                        <label>> Description publique</label>
-                        <span>0/250 caractères</span>
+                        <label>> Change your bio </label>
+                        <span id="bio-count">0/60</span>
                     </div>
                     
-                    <textarea class="w-full h-32 bg-black border PDarkBorder rounded p-4 PText focus:outline-none focus:border-white/50 transition-colors resize-none placeholder-white/20 font-mono"
-                              placeholder="// Écrivez quelque chose à propos de vous..."></textarea>
+                    <textarea id="bio-text" maxlength="60" class="w-full h-32 bg-black border PDarkBorder rounded p-4 PText focus:outline-none focus:border-white/50 transition-colors resize-none placeholder-white/20 font-mono"
+                              placeholder="// Write something about you..."></textarea>
                 </div>
             </section>
         </div>
 
         <div class="flex justify-end mt-4 max-w-6xl mx-auto w-full">
-            <button class="PBoxBg text-black font-black py-3 px-10 rounded-lg text-lg hover:scale-105 hover:shadow-[0_0_20px_rgba(255,255,255,0.3)] transition-all uppercase tracking-widest">
-                [ SAUVEGARDER ]
+            <button id="save-btn" class="PBoxBg text-black font-black py-3 px-10 rounded-lg text-lg hover:scale-105 hover:shadow-[0_0_20px_rgba(255,255,255,0.3)] transition-all uppercase tracking-widest">
+                [ SAVE ]
             </button>
         </div>
 
-    </main>
+    </app-def>
     `;
+}
+
+function setColors(redBtn: HTMLButtonElement, greenBtn: HTMLButtonElement, blueBtn: HTMLButtonElement,
+				  redBool:boolean, greenBool:boolean, blueBool:boolean)
+{
+	greenBtn.innerHTML = selectedColor("green", "bg-green-500", "shadow-[0_0_10px_#22c55e]", greenBool);
+	blueBtn.innerHTML = selectedColor("blue", "bg-cyan-500", "shadow-[0_0_10px_#1a30c4]", blueBool);
+	redBtn.innerHTML = selectedColor("red", "bg-red-500", "shadow-[0_0_10px_#c41a25]", redBool);
+}
+
+function importUserSettings(redBtn: HTMLButtonElement, greenBtn: HTMLButtonElement, blueBtn: HTMLButtonElement, bio:HTMLTextAreaElement,
+					user: ChatUser)
+{
+	setColors(redBtn, greenBtn, blueBtn,
+			  user.color == "red", user.color == "green", user.color == "blue");
+	if (user.desc.length != 0)
+		bio.value = user.desc;
+	//TODO mettre dans la page settings, les settings du user
+	return user.color
+}
+function exportUserSettings(user: ChatUser, bio: string, color: string, avatar: string)
+{
+	//TODO avatar is a string??
+}
+export function DevSettings(user: ChatUser)
+{
+
+	let saveBtn = <HTMLButtonElement>document.getElementById("save-btn");
+	if (!saveBtn)
+		return ;
+	const bio = <HTMLTextAreaElement>document.getElementById("bio-text")!;
+	const bioCount = <HTMLSpanElement>document.getElementById("bio-count")!;
+
+	let redBtn = <HTMLButtonElement>document.getElementById("red-btn");
+	let greenBtn = <HTMLButtonElement>document.getElementById("green-btn");
+	let blueBtn = <HTMLButtonElement>document.getElementById("blue-btn");
+	
+	var color = importUserSettings(redBtn, greenBtn, blueBtn, bio, user);
+
+	bio.addEventListener("keyup", ({key}) => {
+		bioCount.innerHTML = `${bio.value.length}/60`;
+	})
+
+	blueBtn.onclick = () => {
+		setColors(redBtn, greenBtn, blueBtn, false, false, true);
+		color = "blue";
+	}
+	redBtn.onclick = () => {
+		setColors(redBtn, greenBtn, blueBtn, true, false, false);
+		color = "red";
+	}
+	greenBtn.onclick = () => {
+		setColors(redBtn, greenBtn, blueBtn, false, true, false);
+		color = "green";
+	}
+
+	saveBtn.onclick = () => {
+		const txt = bio.value.replace(/\n/g, " ");
+		user.updateColor(color);
+		user.updateDesc(txt);
+		user.updateUser(color, "", txt);
+	}
 }

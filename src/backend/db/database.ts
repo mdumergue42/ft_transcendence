@@ -14,6 +14,7 @@ export async function initDb(server: FastifyInstance) {
 	password TEXT NOT NULL,
 	about_me TEXT,
 	avatar TEXT,
+	color TEXT,
 	email_verified INTEGER DEFAULT 0,
 	code_verif TEXT,
 	expire_code_verif DATETIME,

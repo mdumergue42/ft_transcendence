@@ -3,7 +3,7 @@ import {FastifyInstance} from 'fastify';
 import {Client} from './client.js';
 import {ARoom} from './Aroom.js';
 import {MMRoom} from './MMroom.js';
-import {getIdByName, getNameById, getFlagFriendShip, getHistoricById, getAvatarByName, getDescByName ,insertUser, insertMatchs, insertMsg, insertFriend, updateFlagFriend, getCountFriend} from './sqlGet.js'
+import {getIdByName, getNameById, getFlagFriendShip, getHistoricById, getColorById, getAvatarByName, getDescByName ,insertUser, insertMatchs, insertMsg, insertFriend, updateFlagFriend, updateUser, getCountFriend} from './sqlGet.js'
 
 
 interface Dictionary<T> {
@@ -168,7 +168,6 @@ class WsServ
 			}
 			arg = x[y];
 			console.log("GETNAME:", arg, y)
-			client.send({type: "init", name: arg})
 		}
 		if (!arg)
 		{
@@ -238,9 +237,19 @@ class WsServ
 				break; 
 			case 'getHistoric':
 				this.getHistoric(client, msg.name, msg.flag);
+				break ;
+			case 'update':
+				this.UpdateUser(client, msg.color, msg.avatar, msg.desc);
+				break ;
 			default:
 				break;
 		}
+	}
+
+	async UpdateUser(client: Client, color: string, avatar:string, desc:string)
+	{
+		console.log("USER UPDATE");
+		await updateUser(avatar, desc, color, client.id, this.db);
 	}
 
 	async getHistoric(client: Client, name:string, flag:any)

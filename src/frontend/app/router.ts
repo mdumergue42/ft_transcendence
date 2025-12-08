@@ -25,17 +25,37 @@ async function connection(logs: HTMLElement): Promise<[boolean, ChatUser | null]
 
 	let isLoggedIn = false;
 	let username = null;
+
+	const token = localStorage.getItem('token');
+	console.log('voici le token :', token);
+	if (!token) {
+		console.log('Token pas stock');
+		return [false, null];
+	}
 	try {
-		const res = await fetch('/api/auth/status');
+		const res = await fetch('/api/auth/status', {
+			method: 'GET',
+			headers: {
+				'Authorization': `Bearer ${token}`
+			}
+		});
 		if (res.ok) {
 			const r = await res.json();
-			isLoggedIn = r.loggedIn;
+			console.log('login successsfulllll');
+		//	isLoggedIn = r.loggedIn;
 			//username = TODO
+			return [true, r.user];
+			
+		} else {
+			console.log('token invalideeee, suppressionnnn');
+			localStorage.removeItem('token');
+			return [false, null];
 		}
 	}
 	catch {
 		logs.innerHTML = "Erreur fetch auth";
 		logs.style.color = "red";
+		localStorage.removeItem('token');
 		return [false, null];
 	}
 	

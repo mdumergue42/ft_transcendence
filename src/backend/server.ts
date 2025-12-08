@@ -63,10 +63,25 @@ server.addHook('onResponse', async (request, reply) => {
 	console.log(`${base} ${colors.gray}→ ${colors.reset}${statusColor}${status}${colors.reset} ${colors.dim}(${calculatedResponseTime}ms)${colors.reset}`);
 });
 
+console.log('jwt de merde: ', process.env.JWT_SECRET);
 await server.register(fastifyJwt, {
 	secret: process.env.JWT_SECRET!,
 	sign: { expiresIn: '24h' }
 });
+
+server.decorate('authenticate', async function(request: FastifyRequest, reply: FastifyReply): Promise<void> {
+	try {
+		await request.jwtVerify();
+	} catch(err) {
+		reply.code(401).send({ success: false, error: 'Invalid authentification or invalid token' });
+	}
+});
+
+declare module 'fastify' {
+	interface FastifyInstance {
+		authenticate: (request: FastifyRequest, reply: FastifyReply) => Promise<void>;
+	}
+}
 
 server.register(fastifyCors, {
 	origin: true,

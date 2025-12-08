@@ -1,8 +1,6 @@
 import '../ui/def.js';
 import { ChatUser } from '../components/chat/chat.js'
 
-//TODO dashboard/profile/historic = 1thing; need to acces other player profile 2
-
 function statSquare(title: string, id:string) {
 	return `
 	<div class="border-2 PBoxBorder p-4 text-center relative" style="padding-bottom: 28px">

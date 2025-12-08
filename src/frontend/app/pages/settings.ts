@@ -35,20 +35,32 @@ export function renderSettings()
                 
                 <div class="flex items-center gap-8">
                     <div class="relative w-32 h-32 flex-shrink-0">
-                        <div class="absolute inset-0 rounded-full border-2 border-dashed PBorder animate-[spin_10s_linear_infinite] opacity-50"></div>
-                        <img src="/image/avatar/default/cara.jpg" alt="Avatar" 
+                        <img id="avatar-preview" src="/image/avatar/default/cara.jpg" alt="Avatar" 
                              class="w-full h-full rounded-full object-cover border-4 PBoxBorder shadow-[0_0_15px_rgba(0,0,0,0.5)]">
                     </div>
 
+
                     <div class="flex-1 space-y-3">
-                        <p class="text-xs opacity-70">Supported formats: JPG, PNG, GIF.<br>Max size: 5MB.</p>
-                        <button class="w-full border PBoxBorder PText px-4 py-2 rounded hover:bg-white/5 transition-colors uppercase text-xs font-bold tracking-wider flex items-center justify-center gap-2">
-                            <span></span> NEW AVATAR
-                        </button>
-                        <button class="w-full border border-red-500 text-red-500 px-4 py-2 rounded hover:bg-red-500/10 transition-colors uppercase text-xs font-bold tracking-wider">
-                            X DELETE
-                        </button>
+						<form method="post" enctype="multipart/form-data">
+							<p class="text-xs opacity-70">Supported formats: JPG, PNG.<br>Max size: 5MB.</p>
+
+							<div>
+								<label for="avatar-input" class="w-full border PBoxBorder PText px-4 py-2 rounded hover:bg-white/5 transition-colors uppercase text-xs font-bold tracking-wider flex items-center justify-center gap-2" style="margin:15px 0px">
+										NEW AVATAR
+								</label>
+								<input id="avatar-input" type="file" id="image_uploads" name="image_uploads" accept=".jpg, .jpeg, .png"/>
+							</div>
+
+
+							<div id="delete-avatar" class="w-full border flex justify-center border-red-500 text-red-500 px-4 py-2 rounded hover:bg-red-500/10 transition-colors uppercase text-xs font-bold tracking-wider">
+								<span>X DELETE</span>
+							</div>
+						</form>
                     </div>
+
+
+
+
                 </div>
             </section>
 
@@ -117,19 +129,61 @@ function importUserSettings(redBtn: HTMLButtonElement, greenBtn: HTMLButtonEleme
 			  user.color == "red", user.color == "green", user.color == "blue");
 	if (user.desc.length != 0)
 		bio.value = user.desc;
-	//TODO mettre dans la page settings, les settings du user
+	setAvatar(user.avatar, false);
 	return user.color
 }
-function exportUserSettings(user: ChatUser, bio: string, color: string, avatar: string)
+
+function setAvatar(img: string, tmp :boolean = true)
 {
-	//TODO avatar is a string??
+	var avatar = <HTMLImageElement>document.getElementById("avatar-preview");
+	if (avatar)
+		if (tmp)
+			avatar.src = `${img}`;
+		else
+			avatar.src = `/image/avatar/${img}`;
 }
+
 export function DevSettings(user: ChatUser)
 {
+
 
 	let saveBtn = <HTMLButtonElement>document.getElementById("save-btn");
 	if (!saveBtn)
 		return ;
+	let avatar: File | null = null;
+
+	const input = <HTMLInputElement>document.getElementById("avatar-input")!;
+	input.style.display = "none";
+	input.addEventListener("change", updateImageDisplay);
+	function updateImageDisplay() {
+		const files = input.files;
+		const file = files ? files[0] : null;
+		if (!file) {
+			avatar = null;
+		}
+		else {
+			if (validFileType(file)) {
+				console.log(`File: ${file.name}; ${file.size}`)
+				avatar = file;
+				setAvatar(URL.createObjectURL(file));
+			}
+			else {
+				avatar = null;
+			}
+
+		}
+	}
+	function validFileType(file: any) {
+		const fileTypes = ["image/jpeg", "image/jpg", "image/png"];
+		return fileTypes.includes(file.type) && file.size <= 5 * 1e6;
+	}
+
+	const del = document.getElementById("delete-avatar")!;
+	del.addEventListener("click", (e) => {
+		console.log("delete-avatar")
+		avatar = null;
+	});
+
 	const bio = <HTMLTextAreaElement>document.getElementById("bio-text")!;
 	const bioCount = <HTMLSpanElement>document.getElementById("bio-count")!;
 
@@ -156,10 +210,29 @@ export function DevSettings(user: ChatUser)
 		color = "green";
 	}
 
-	saveBtn.onclick = () => {
+	saveBtn.onclick = async () => {
 		const txt = bio.value.replace(/\n/g, " ");
+		const formData = new FormData();
 		user.updateColor(color);
 		user.updateDesc(txt);
-		user.updateUser(color, "", txt);
+
+		formData.set('avatarNull', avatar == null ? "1" : "0");
+		if (avatar)
+			formData.set('avatar', avatar, avatar.name);
+		formData.set('color', color);
+		formData.set('desc', txt);
+		formData.set('name', user.username!);
+		var res;
+		try {
+			res = await fetch('/api/user/settings', {
+				method: 'POST',
+				body: formData,
+			});
+			res = await res.json();
+			if (res.message == "succes")
+				user.updateAvatar(res.filePath);
+		}
+		catch {
+		}
 	}
 }

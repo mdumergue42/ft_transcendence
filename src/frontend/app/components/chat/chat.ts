@@ -15,6 +15,7 @@ export class ChatUser
 	inQ: number = 0;
 	color: string = "green";
 	desc: string = "";
+	avatar: string = "/default/cara.jpg";
 	constructor(_name:string | null)
 	{
 		this.username = _name;
@@ -183,12 +184,6 @@ export class ChatUser
 		this.reRenderFriendList();
 	}
 
-	updateUser(color: string, avatar: string, desc: string)
-	{
-		console.log("UPDATE USER:", color,avatar, desc);
-		this.wsSend({type: "update", color: color, avatar: avatar, desc:desc});
-	}
-
 	updateColor(color:string)
 	{
 		if (color == "green" || color == "blue" || color == "red")
@@ -201,6 +196,10 @@ export class ChatUser
 	updateDesc(desc:string)
 	{
 		this.desc = desc;
+	}
+	updateAvatar(avatar:string)
+	{
+		this.avatar = avatar;
 	}
 
 	onMsg(message:any)

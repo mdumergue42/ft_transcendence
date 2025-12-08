@@ -113,9 +113,10 @@ export async function updateFlagFriend(idFrom:number, idTo:number, flag:number, 
 	await stmt.run([flag, idFrom, idTo]);
 }
 
-export async function updateUser(avatar:string, descr:string, color:string, id:number, db:any)
+export async function updateUser(avatar:string | null, descr:string, color:string, id:number, db:any)
 {
-
+	if (!avatar)
+		avatar = "";
 	const stmt = await db.prepare(`UPDATE users SET avatar = ?, about_me = ?,color = ? WHERE id_user = ?`);
 	await stmt.run([avatar, descr, color,id]);
 }

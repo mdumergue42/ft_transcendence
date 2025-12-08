@@ -10,7 +10,6 @@ interface Dictionary<T> {
     [Key: string]: T;
 }
 
-
 class WsServ
 {
 	server: WebSocketServer
@@ -238,18 +237,9 @@ class WsServ
 			case 'getHistoric':
 				this.getHistoric(client, msg.name, msg.flag);
 				break ;
-			case 'update':
-				this.UpdateUser(client, msg.color, msg.avatar, msg.desc);
-				break ;
 			default:
 				break;
 		}
-	}
-
-	async UpdateUser(client: Client, color: string, avatar:string, desc:string)
-	{
-		console.log("USER UPDATE");
-		await updateUser(avatar, desc, color, client.id, this.db);
 	}
 
 	async getHistoric(client: Client, name:string, flag:any)
@@ -277,7 +267,7 @@ class WsServ
 		}
 
 		var avatar = await getAvatarByName(name, this.db);
-		if (avatar == undefined || !avatar)
+		if (avatar == undefined || !avatar || avatar == "")
 			avatar = "default/404.png";
 		var desc = await getDescByName(name, this.db);
 		if (desc == undefined)

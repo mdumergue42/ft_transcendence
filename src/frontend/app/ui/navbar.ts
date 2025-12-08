@@ -20,15 +20,8 @@ export class AppNavbar extends HTMLElement {
 	}
 
 	async connectedCallback() {
-		let isLoggedIn = false;
-		try {
-			const res = await fetch('/api/auth/status');
-			if (res.ok) {
-				isLoggedIn = (await res.json()).loggedIn;
-			}
-		} catch {
-			console.warn('Erreur fetch auth, on part du principe non connecté.');
-		}
+		var isLoggedIn = localStorage.getItem('isLoggedIn') === 'true' ? true : false;
+
 
 		const linkElement = document.createElement('link');
 		linkElement.rel = 'stylesheet';

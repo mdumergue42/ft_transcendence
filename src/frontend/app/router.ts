@@ -19,44 +19,44 @@ function wait30ms(x:number = 1) {
 }
 
 async function connection(logs: HTMLElement): Promise<[boolean, ChatUser | null]> {
-	logs.innerHTML = "Connection to API";
+	logs.innerHTML = "Connection";
 
-	await wait30ms();
+	function error(msg:string): [boolean, null] {
+		logs.innerHTML = `Error: ${msg}`;
+		logs.style.color = "red";
+		return [false, null];
+	}
 
 	let isLoggedIn = false;
 	let username = null;
 
 	const token = localStorage.getItem('token');
-	console.log('voici le token :', token);
-	if (!token) {
-		console.log('Token pas stock');
-		return [false, null];
-	}
-	try {
-		const res = await fetch('/api/auth/status', {
-			method: 'GET',
-			headers: {
-				'Authorization': `Bearer ${token}`
+	console.log("TOKEN:", token);
+	if (token) {
+		try {
+			const res = await fetch('/api/auth/status', {
+				method: 'GET',
+				headers: {
+					'Authorization': `Bearer ${token}`
+				}
+			});
+			if (res.ok) {
+				const r = await res.json();
+				console.log('login successsfulllll');
+				isLoggedIn = r.loggedIn;
+				localStorage.setItem('isLoggedIn', isLoggedIn.toString());
+				username = r.user.username;
+
 			}
-		});
-		if (res.ok) {
-			const r = await res.json();
-			console.log('login successsfulllll');
-		//	isLoggedIn = r.loggedIn;
-			//username = TODO
-			return [true, r.user];
-			
-		} else {
-			console.log('token invalideeee, suppressionnnn');
-			localStorage.removeItem('token');
-			return [false, null];
+			else {
+				console.log('token invalideeee, suppressionnnn');
+				localStorage.removeItem('token');
+			}
 		}
-	}
-	catch {
-		logs.innerHTML = "Erreur fetch auth";
-		logs.style.color = "red";
-		localStorage.removeItem('token');
-		return [false, null];
+		catch {
+			localStorage.removeItem('token');
+			return error("auth");
+		}
 	}
 	
 	if (!isLoggedIn && location.pathname != '/') {
@@ -64,19 +64,12 @@ async function connection(logs: HTMLElement): Promise<[boolean, ChatUser | null]
 		window.dispatchEvent(new PopStateEvent('popstate'));
 		return [false, null];
 	}
-	await wait30ms();
-	
 	console.log("USERNAME:", username);
-	
-	logs.innerHTML = "Connection to WebSocket";
+
 	const user = new ChatUser(username);
-	const isOpen = await user._waitWs(user.ws);
-	if (!isOpen) {
-		logs.innerHTML = "Erreur WebSocket User";
-		logs.style.color = "red";
-	}
-	await wait30ms();
-	return [isOpen, user];
+	if (!await user._waitWs(user.ws))
+		return error("websocket");
+	return [true, user];
 }
 
 function render(root: HTMLElement, user: ChatUser | null, allpath: string) {

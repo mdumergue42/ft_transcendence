@@ -36,7 +36,6 @@ export class MMRoom extends ARoom {
 	assignPlayer()
 	{
 		[this.p1, this.p2] = this.getBothPlayer();
-		console.log("ASSIGN PLAYER:", this.p1!.username, this.p2!.username)
 		console.log(this.flag, Math.min(3, this.flag));
 
 		var name = ["-", "-", "CP", this.p2 ? this.p2.username : "-"][Math.min(3, this.flag)];

@@ -138,7 +138,7 @@ dist
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 
-data/*.sql
+data/*.sqlite
 dist/*
 public/*
 !public/image/*ico

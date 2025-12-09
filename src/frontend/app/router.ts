@@ -43,6 +43,7 @@ async function connection(logs: HTMLElement): Promise<[boolean, ChatUser | null]
 	if (!isLoggedIn && location.pathname != '/') {
 		history.pushState({}, '', '/');
 		window.dispatchEvent(new PopStateEvent('popstate'));
+		window.location.reload();
 		return [false, null];
 	}
 	await wait30ms();

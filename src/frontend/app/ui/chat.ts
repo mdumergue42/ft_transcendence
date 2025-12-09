@@ -23,7 +23,6 @@ export class AppChat extends HTMLElement
 
     render()
     {
-		//TODO attention isloggenIn = false
         this.innerHTML = `
         <button id="chat-bubble-toggle" 
             class="PBoxBorder PBoxHover PTextHover border-2 fixed bottom-4 right-4 w-16 h-16 

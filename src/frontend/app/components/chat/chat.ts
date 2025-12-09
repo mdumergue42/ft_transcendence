@@ -15,7 +15,7 @@ export class ChatUser
 	inQ: number = 0;
 	color: string = "green";
 	desc: string = "";
-	avatar: string = "/default/cara.jpg";
+	avatar: string = "";
 	constructor(_name:string | null)
 	{
 		this.username = _name;
@@ -193,13 +193,12 @@ export class ChatUser
 			html.setAttribute("data-theme", this.color);
 		}
 	}
-	updateDesc(desc:string)
-	{
-		this.desc = desc;
-	}
-	updateAvatar(avatar:string)
-	{
-		this.avatar = avatar;
+	updateDesc(desc:string) { this.desc = desc; }
+	updateAvatar(avatar:string) { this.avatar = avatar; }
+	getAvatar() {
+		if (this.avatar == "")
+			return "/default/default.jpg";
+		return this.avatar;
 	}
 
 	onMsg(message:any)

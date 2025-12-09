@@ -275,7 +275,7 @@ class WsServ
 
 		var avatar = await getAvatarByName(name, this.db);
 		if (avatar == undefined || !avatar || avatar == "")
-			avatar = "default/404.png";
+			avatar = "default/default.jpg";
 		var desc = await getDescByName(name, this.db);
 		if (desc == undefined)
 			desc = "";

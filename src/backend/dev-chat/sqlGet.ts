@@ -84,7 +84,7 @@ export async function getAllMsg(id: number, db:any)
 export async function insertUser(name:string, email:string, pass:string, db:any)
 {
 	const stmt = await db.prepare(`INSERT INTO users(username, email, password, avatar, about_me, color) VALUES(?, ?, ?, ?, ?, ?)`);
-	await stmt.run([name, email, pass, 'default/cara.jpg', '', 'green']);
+	await stmt.run([name, email, pass, '', '', 'green']);
 }
 
 export async function insertMatchs(type:string, id1:number, id2:number, s1:number, s2:number, db:any)

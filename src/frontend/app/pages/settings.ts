@@ -35,7 +35,7 @@ export function renderSettings()
                 
                 <div class="flex items-center gap-8">
                     <div class="relative w-32 h-32 flex-shrink-0">
-                        <img id="avatar-preview" src="/image/avatar/default/cara.jpg" alt="Avatar" 
+                        <img id="avatar-preview" src="/image/avatar/default/default.jpg" alt="Avatar" 
                              class="w-full h-full rounded-full object-cover border-4 PBoxBorder shadow-[0_0_15px_rgba(0,0,0,0.5)]">
                     </div>
 
@@ -129,7 +129,7 @@ function importUserSettings(redBtn: HTMLButtonElement, greenBtn: HTMLButtonEleme
 			  user.color == "red", user.color == "green", user.color == "blue");
 	if (user.desc.length != 0)
 		bio.value = user.desc;
-	setAvatar(user.avatar, false);
+	setAvatar(user.getAvatar(), false);
 	return user.color
 }
 
@@ -156,15 +156,11 @@ export function DevSettings(user: ChatUser)
 	function updateImageDisplay() {
 		const files = input.files;
 		const file = files ? files[0] : null;
-		if (!file)
-			avatar = null;
-		else {
+		if (file) {
 			if (validFileType(file)) {
 				avatar = file;
 				setAvatar(URL.createObjectURL(file));
 			}
-			else
-				avatar = null;
 		}
 	}
 	function validFileType(file: any) {
@@ -175,6 +171,7 @@ export function DevSettings(user: ChatUser)
 	const del = document.getElementById("delete-avatar")!;
 	del.addEventListener("click", (e) => {
 		avatar = null;
+		setAvatar("/image/avatar/default/default.jpg");
 	});
 	//TODO si delete, preview de avatar null!!
 

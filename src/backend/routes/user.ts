@@ -10,14 +10,14 @@ interface UserRequestBody extends FormData {
 	avatarNull: string;
 }
 
-async function saveAvatar(buffer: Buffer, path: string): Promise<string | null> {
+async function saveAvatar(buffer: Buffer, path: string): Promise<string> {
 	try {
 		await fs.writeFile(`./public/image/avatar/${path}`, buffer);
 		return path;
 	}
 	catch (error) {
 		console.log(error);
-		return null;
+		return "";
 	}
 }
 
@@ -34,7 +34,7 @@ export async function userSettingsRt(server: FastifyInstance) {
 			const avatarNull = formData.get("avatarNull") as string;
 
 			var avatar = null;
-			var path: string | null = null;
+			var path: string = "";
 			if (avatarNull == "0") {
 				avatar = formData.get("avatar") as {type: string};
 

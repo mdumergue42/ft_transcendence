@@ -85,7 +85,6 @@ function render(root: HTMLElement, user: ChatUser | null, allpath: string) {
 		break;
 		default:
 			root.innerHTML = renderHome();
-			initHome();
 		break;
 	}
 	devChat(user);

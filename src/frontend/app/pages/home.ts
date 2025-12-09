@@ -2,7 +2,6 @@ import '../ui/auth-modal.js';
 
 export function renderHome() {
     return `
-    <auth-modal></auth-modal>
 
     <style>
         @keyframes glitch-anim
@@ -51,7 +50,8 @@ export function renderHome() {
         }
     </style>
 
-    <main class="h-screen w-full bg-black flex flex-col items-center justify-center relative overflow-hidden font-mono">
+	<app-def>
+    <div class="h-screen w-full bg-black flex flex-col items-center justify-center relative overflow-hidden font-mono">
         
         <div class="absolute inset-0 pointer-events-none opacity-20" 
              style="background-image: 
@@ -97,5 +97,6 @@ export function renderHome() {
             </div>
 
         </div>
-    </main>`;
+    </div>
+	</app-def>`;
 }

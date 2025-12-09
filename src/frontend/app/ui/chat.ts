@@ -8,6 +8,9 @@ export class AppChat extends HTMLElement
 
     connectedCallback()
     {
+		if (!(localStorage.getItem('isLoggedIn') === 'true')) {
+			this.innerHTML = "";
+		}
         this.render();
         
         const bubble = this.querySelector('#chat-bubble-toggle') as HTMLButtonElement;

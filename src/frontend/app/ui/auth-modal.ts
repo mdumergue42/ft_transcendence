@@ -254,6 +254,7 @@ export class AuthModal extends HTMLElement {
 		if (isLoggedIn)
 		{
 			localStorage.removeItem('token');
+			localStorage.removeItem('isLoggedIn');
 			window.location.reload();
 			return ;
 		}

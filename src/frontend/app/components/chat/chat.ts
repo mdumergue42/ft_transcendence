@@ -50,7 +50,6 @@ export class ChatUser
 
 	setUserName(name: string | null)
 	{
-		//TODO deconnection!
 		if (this.username && name)
 			return ;
 		this.username = name;
@@ -210,7 +209,7 @@ export class ChatUser
 			console.log(msg);
 		switch (msg.type) {
 			case 'init':
-				this.username = msg.name; //TODO c pas au back de le faire
+				this.username = msg.name;
 				this.updateColor(msg.color);
 				this.updateDesc(msg.desc);
 				this.updateAvatar(msg.avatar);

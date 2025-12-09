@@ -39,8 +39,6 @@ async function connection(logs: HTMLElement): Promise<[boolean, ChatUser | null]
 		logs.style.color = "red";
 		return [false, null];
 	}
-	isLoggedIn = true;
-	username = "TD";
 	
 	if (!isLoggedIn && location.pathname != '/') {
 		history.pushState({}, '', '/');

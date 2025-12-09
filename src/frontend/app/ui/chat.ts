@@ -10,6 +10,7 @@ export class AppChat extends HTMLElement
     {
 		if (!(localStorage.getItem('isLoggedIn') === 'true')) {
 			this.innerHTML = "";
+			return ;
 		}
         this.render();
         

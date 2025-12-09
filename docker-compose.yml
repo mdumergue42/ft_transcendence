@@ -28,7 +28,7 @@ services:
       - /app/dist
       - /app/public/js
       - ./public/image/avatar:/app/public/image/avatar
-      - /data:/app/data
+      - ./data:/app/data
     environment:
       - NODE_ENV=development
       - HOST=0.0.0.0

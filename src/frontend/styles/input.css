@@ -51,8 +51,8 @@ html {
 	--dark-color: rgb(127 29 29 / 0.2);
 	--light-gb-color: rgb(127 29 29 / 0.4);
 	--shadow-color: rgba(255, 0, 0, 0.8);
-	--low-shadow-color: rgba(0, 255, 0, 0.2);
-	--deep-shadow-color: rgba(0, 20, 0, 0.8);
+	--low-shadow-color: rgba(255, 0, 0, 0.2);
+	--deep-shadow-color: rgba(20, 0, 0, 0.8);
   }
 
 .PBorder {

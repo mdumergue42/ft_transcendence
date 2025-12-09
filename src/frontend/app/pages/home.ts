@@ -94,31 +94,8 @@ export function renderHome() {
     ╚═╝      ╚═════╝ ╚═╝  ╚═══╝ ╚═════╝
 </span>
                 </pre>
-                z
             </div>
 
-            <button id="landing-login-btn" 
-                class="group relative px-12 py-5 bg-black/50 border-2 PBoxBorder rounded-lg overflow-hidden transition-all duration-300 hover:scale-105 PShadowHover">
-                
-                <div class="absolute inset-0 w-0 PBoxBg opacity-20 transition-all duration-[250ms] ease-out group-hover:w-full"></div>
-                
-                <span class="relative PText font-black text-xl md:text-2xl tracking-widest uppercase flex items-center gap-6">
-                    <span class="animate-pulse">></span> 
-                    SE CONNECTER 
-                    <span class="animate-pulse"><</span>
-                </span>
-            </button>
         </div>
     </main>`;
-}
-
-export function initHome()
-{
-    const loginBtn = document.getElementById('landing-login-btn');
-    
-    loginBtn?.addEventListener('click', () =>
-	{
-        const event = new CustomEvent('login');
-        document.dispatchEvent(event);
-    });
 }

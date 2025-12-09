@@ -1,4 +1,4 @@
-import { renderHome, initHome } from './pages/home.js';
+import { renderHome } from './pages/home.js';
 import { renderHistory, DevHistory } from './pages/history.js';
 import { renderMatch, DevGame } from './pages/match.js';
 import './ui/navbar.js';
@@ -68,7 +68,6 @@ function render(root: HTMLElement, user: ChatUser | null, allpath: string) {
 	switch (path) {
 		case '':
 			root.innerHTML = renderHome();
-			initHome();
 		break;
 		case 'match':
 			root.innerHTML = renderMatch();

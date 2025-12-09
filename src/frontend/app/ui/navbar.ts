@@ -45,7 +45,7 @@ export class AppNavbar extends HTMLElement {
 			${this.navBarEle(isLoggedIn,"/settings", "settings", "Settings", "⚙️")}
 			<li class="w-full flex justify-center mt-auto relative">
 				<button id="login-btn" class="menu w-14 h-14 flex items-center justify-center bg-black/30 border-2 PBoxBorder rounded-xl PText text-2xl cursor-pointer transition-all duration-300 no-underline PBoxHover hover:scale-110 PShadowHover group" title="Connexion">
-					👤
+					${isLoggedIn ? "❌": "👤"}
 				</button>
 				<span class="absolute left-20 bg-black/90 PText border PBoxBorder px-3 py-2 rounded-md text-xs whitespace-nowrap opacity-0 pointer-events-none transition-opacity duration-200 z-[51] font-mono group-hover:opacity-100">Se connecter</span>
 			</li>
@@ -60,6 +60,7 @@ export class AppNavbar extends HTMLElement {
 					this.navigateTo(page);
 				} else if (target.id === 'login-btn') {
 					console.log('Login button clicked');
+					console.log(`login : ${isLoggedIn}`);
 					this.dispatchEvent(new CustomEvent('login', { bubbles: true, composed: true }));
 				}
 			}

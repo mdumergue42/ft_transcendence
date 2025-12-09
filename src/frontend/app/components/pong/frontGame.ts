@@ -47,7 +47,6 @@ export class PongGame
 	}
 
 	showTrTree() {
-		console.log("TREE:", this.trTree);
 		if (!this.canvas)
 			return ;
 		this.vw!.vwMenu.style.display = "none";
@@ -72,7 +71,6 @@ export class PongGame
 			document.getElementById("select-mm")!.style.display = "none";
 			document.getElementById("select-ai")!.style.display = "none";
 			document.getElementById("select-pvp")!.style.display = "none";
-			console.log("SELECT-START:", this.trState);
 			document.getElementById("select-start")!.style.display = this.trState == 2 ? "" : "none";
 			document.getElementById("select-tr")!.style.display = "";
 			document.getElementById("select-cancel")!.style.display = "";

@@ -160,7 +160,6 @@ export function DevSettings(user: ChatUser)
 			avatar = null;
 		else {
 			if (validFileType(file)) {
-				console.log(`File: ${file.name}; ${file.size}`)
 				avatar = file;
 				setAvatar(URL.createObjectURL(file));
 			}
@@ -175,9 +174,9 @@ export function DevSettings(user: ChatUser)
 
 	const del = document.getElementById("delete-avatar")!;
 	del.addEventListener("click", (e) => {
-		console.log("delete-avatar")
 		avatar = null;
 	});
+	//TODO si delete, preview de avatar null!!
 
 	const bio = <HTMLTextAreaElement>document.getElementById("bio-text")!;
 	const bioCount = <HTMLSpanElement>document.getElementById("bio-count")!;

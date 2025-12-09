@@ -9,9 +9,11 @@ up:
 	docker compose up --build -d
 
 down:
-	docker compose down
+	docker compose down -v
 
-fclean:
+fclean: down
 	docker system prune -a --volumes
+	rm -rf ./data/*
+	rm -rf ./public/image/avatar/user/*
 
 .PHONY: all re up down fclean

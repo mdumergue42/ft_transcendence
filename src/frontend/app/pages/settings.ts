@@ -42,7 +42,7 @@ export function renderSettings()
 
                     <div class="flex-1 space-y-3">
 						<form method="post" enctype="multipart/form-data">
-							<p class="text-xs opacity-70">Supported formats: JPG, PNG.<br>Max size: 5MB.</p>
+							<p class="text-xs opacity-70">Supported formats: JPG, PNG.<br>Max size: 0.5MB.</p>
 
 							<div>
 								<label for="avatar-input" class="w-full border PBoxBorder PText px-4 py-2 rounded hover:bg-white/5 transition-colors uppercase text-xs font-bold tracking-wider flex items-center justify-center gap-2" style="margin:15px 0px">
@@ -145,8 +145,6 @@ function setAvatar(img: string, tmp :boolean = true)
 
 export function DevSettings(user: ChatUser)
 {
-
-
 	let saveBtn = <HTMLButtonElement>document.getElementById("save-btn");
 	if (!saveBtn)
 		return ;
@@ -158,24 +156,21 @@ export function DevSettings(user: ChatUser)
 	function updateImageDisplay() {
 		const files = input.files;
 		const file = files ? files[0] : null;
-		if (!file) {
+		if (!file)
 			avatar = null;
-		}
 		else {
 			if (validFileType(file)) {
 				console.log(`File: ${file.name}; ${file.size}`)
 				avatar = file;
 				setAvatar(URL.createObjectURL(file));
 			}
-			else {
+			else
 				avatar = null;
-			}
-
 		}
 	}
 	function validFileType(file: any) {
 		const fileTypes = ["image/jpeg", "image/jpg", "image/png"];
-		return fileTypes.includes(file.type) && file.size <= 5 * 1e6;
+		return fileTypes.includes(file.type) && file.size <= 5 * 1e5;
 	}
 
 	const del = document.getElementById("delete-avatar")!;

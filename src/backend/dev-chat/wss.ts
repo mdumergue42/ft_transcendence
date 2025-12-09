@@ -35,6 +35,13 @@ class WsServ
 
 	async tmp()
 	{
+		const x = await getNameById(1, this.db);
+		console.log(x);
+		if (x != undefined)
+		{
+			console.log("CA REDEMARRE");
+			return ;
+		}
 		await insertUser('bastien','a@mail.com','123', this.db);
 		await insertUser('gaby','c@mail.com','123', this.db);
 		await insertUser('maelys','d@mail.com','123', this.db);

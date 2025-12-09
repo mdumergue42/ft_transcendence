@@ -212,8 +212,9 @@ export class ChatUser
 		switch (msg.type) {
 			case 'init':
 				this.username = msg.name; //TODO c pas au back de le faire
-				this.updateColor(msg.color)
-				this.updateDesc(msg.desc)
+				this.updateColor(msg.color);
+				this.updateDesc(msg.desc);
+				this.updateAvatar(msg.avatar);
 				break ;
 			case 'msg':
 				this.receiveMsg(msg);

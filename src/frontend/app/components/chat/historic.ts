@@ -141,7 +141,7 @@ export class Historic
 		var avatar = <HTMLImageElement>document.getElementById("avatar");
 		if (avatar)
 			avatar.src = `/image/avatar/${this.avatar}`;
-		var about = <HTMLImageElement>document.getElementById("about-me");
+		var about = <HTMLElement>document.getElementById("about-me");
 		if (about)
 			about.innerHTML = `${this.about}`;
 

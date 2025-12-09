@@ -26,6 +26,13 @@ export async function getDescByName(name: string, db:any) {
 		result = result.desc;
 	return result;
 }
+export async function getColorById(id: number, db:any) {
+	const stmt = await db.prepare(`SELECT color as color FROM users WHERE id_user = ?`);
+	let result = await stmt.get([id])
+	if (result)
+		result = result.color;
+	return result;
+}
 
 export async function getFlagFriendShip(friendId:number, selfId:number, db:any)
 {
@@ -76,8 +83,8 @@ export async function getAllMsg(id: number, db:any)
 
 export async function insertUser(name:string, email:string, pass:string, db:any)
 {
-	const stmt = await db.prepare(`INSERT INTO users(username, email, password, avatar, about_me) VALUES(?, ?, ?, ?, ?)`);
-	await stmt.run([name, email, pass, 'default/cara.jpg', 'aboutMe TODO']);
+	const stmt = await db.prepare(`INSERT INTO users(username, email, password, avatar, about_me, color) VALUES(?, ?, ?, ?, ?, ?)`);
+	await stmt.run([name, email, pass, '', '', 'green']);
 }
 
 export async function insertMatchs(type:string, id1:number, id2:number, s1:number, s2:number, db:any)
@@ -106,11 +113,12 @@ export async function updateFlagFriend(idFrom:number, idTo:number, flag:number, 
 	await stmt.run([flag, idFrom, idTo]);
 }
 
-export async function updateUser(avatar:string, descr:string, id:number, db:any)
+export async function updateUser(avatar:string | null, descr:string, color:string, id:number, db:any)
 {
-
-	const stmt = await db.prepare(`UPDATE users SET avatar = ?, about_me = ? WHERE id_user = ?`);
-	await stmt.run([avatar, descr, id]);
+	if (!avatar)
+		avatar = "";
+	const stmt = await db.prepare(`UPDATE users SET avatar = ?, about_me = ?,color = ? WHERE id_user = ?`);
+	await stmt.run([avatar, descr, color,id]);
 }
 
 export async function getCountFriend(idFrom: number, idTo:number, db:any)

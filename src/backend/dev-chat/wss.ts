@@ -3,13 +3,12 @@ import {FastifyInstance} from 'fastify';
 import {Client} from './client.js';
 import {ARoom} from './Aroom.js';
 import {MMRoom} from './MMroom.js';
-import {getIdByName, getNameById, getFlagFriendShip, getHistoricById, getAvatarByName, getDescByName ,insertUser, insertMatchs, insertMsg, insertFriend, updateFlagFriend, getCountFriend} from './sqlGet.js'
+import {getIdByName, getNameById, getFlagFriendShip, getHistoricById, getColorById, getAvatarByName, getDescByName ,insertUser, insertMatchs, insertMsg, insertFriend, updateFlagFriend, updateUser, getCountFriend} from './sqlGet.js'
 
 
 interface Dictionary<T> {
     [Key: string]: T;
 }
-
 
 class WsServ
 {
@@ -31,11 +30,18 @@ class WsServ
 		});
 
 		this.db = SQLserver.db;
-		//this.tmp() //TODO retirer car c sencer etre automatique!
+		this.tmp() //TODO retirer car c sencer etre automatique!
 	}
 
 	async tmp()
 	{
+		const x = await getNameById(1, this.db);
+		console.log(x);
+		if (x != undefined)
+		{
+			console.log("CA REDEMARRE");
+			return ;
+		}
 		await insertUser('bastien','a@mail.com','123', this.db);
 		await insertUser('gaby','c@mail.com','123', this.db);
 		await insertUser('maelys','d@mail.com','123', this.db);
@@ -168,7 +174,6 @@ class WsServ
 			}
 			arg = x[y];
 			console.log("GETNAME:", arg, y)
-			client.send({type: "init", name: arg})
 		}
 		if (!arg)
 		{
@@ -238,6 +243,7 @@ class WsServ
 				break; 
 			case 'getHistoric':
 				this.getHistoric(client, msg.name, msg.flag);
+				break ;
 			default:
 				break;
 		}
@@ -268,8 +274,8 @@ class WsServ
 		}
 
 		var avatar = await getAvatarByName(name, this.db);
-		if (avatar == undefined || !avatar)
-			avatar = "default/404.png";
+		if (avatar == undefined || !avatar || avatar == "")
+			avatar = "default/default.jpg";
 		var desc = await getDescByName(name, this.db);
 		if (desc == undefined)
 			desc = "";

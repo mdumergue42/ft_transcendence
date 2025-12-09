@@ -1,6 +1,7 @@
 import { renderHome } from './pages/home.js';
 import { renderHistory, DevHistory } from './pages/history.js';
 import { renderMatch, DevGame } from './pages/match.js';
+import { renderSettings, DevSettings } from './pages/settings.js';
 import './ui/navbar.js';
 import './ui/chat.js';
 import './ui/match.js';
@@ -38,6 +39,8 @@ async function connection(logs: HTMLElement): Promise<[boolean, ChatUser | null]
 		logs.style.color = "red";
 		return [false, null];
 	}
+	isLoggedIn = true;
+	username = "TD";
 	
 	if (!isLoggedIn && location.pathname != '/') {
 		history.pushState({}, '', '/');
@@ -46,7 +49,6 @@ async function connection(logs: HTMLElement): Promise<[boolean, ChatUser | null]
 	}
 	await wait30ms();
 	
-	console.log("USERNAME:", username);
 	
 	logs.innerHTML = "Connection to WebSocket";
 	const user = new ChatUser(username);
@@ -56,6 +58,7 @@ async function connection(logs: HTMLElement): Promise<[boolean, ChatUser | null]
 		logs.style.color = "red";
 	}
 	await wait30ms();
+	console.log("USERNAME:", user.username);
 	return [isOpen, user];
 }
 
@@ -68,21 +71,22 @@ function render(root: HTMLElement, user: ChatUser | null, allpath: string) {
 	switch (path) {
 		case '':
 			root.innerHTML = renderHome();
-		break;
+			break;
 		case 'match':
 			root.innerHTML = renderMatch();
-		DevGame(user);
-		break;
+			DevGame(user);
+			break;
 		case 'history':
 			root.innerHTML = renderHistory();
-		if (arg.length == 1)
-			DevHistory(user, arg[0]);
-		else
-			DevHistory(user, user.username);
-		break;
+			if (arg.length == 1)
+				DevHistory(user, arg[0]);
+			else
+				DevHistory(user, user.username);
+			break;
 		case 'settings':
-			root.innerHTML = '<app-def><main style="margin-left: 100px; padding: 20px; background: black; color: #00ff00; min-height: 100vh;"><h1>👤 settings - Coming Soon!</h1></main><app-def>';
-		break;
+			root.innerHTML = renderSettings();
+			DevSettings(user);
+			break;
 		default:
 			root.innerHTML = renderHome();
 		break;

@@ -7,6 +7,8 @@ import { fileURLToPath } from 'url';
 import { WSServInit } from './dev-chat/wss.js';
 import { initDb } from './db/database.js'
 import { authRt } from './routes/auth.js'
+import { userSettingsRt } from './routes/user.js'
+
 import fastifyJwt from '@fastify/jwt';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -81,6 +83,7 @@ server.register(fastifyStatic, {
 // init database and routes
 await initDb(server);
 await server.register(authRt);
+await server.register(userSettingsRt);
 
 
 server.setNotFoundHandler((request, reply) => {

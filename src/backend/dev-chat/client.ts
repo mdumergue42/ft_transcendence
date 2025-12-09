@@ -1,5 +1,5 @@
 import {WebSocket} from 'ws';
-import {getIdByName, getNameById, getAllMsg, getAllFriends} from './sqlGet.js'
+import {getIdByName, getColorById, getNameById, getDescByName, getAllMsg, getAllFriends, getAvatarByName} from './sqlGet.js'
 
 export class Client
 {
@@ -23,6 +23,10 @@ export class Client
 	{
 		this.username = name;
 		this.id = await getIdByName(name, db);
+		const color = await getColorById(this.id, db);
+		const avatar = await getAvatarByName(this.username, db);
+		const desc = await getDescByName(this.username, db);
+		this.send({type: "init", name:name, color:color, desc:desc, avatar:avatar});
 		await this.userGetFriends(db);
 		await this.userGetMsg(db);
 	}

@@ -13,8 +13,12 @@ export class ChatUser
 	historic: Historic
 	friendList:Conv[] = [];
 	inQ: number = 0;
+	color: string = "green";
+	desc: string = "";
+	avatar: string = "";
 	constructor(_name:string | null)
 	{
+		this.username = _name;
 		this.ws = new WebSocket(`wss://${window.location.hostname}/ws/`);
 		this.connect();
 		this.lastPeer = this.friendList[0];
@@ -180,17 +184,36 @@ export class ChatUser
 		this.reRenderFriendList();
 	}
 
+	updateColor(color:string)
+	{
+		if (color == "green" || color == "blue" || color == "red")
+		{
+			this.color = color;
+			const html = document.querySelector('html')!;
+			html.setAttribute("data-theme", this.color);
+		}
+	}
+	updateDesc(desc:string) { this.desc = desc; }
+	updateAvatar(avatar:string) { this.avatar = avatar; }
+	getAvatar() {
+		if (this.avatar == "")
+			return "/default/default.jpg";
+		return this.avatar;
+	}
+
 	onMsg(message:any)
 	{
 		const msg = JSON.parse(message.data);
 		if (msg.type == "pong")
 			return ;
-		if (msg.type != "game" || msg.tag != "state")
+		if ((msg.type != "game" || msg.tag != "state") && msg.type != "historic" && msg.type != 'endb')
 			console.log(msg);
 		switch (msg.type) {
-			case 'init': //TODO c pas au back de le faire
-				this.username = msg.name;
-				console.log(`I'm ${msg.name}`);
+			case 'init':
+				this.username = msg.name; //TODO c pas au back de le faire
+				this.updateColor(msg.color);
+				this.updateDesc(msg.desc);
+				this.updateAvatar(msg.avatar);
 				break ;
 			case 'msg':
 				this.receiveMsg(msg);

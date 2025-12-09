@@ -250,6 +250,14 @@ export class AuthModal extends HTMLElement {
     }
 
     open() {
+		var isLoggedIn = localStorage.getItem('isLoggedIn') === 'true' ? true : false;
+		if (isLoggedIn)
+		{
+			localStorage.removeItem('token');
+			window.location.reload();
+			return ;
+		}
+
         this.isOpen = true;
         const modal = this.querySelector('#auth-modal') as HTMLElement;
         const content = modal.querySelector('div') as HTMLElement;

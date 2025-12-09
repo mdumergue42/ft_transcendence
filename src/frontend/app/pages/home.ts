@@ -1,10 +1,72 @@
 import '../ui/auth-modal.js';
 
 export function renderHome() {
-	return `<app-def>
-				<div class="text-center mb-8 p-6 border-2 PBoxBorder PInsetLowShadow">
-					<pre class="PText text-xs md:text-sm leading-tight mb-4 whitespace-pre-wrap relative">
-						<span class="absolute inset-0 animate-noise-anim PText opacity-80">
+    return `
+    <auth-modal></auth-modal>
+
+    <style>
+        @keyframes glitch-anim
+		{
+            0% { clip-path: inset(40% 0 61% 0); transform: translate(-2px, 2px); }
+            20% { clip-path: inset(92% 0 1% 0); transform: translate(2px, -2px); }
+            40% { clip-path: inset(43% 0 1% 0); transform: translate(-2px, 2px); }
+            60% { clip-path: inset(25% 0 58% 0); transform: translate(2px, -2px); }
+            80% { clip-path: inset(54% 0 7% 0); transform: translate(-2px, 2px); }
+            100% { clip-path: inset(58% 0 43% 0); transform: translate(2px, -2px); }
+        }
+        
+        .glitch-text
+		{
+            position: relative;
+        }
+        
+        .glitch-text::before,
+        .glitch-text::after
+		{
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.8;
+        }
+
+        .glitch-text::before
+		{
+            left: 2px;
+            text-shadow: -1px 0 red;
+            background: black;
+            animation: glitch-anim 2s infinite linear alternate-reverse;
+            clip-path: inset(0 0 0 0);
+        }
+
+        .glitch-text::after
+		{
+            left: -2px;
+            text-shadow: -1px 0 blue;
+            background: black;
+            animation: glitch-anim 3s infinite linear alternate-reverse;
+            clip-path: inset(0 0 0 0);
+        }
+    </style>
+
+    <main class="h-screen w-full bg-black flex flex-col items-center justify-center relative overflow-hidden font-mono">
+        
+        <div class="absolute inset-0 pointer-events-none opacity-20" 
+             style="background-image: 
+                linear-gradient(rgba(0, 255, 0, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 0, 0.1) 1px, transparent 1px);
+                background-size: 40px 40px;
+                mask-image: radial-gradient(circle, black 40%, transparent 100%);">
+        </div>
+
+        <div class="relative z-10 flex flex-col items-center gap-12 p-8 max-w-5xl w-full">
+            
+            <div class="text-center animate-in fade-in zoom-in duration-700 relative">
+                
+                <pre class="glitch-text PText text-[8px] md:text-[10px] lg:text-xs leading-[1.1] whitespace-pre relative font-bold select-none" 
+                     data-text="
 ████████╗██████╗  █████╗ ███╗   ██╗███████╗
 ╚══██╔══╝██╔══██╗██╔══██╗████╗  ██║██╔════╝
    ██║   ██████╔╝███████║██╔██╗ ██║███████╗
@@ -16,9 +78,8 @@ export function renderHome() {
     ██████╔╝██║   ██║██╔██╗ ██║██║  ███╗
     ██╔═══╝ ██║   ██║██║╚██╗██║██║   ██║
     ██║     ╚██████╔╝██║ ╚████║╚██████╔╝
-    ╚═╝      ╚═════╝ ╚═╝  ╚═══╝ ╚═════╝
-			</span>
-			<span class="relative z-10">
+    ╚═╝      ╚═════╝ ╚═╝  ╚═══╝ ╚═════╝">
+<span class="relative z-10">
 ████████╗██████╗  █████╗ ███╗   ██╗███████╗
 ╚══██╔══╝██╔══██╗██╔══██╗████╗  ██║██╔════╝
    ██║   ██████╔╝███████║██╔██╗ ██║███████╗
@@ -32,73 +93,32 @@ export function renderHome() {
     ██║     ╚██████╔╝██║ ╚████║╚██████╔╝
     ╚═╝      ╚═════╝ ╚═╝  ╚═══╝ ╚═════╝
 </span>
-					</pre>
-					<div class="text-sm mb-4 PText">
-						>>> RETRO GAMING SYSTEM INITIALIZED <<<
-					</div>
-					<div class="text-sm mb-4 PText">
-						>>> COPYRIGHT 1982-2025 ARCADE CORP <<<
-					</div>
-					<button id="play-button" class="px-6 py-3 border-2 PBoxBorder PText font-bold uppercase tracking-widest PBoxHover hover:text-black transition-all duration-200 animate-pulse">
-						[PRESS START]
-					</button>
-				</div>
-				<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-					<div class="border-2 PBoxBorder p-4 text-center relative">
-						<div class="absolute top-1 left-1 text-xs PText">SCORE</div>
-						<div class="text-2xl font-bold PText mt-4">000028</div>
-						<div class="text-xs PText mt-1">WINS</div>
-					</div>
-					<div class="border-2 PBoxBorder p-4 text-center relative">
-						<div class="absolute top-1 left-1 text-xs PText">COMBO</div>
-						<div class="text-2xl font-bold PText mt-4">+00005</div>
-						<div class="text-xs PText mt-1">STREAK</div>
-					</div>
-					<div class="border-2 PBoxBorder p-4 text-center relative">
-						<div class="absolute top-1 left-1 text-xs PText">LEVEL</div>
-						<div class="text-2xl font-bold PText mt-4">000042</div>
-						<div class="text-xs PText mt-1">SKILL</div>
-					</div>
-					<div class="border-2 PBoxBorder p-4 text-center relative">
-						<div class="absolute top-1 left-1 text-xs PText">PERF</div>
-						<div class="text-2xl font-bold PText mt-4">087.0%</div>
-						<div class="text-xs PText mt-1">ACC</div>
-					</div>
-				</div>
-				<div class="space-y-2 mb-8">
-					<div class="border-2 PBoxBorder p-4">
-						<div class="text-sm PText mb-2">SELECT GAME MODE:</div>
-						<a class="block p-3 border PBoxBorder PText PBoxHover hover:text-black transition-all duration-200 uppercase tracking-wide">
-							> 1. FIGHT
-						</a>
-						<a class="block p-3 border PBoxBorder PText PBoxHover hover:text-black transition-all duration-200 uppercase tracking-wide mt-1">
-							> 2. VIEW PROFILE
-						</a>
-						<a class="block p-3 border PBoxBorder PText PBoxHover hover:text-black transition-all duration-200 uppercase tracking-wide mt-1">
-							> 3. SETTINGS
-						</a>
-					</div>
-				</div>
-				<div class="border-2 PBoxBorder p-4 mb-8">
-					<div class="text-sm PText mb-3">SYSTEM LOG:</div>
-					<div class="space-y-1 text-xs PText">
-						<div class="opacity-80">[23:42] VICTORY: PLAYER DEFEATED OPPONENT42</div>
-						<div class="opacity-70">[23:38] ACHIEVEMENT: "PIXEL MASTER" UNLOCKED</div>
-						<div class="opacity-60">[23:35] RANK_UP: PROMOTED TO LEVEL 42</div>
-						<div class="opacity-50">[23:30] HIGH_SCORE: NEW RECORD SET - 15 RALLIES</div>
-						<div class="opacity-40">[23:25] SYSTEM: GAME SESSION STARTED</div>
-					</div>
-				</div>
-				<div class="border-2 PBoxBorder p-4 text-center">
-					<div class="text-sm PText mb-3">ARCADE SIMULATOR:</div>
-					<canvas id="pong-canvas" class="mx-auto border PBoxBorder" width="480" height="240" style="image-rendering: pixelated;"></canvas>
-					<div class="mt-3 text-xs PText">
-						USE ARROW KEYS TO CONTROL PADDLE
-					</div>
-				</div>
-				<div class="text-center mt-8 text-xs PText/50">
-					[ESC] EXIT | [F1] HELP | [F12] SETTINGS<br>
-					TRANSCENDENCE v1.42 - 1982 ARCADE CORPORATION
-				</div>
-		</app-def>`;
+                </pre>
+                z
+            </div>
+
+            <button id="landing-login-btn" 
+                class="group relative px-12 py-5 bg-black/50 border-2 PBoxBorder rounded-lg overflow-hidden transition-all duration-300 hover:scale-105 PShadowHover">
+                
+                <div class="absolute inset-0 w-0 PBoxBg opacity-20 transition-all duration-[250ms] ease-out group-hover:w-full"></div>
+                
+                <span class="relative PText font-black text-xl md:text-2xl tracking-widest uppercase flex items-center gap-6">
+                    <span class="animate-pulse">></span> 
+                    SE CONNECTER 
+                    <span class="animate-pulse"><</span>
+                </span>
+            </button>
+        </div>
+    </main>`;
+}
+
+export function initHome()
+{
+    const loginBtn = document.getElementById('landing-login-btn');
+    
+    loginBtn?.addEventListener('click', () =>
+	{
+        const event = new CustomEvent('login');
+        document.dispatchEvent(event);
+    });
 }

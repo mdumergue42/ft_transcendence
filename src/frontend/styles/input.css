@@ -41,6 +41,20 @@ html {
   --deep-shadow-color: rgba(0, 0, 20, 0.8);
 }
 
+[data-theme="red"] {
+	--prim-color: red;
+	--border-color: rgb(248 113 113 / var(--tw-border-opacity, 1));
+	--background-color: rgb(248 113 113 / var(--tw-border-opacity, 1));
+	--obj-color: var(--border-color);
+	--text-color: rgb(248 113 113 / var(--tw-text-opacity, 1));
+	--somber-color: rgb(220 38 38 / var(--tw-text-opacity, 1));
+	--dark-color: rgb(127 29 29 / 0.2);
+	--light-gb-color: rgb(127 29 29 / 0.4);
+	--shadow-color: rgba(255, 0, 0, 0.8);
+	--low-shadow-color: rgba(0, 255, 0, 0.2);
+	--deep-shadow-color: rgba(0, 20, 0, 0.8);
+  }
+
 .PBorder {
 	border-color: var(--border-color);
 }

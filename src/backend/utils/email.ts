@@ -5,9 +5,18 @@ dotenv.config();
 const transporter = nodemailer.createTransport({
 	host: process.env.SMTP_HOST,
 	port: parseInt(process.env.SMTP_PORT!),
-	secure: false,
+	secure: true,
 	auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS }
 });
+
+
+transporter.verify((error, success) => {
+	if (error) {
+		console.error("SMTP error: ", error);
+	} else {
+		console.log("SMTP ok");
+	}
+})
 
 export async function sendMail(to: string, subject: string, html: string) {
 	await transporter.sendMail({
@@ -16,7 +25,7 @@ export async function sendMail(to: string, subject: string, html: string) {
 }
 
 export async function sendVerifEmail(user: { id_user: number; username: string; email: string }, token:string) {
-	const verifLink = `${process.env.FRONTEND_URL}/api/auth/verify-email?id_user=${user.id_user}&token=${token}`;
+	const verifLink = `${process.env.BACKEND_URL}/api/auth/verify-email?id_user=${user.id_user}&token=${token}`;
 
 	const html = `
 	<p>Hello ${user.username},</p>

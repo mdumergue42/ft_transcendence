@@ -160,7 +160,7 @@ export async function authRt(server: FastifyInstance) {
 			catch (error : any) {
 				console.error("erreur mail user: ", error.message);
 				await deleteUserWithName(username, server.db);
-				return reply.code(error.code).send({ success: false, error: error.message });
+				return reply.code(500).send({ success: false, error: error.message });
 			}
 		}
 		catch (error: any) {

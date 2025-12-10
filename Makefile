@@ -1,3 +1,5 @@
+IS_RUNNUNG = 
+
 all: up
 
 re: down up
@@ -11,12 +13,13 @@ up:
 down:
 	docker compose down -v
 
-fclean:
-	#TODO sa clear pas la DB
-	docker exec -i app sh -c "rm -f /app/db.sqlite"
-	docker compose down -v
-	rm -rf data/db.sqlite
-	rm -rf public/image/avatar/user/*
+clean:
+	@bash -c 'docker compose ls | grep ft_transcendence | grep running && docker exec -i app sh -c "rm -f /app/db.sqlite" || echo "nothing running"'
+	@docker compose down -v
+
+fclean: clean
+	@rm -rf public/image/avatar/user/*
+	@echo "CLEAR DATABASE?: sudo rm -rf data/db.sqlite"
 
 prune:
 	docker system prune -a --volumes

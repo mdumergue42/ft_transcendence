@@ -55,6 +55,13 @@ export class AuthModal extends HTMLElement {
                         >
                             SE CONNECTER
                         </button>
+                        <button
+                            type="button"
+                            id="resend-email-btn"
+                            class="hidden w-full mt-3 text-[10px] PText opacity-60 hover:opacity-100 hover:text-white transition-all uppercase tracking-widest"
+                        >
+                            [ RENVOYER L'EMAIL DE VALIDATION ]
+                        </button>
                     </form>
                     <form id="register-form" class="auth-form space-y-4 hidden">
                         <div>
@@ -144,6 +151,7 @@ export class AuthModal extends HTMLElement {
 
     switchTab(tab: 'login' | 'register') {
         this.currentTab = tab;
+        this.hideErrorAndResend(); //j\ai rejoute ici
 
         const loginTab = this.querySelector('#login-tab') as HTMLButtonElement;
         const registerTab = this.querySelector('#register-tab') as HTMLButtonElement;
@@ -172,6 +180,7 @@ export class AuthModal extends HTMLElement {
 
     async handleLogin(e: Event) {
         e.preventDefault();
+        this.hideErrorAndResend(); // la aussi
         const form = e.target as HTMLFormElement;
         const formData = new FormData(form);
 
@@ -197,11 +206,27 @@ export class AuthModal extends HTMLElement {
             } else {
                 const error = await response.json();
                 alert('Erreur de connexion: ' + (error.message || 'Identifiants incorrects'));
+                this.showResendButton(); //ici
             }
         } catch (error) {
             console.error('Login error:', error);
             alert('Erreur de connexion. Veuillez réessayer.');
         }
+    }
+
+    showResendButton()
+    {
+        const btn = this.querySelector('#resend-email-btn') as HTMLElement;
+        if (btn) btn.classList.remove('hidden');
+    }
+
+    hideErrorAndResend()
+    {
+        const errorDiv = this.querySelector('#login-error') as HTMLElement;
+        const resendBtn = this.querySelector('#resend-email-btn') as HTMLElement;
+        
+        if (errorDiv) errorDiv.classList.add('hidden');
+        if (resendBtn) resendBtn.classList.add('hidden');
     }
 
     async handleRegister(e: Event) {

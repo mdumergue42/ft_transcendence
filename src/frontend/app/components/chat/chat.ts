@@ -270,10 +270,10 @@ export class ChatUser
 
 	sendInvite(conv:Conv)
 	{
+		const qType = this.inQ == 2 : "Tournament" : "Match";
 		this.wsSend({type: "invite", name:conv.penPal,
-		content:`${this.username} has invite you`});
-		conv.HTMLAddInvite("INVITATION SEND");
-		//TODO msgs for types of Q
+		content:`${this.username} has invite you to a ${qType}`});
+		conv.HTMLAddInvite(`invitation send for a ${qType}`);
 	}
 
 	sendJoin(conv:Conv) { this.wsSend({type: "join", name: conv.penPal}); }
@@ -282,8 +282,20 @@ export class ChatUser
 
 	addFriend(name:string)
 	{
+		const validateUsername = (name: string) => {
+			if (!name || !name.trim() || /\s/.test(name)) return false;
+
+			const regex = /^[a-zA-Z0-9_]{3,16}$/;
+			return regex.test(name);
+		};
+		if (!validateUsername(name))
+		{
+			if (log)
+				log.innerHTML = "that's a weird name";
+			return ;
+		}
+
 		var log = document.getElementById("log-add-friend");
-		//TODO check username regex to block sql injection!
 		if (name == this.username) {
 			if (log)
 				log.innerHTML = "can't be friend with yourself";

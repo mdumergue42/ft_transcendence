@@ -157,7 +157,7 @@ class WsServ
 		console.log("USER:", client.username, client.id, msg);
 		var arg;
 		arg = msg.name;
-		if (arg == "TD") //C pas au back de le faire!
+		if (arg == "TD") //TODO supr ca xd
 		{
 			var x = ["bastien", "gaby", "maelys", "youenn"];
 			var y = 0;
@@ -171,10 +171,7 @@ class WsServ
 			console.log("GETNAME:", arg, y)
 		}
 		if (!arg)
-		{
-		//TODO => DECONNECTION
 			return ;
-		}
 		await client.user(arg, this.db);
 		await client.sendFriendList(this.connectedClients);
 		this.moveArrayClient(client);
@@ -432,9 +429,6 @@ class WsServ
 
 	cancelGame(client: Client)
 	{
-		//TODO Creating Tournament -> cancel + kick other
-		//TODO Tournament -> ff + other continue
-		//TODO in game -> ff + stop
 		var roomIds = client.roomId;
 		if (!roomIds)
 			return ;

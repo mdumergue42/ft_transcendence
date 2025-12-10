@@ -37,8 +37,6 @@ export class AppMatch extends HTMLElement {
 			</div>
 		</div>
 		`;
-
-		//TODO LISTE PLAYER!!
 	}
 
 	case(id:string) {

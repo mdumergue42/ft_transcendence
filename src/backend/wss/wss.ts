@@ -484,7 +484,7 @@ class WsServ
 		}
 		else {
 			client.send({type: "game", tag:"trJoin", op:0});
-			var x = await GameRoom.waitGameEnd(); //TODO cancel should stop this wait
+			var x = await GameRoom.waitGameEnd();
 			this.exitQ(client);
 		}
 	}

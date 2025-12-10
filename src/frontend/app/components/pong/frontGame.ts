@@ -55,12 +55,12 @@ export class PongGame
 		
 		var d;
 		for (let k in this.trList) {
-			d = document.getElementById(`tr-p${k}-name`)!; //TODO Scores
+			d = document.getElementById(`tr-p${k}-name`)!;
 			d.innerHTML = this.trList[k];
 		}
-		d = document.getElementById(`tr-m1-name`)!; //TODO Scores
+		d = document.getElementById(`tr-m1-name`)!;
 		d.innerHTML = this.trTree.m1;
-		d = document.getElementById(`tr-m2-name`)!; //TODO Scores
+		d = document.getElementById(`tr-m2-name`)!;
 		d.innerHTML = this.trTree.m2;
 
 	}

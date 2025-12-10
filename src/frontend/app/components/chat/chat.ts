@@ -270,7 +270,7 @@ export class ChatUser
 
 	sendInvite(conv:Conv)
 	{
-		const qType = this.inQ == 2 : "Tournament" : "Match";
+		const qType = this.inQ == 2 ? "Tournament" : "Match";
 		this.wsSend({type: "invite", name:conv.penPal,
 		content:`${this.username} has invite you to a ${qType}`});
 		conv.HTMLAddInvite(`invitation send for a ${qType}`);
@@ -288,6 +288,9 @@ export class ChatUser
 			const regex = /^[a-zA-Z0-9_]{3,16}$/;
 			return regex.test(name);
 		};
+
+		var log = document.getElementById("log-add-friend");
+
 		if (!validateUsername(name))
 		{
 			if (log)
@@ -295,7 +298,6 @@ export class ChatUser
 			return ;
 		}
 
-		var log = document.getElementById("log-add-friend");
 		if (name == this.username) {
 			if (log)
 				log.innerHTML = "can't be friend with yourself";

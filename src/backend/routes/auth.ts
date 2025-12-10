@@ -13,7 +13,32 @@ import { updatetfa_enable, updateEmailVerif } from '../db/update.js'
 import { insertUser } from '../db/insert.js'
 
 export async function authRt(server: FastifyInstance) {
-	server.get('/api/auth/status', async () => ({ loggedIn: false }));
+	
+	// status -----------------------
+	server.get('/api/auth/status', {
+		onRequest: [server.authenticate]
+	}, async (request: any, reply) => {
+		return {
+			success: true,
+			loggedIn: true,
+			user: request.user
+		};
+	});
+
+	// server.post('/api/auth/verif-token', async (req, reply) => {
+	// 	console.log('Verify token called with body:', req.body);
+	// 	const { tokenJWT } = req.body as any;
+	// 	if (!tokenJWT) {
+	// 		return reply.code(400).send({ valid: false });
+	// 	}
+
+	// 	try {
+	// 		server.jwt.verify(tokenJWT);
+	// 		return { valid: true };
+	// 	} catch {
+	// 		return { valid: false };
+	// 	}
+	// });
 
 	// login ------------------------
 	server.post('/api/auth/login', async (req, reply) => {
@@ -50,7 +75,7 @@ export async function authRt(server: FastifyInstance) {
 				};
 			}
 			
-			const tokenJWT = generateJWT(server, {
+			const token = generateJWT(server, {
 				id_user: user.id_user,
 				username: user.username,
 				email: user.email
@@ -60,7 +85,7 @@ export async function authRt(server: FastifyInstance) {
 			//il faut tout return pour le frontend et l'API
 			return { 
 				success: true,
-				tokenJWT: tokenJWT,
+				token: token,
 				user: {id: user.id_user, username: user.username, email: user.email}};
 		}
 		catch (error: any) {
@@ -80,7 +105,7 @@ export async function authRt(server: FastifyInstance) {
 
 		const user = await getAllById(id_user, server.db);
 
-		const tokenJWT = generateJWT(server, {
+		const token = generateJWT(server, {
 			id_user: user.id_user,
 			username: user.username,
 			email: user.email
@@ -88,7 +113,7 @@ export async function authRt(server: FastifyInstance) {
 
 		return { 
 			success: true,
-			tokenJWT: tokenJWT,
+			token: token,
 			user: {id: user.id_user, username: user.username, email: user.email}};
 	});
 
@@ -193,7 +218,7 @@ export async function authRt(server: FastifyInstance) {
 			const decoded = await server.jwt.verify(token) as FastifyJWT;
 			return { success: true, user: decoded };
 		} catch (error) {
-			return reply.code(401).send({ success: false, error: 'Invalid or expire tokenJWT'});
+			return reply.code(401).send({ success: false, error: 'Invalid or expire token'});
 		}
 	})
 }

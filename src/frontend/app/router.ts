@@ -20,24 +20,44 @@ function wait30ms(x:number = 1) {
 }
 
 async function connection(logs: HTMLElement): Promise<[boolean, ChatUser | null]> {
-	logs.innerHTML = "Connection to API";
+	logs.innerHTML = "Connection";
 
-	await wait30ms();
+	function error(msg:string): [boolean, null] {
+		logs.innerHTML = `Error: ${msg}`;
+		logs.style.color = "red";
+		return [false, null];
+	}
 
 	let isLoggedIn = false;
 	let username = null;
-	try {
-		const res = await fetch('/api/auth/status');
-		if (res.ok) {
-			const r = await res.json();
-			isLoggedIn = r.loggedIn;
-			//username = TODO
+
+	const token = localStorage.getItem('token');
+	console.log("TOKEN:", token);
+	if (token) {
+		try {
+			const res = await fetch('/api/auth/status', {
+				method: 'GET',
+				headers: {
+					'Authorization': `Bearer ${token}`
+				}
+			});
+			if (res.ok) {
+				const r = await res.json();
+				console.log('login successsfulllll');
+				isLoggedIn = r.loggedIn;
+				localStorage.setItem('isLoggedIn', isLoggedIn.toString());
+				username = r.user.username;
+
+			}
+			else {
+				console.log('token invalideeee, suppressionnnn');
+				localStorage.removeItem('token');
+			}
 		}
-	}
-	catch {
-		logs.innerHTML = "Erreur fetch auth";
-		logs.style.color = "red";
-		return [false, null];
+		catch {
+			localStorage.removeItem('token');
+			return error("auth");
+		}
 	}
 	
 	if (!isLoggedIn && location.pathname != '/') {
@@ -46,19 +66,12 @@ async function connection(logs: HTMLElement): Promise<[boolean, ChatUser | null]
 		window.location.reload();
 		return [false, null];
 	}
-	await wait30ms();
-	
-	
-	logs.innerHTML = "Connection to WebSocket";
+	console.log("USERNAME:", username);
+
 	const user = new ChatUser(username);
-	const isOpen = await user._waitWs(user.ws);
-	if (!isOpen) {
-		logs.innerHTML = "Erreur WebSocket User";
-		logs.style.color = "red";
-	}
-	await wait30ms();
-	console.log("USERNAME:", user.username);
-	return [isOpen, user];
+	if (!await user._waitWs(user.ws))
+		return error("websocket");
+	return [true, user];
 }
 
 function render(root: HTMLElement, user: ChatUser | null, allpath: string) {

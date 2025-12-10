@@ -198,18 +198,45 @@ export class AuthModal extends HTMLElement {
                 body: JSON.stringify(loginData)
             });
 
-            if (response.ok) {
-                const result = await response.json();
-                console.log('Login successful:', result);
-                this.close();
-                window.location.reload();
-            } else {
-                const error = await response.json();
-                alert('Erreur de connexion: ' + (error.message || 'Identifiants incorrects'));
-                this.showResendButton(); //ici
-            }
-        } catch (error) {
+			const result = await response.json();
+			console.log('result de authmodal: ', result);
+			if (!response.ok) {
+				console.error('LE back a pas renvoyer le fucking token');
+				alert('Error' + (result.error || 'ID incorrects'));
+			}
+			if (result.token) {
+				localStorage.setItem('token', result.token);
+				this.close();
+				window.location.reload();
+			} else {
+				console.error('le backend a rien renvoyer');
+				alert('erreur: token manquant');
+			}
+				// //verif du jwt
+				// const verifToken = await fetch('/api/auth/verif-token', {
+				// 	method: 'POST',
+				// 	headers: {
+				// 		'Content-Type': 'application/json'
+				// 	},
+				// 	body: JSON.stringify({ token: result.token })
+				// });
+				// console.log('fetch de ses morts ok', verifToken.status)
+
+				// const verifJWT = await verifToken.json();
+				// if (verifJWT.valid) {
+				// 	console.log('Login successful:', result);
+                // 	this.close();
+                // 	window.location.reload();
+				// }
+				// else {
+				// 	console.log('Expired token or invalid, suppressed token');
+				// 	localStorage.removeItem('tokenJWT');
+				// 	alert('Invalid token, please try again');
+				// }
+        }
+		catch (error) {
             console.error('Login error:', error);
+		//	localStorage.removeItem('tokenJWT');
             alert('Erreur de connexion. Veuillez réessayer.');
         }
     }
@@ -273,6 +300,12 @@ export class AuthModal extends HTMLElement {
             alert('Erreur d\'inscription. Veuillez réessayer.');
         }
     }
+
+	async handleLogout(e: Event) {
+		localStorage.removeItem('token');
+		console.log('User disconnect.');
+		window.location.reload();
+	}
 
     open() {
 		var isLoggedIn = localStorage.getItem('isLoggedIn') === 'true' ? true : false;

@@ -154,6 +154,7 @@ class WsServ
 
 	async user(msg:any, client:Client)
 	{
+		console.log("USER:", client.username, client.id, msg);
 		var arg;
 		arg = msg.name;
 		if (arg == "TD") //C pas au back de le faire!

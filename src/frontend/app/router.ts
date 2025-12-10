@@ -45,7 +45,6 @@ async function connection(logs: HTMLElement): Promise<[boolean, ChatUser | null]
 				const r = await res.json();
 				console.log('login successsfulllll');
 				isLoggedIn = r.loggedIn;
-				localStorage.setItem('isLoggedIn', isLoggedIn.toString());
 				username = r.user.username;
 
 			}
@@ -59,6 +58,7 @@ async function connection(logs: HTMLElement): Promise<[boolean, ChatUser | null]
 			return error("auth");
 		}
 	}
+	localStorage.setItem('isLoggedIn', isLoggedIn.toString());
 	
 	if (!isLoggedIn && location.pathname != '/') {
 		history.pushState({}, '', '/');

@@ -8,8 +8,8 @@ import { FastifyJWT } from '@fastify/jwt';
 import { generateCode, saveCode, verifCode } from '../utils/2fa.js';
 import { request } from 'http';
 import { send2faCodeEmail, sendVerifEmail } from '../utils/email.js';
-import { getAllByName, getAllById, getAllByNameOrMail, getAllByMail} from '../db/get.js'
-import { updatetfa_enable, updateEmailVerif } from '../db/update.js'
+import { getAllByName, getIdByName, getAllById, getAllByNameOrMail, getAllByMail} from '../db/get.js'
+import { updatetfa_enable, updateEmailVerif, deleteUserWithName } from '../db/update.js'
 import { insertUser } from '../db/insert.js'
 
 export async function authRt(server: FastifyInstance) {
@@ -18,6 +18,11 @@ export async function authRt(server: FastifyInstance) {
 	server.get('/api/auth/status', {
 		onRequest: [server.authenticate]
 	}, async (request: any, reply) => {
+		if (!await getIdByName(request.user, server.db))
+			return reply.code(401).send({
+				success: false,
+				loggedIn: false,
+			});
 		return {
 			success: true,
 			loggedIn: true,
@@ -143,17 +148,25 @@ export async function authRt(server: FastifyInstance) {
 
 
 			const user = await createUser(server, username, password, email);
-			console.log("user creer: ", user);
-
 			const tokentmp = server.jwt.sign({ id_user: user.id_user }, { expiresIn: '24h' });
+			console.log("user creer: ", user);
+			
+			try {
 
-			await sendVerifEmail(user, tokentmp);
+				await sendVerifEmail(user, tokentmp);
 
-			return {success: true, user, message: 'Check your email to complete your registration.'};
+				return {success: true, user, message: 'Check your email to complete your registration.'};
+			}
+			catch (error : any) {
+				console.error("erreur mail user: ", error.message);
+				await deleteUserWithName(username, server.db);
+				return reply.code(error.code).send({ success: false, error: error.message });
+			}
 		}
 		catch (error: any) {
 			console.error("erreur create user: ", error.message);
-			return reply.code(401).send({ success: false, error: error.message }); }
+			return reply.code(error.code ? error.code : 401).send({ success: false, error: error.message });
+		}
 	});
 
 	// verif email ---------------------

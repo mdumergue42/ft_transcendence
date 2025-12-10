@@ -293,7 +293,7 @@ export class AuthModal extends HTMLElement {
                 this.switchTab('login');
             } else {
                 const error = await response.json();
-                alert('Erreur d\'inscription: ' + (error.message || 'Erreur inconnue'));
+                alert('Erreur d\'inscription: ' + (error.message || error.error ? error.error : 'Erreur inconnue'));
             }
         } catch (error) {
             console.error('Registration error:', error);

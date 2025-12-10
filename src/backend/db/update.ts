@@ -26,3 +26,9 @@ export async function updateEmailVerif(value: number, id:number, db:Dbase)
 	const stmt = await db.prepare(`UPDATE users SET email_verified = ? WHERE id_user = ?`);
 	await stmt.run([value, id]);
 }
+
+export async function deleteUserWithName(name: string, db:Dbase)
+{
+	const stmt = await db.prepare(`DELETE FROM users WHERE username = ?`);
+	await stmt.run([name]);
+}

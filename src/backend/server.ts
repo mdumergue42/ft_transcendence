@@ -65,7 +65,6 @@ server.addHook('onResponse', async (request, reply) => {
 	console.log(`${base} ${colors.gray}→ ${colors.reset}${statusColor}${status}${colors.reset} ${colors.dim}(${calculatedResponseTime}ms)${colors.reset}`);
 });
 
-console.log('jwt de merde: ', process.env.JWT_SECRET);
 await server.register(fastifyJwt, {
 	secret: process.env.JWT_SECRET!,
 	sign: { expiresIn: '24h' }

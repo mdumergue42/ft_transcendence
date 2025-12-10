@@ -51,8 +51,6 @@ export class AppNavbar extends HTMLElement {
 				if (page) {
 					this.navigateTo(page);
 				} else if (target.id === 'login-btn') {
-					console.log('Login button clicked');
-					console.log(`login : ${isLoggedIn}`);
 					this.dispatchEvent(new CustomEvent('login', { bubbles: true, composed: true }));
 				}
 			}

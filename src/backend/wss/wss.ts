@@ -36,7 +36,6 @@ class WsServ
 
 	connection(socket:WebSocket)
 	{
-		console.log('Client connected');
 		this.WaintingClients.push(new Client(socket));
 	}
 
@@ -132,13 +131,10 @@ class WsServ
 		var c = this.getClientWS(socket);
 		if (c)
 			this.parsing(msg, c);
-		else
-			console.log("ALERTE LA");
 	}
 
 	async user(msg:any, client:Client)
 	{
-		console.log("USER:", client.username, client.id, msg);
 		var arg;
 		arg = msg.name;
 		if (!arg)

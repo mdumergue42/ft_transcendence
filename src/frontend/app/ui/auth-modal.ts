@@ -22,25 +22,25 @@ export class AuthModal extends HTMLElement {
                     </div>
                     <div class="flex mb-6 bg-black rounded-xl p-1 border PBorder">
                         <button id="login-tab" class="auth-tab flex-1 py-2 px-4 rounded-lg font-mono text-sm font-semibold transition-all duration-300 text-black PBoxBg border PBorder">
-                            CONNEXION
+                            LOGIN
                         </button>
                         <button id="register-tab" class="auth-tab flex-1 py-2 px-4 rounded-lg font-mono text-sm font-semibold transition-all duration-300 PText">
-                            INSCRIPTION
+                            REGISTRATION
                         </button>
                     </div>
                     <form id="login-form" class="auth-form space-y-4">
                         <div>
-                            <label class="block PText font-mono text-sm mb-2">IDENTIFIANT</label>
+                            <label class="block PText font-mono text-sm mb-2">USERNAME</label>
                             <input
                                 type="text"
                                 name="username"
                                 required
                                 class="w-full bg-black border-2 PBorder rounded-lg px-4 py-3 PText font-mono focus:PBorder focus:outline-none transition-colors duration-300 PLowShadowFocus"
-                                placeholder="Votre nom d'utilisateur"
+                                placeholder="Your username"
                             >
                         </div>
                         <div>
-                            <label class="block PText font-mono text-sm mb-2">MOT DE PASSE</label>
+                            <label class="block PText font-mono text-sm mb-2">PASSWORD</label>
                             <input
                                 type="password"
                                 name="password"
@@ -53,25 +53,25 @@ export class AuthModal extends HTMLElement {
                             type="submit"
                             class="w-full bg-black border-2 PBorder PText PBoxHover hover:text-black font-mono font-bold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 uppercase tracking-wider"
                         >
-                            SE CONNECTER
+                            LOGIN
                         </button>
                         <button
                             type="button"
                             id="resend-email-btn"
                             class="hidden w-full mt-3 text-[10px] PText opacity-60 hover:opacity-100 hover:text-white transition-all uppercase tracking-widest"
                         >
-                            [ RENVOYER L'EMAIL DE VALIDATION ]
+                            [ Resend the email ]
                         </button>
                     </form>
                     <form id="register-form" class="auth-form space-y-4 hidden">
                         <div>
-                            <label class="block PText font-mono text-sm mb-2">IDENTIFIANT</label>
+                            <label class="block PText font-mono text-sm mb-2">USERNAME</label>
                             <input
                                 type="text"
                                 name="username"
                                 required
                                 class="w-full bg-black border-2 PBorder rounded-lg px-4 py-3 PText font-mono focus:PBorder focus:outline-none transition-colors duration-300 PLowShadowFocus"
-                                placeholder="Choisir un nom d'utilisateur"
+                                placeholder="Enter a username"
                             >
                         </div>
                         <div>
@@ -85,7 +85,7 @@ export class AuthModal extends HTMLElement {
                             >
                         </div>
                         <div>
-                            <label class="block PText font-mono text-sm mb-2">MOT DE PASSE</label>
+                            <label class="block PText font-mono text-sm mb-2">Password</label>
                             <input
                                 type="password"
                                 name="password"
@@ -95,7 +95,7 @@ export class AuthModal extends HTMLElement {
                             >
                         </div>
                         <div>
-                            <label class="block PText font-mono text-sm mb-2">CONFIRMER LE MOT DE PASSE</label>
+                            <label class="block PText font-mono text-sm mb-2">Confirm password</label>
                             <input
                                 type="password"
                                 name="confirmPassword"
@@ -108,7 +108,7 @@ export class AuthModal extends HTMLElement {
                             type="submit"
                             class="w-full bg-black border-2 PBorder PText PBoxHover hover:text-black font-mono font-bold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 PShadowHover uppercase tracking-wider"
                         >
-                            S'INSCRIRE
+                            Register
                         </button>
                     </form>
                     <div class="mt-6 text-center">
@@ -164,13 +164,13 @@ export class AuthModal extends HTMLElement {
         const activeClass = 'auth-tab flex-1 py-2 px-4 rounded-lg font-mono text-sm font-semibold transition-all duration-300 text-black PBoxBg border PBorder PLowShadow';
 
         if (tab === 'login') {
-            modalTitle.textContent = 'CONNEXION';
+            modalTitle.textContent = 'LOGIN';
             loginTab.className = activeClass;
             registerTab.className = inactiveClass;
             loginForm.classList.remove('hidden');
             registerForm.classList.add('hidden');
         } else {
-            modalTitle.textContent = 'INSCRIPTION';
+            modalTitle.textContent = 'REGISTER';
             registerTab.className = activeClass;
             loginTab.className = inactiveClass;
             registerForm.classList.remove('hidden');
@@ -210,7 +210,7 @@ export class AuthModal extends HTMLElement {
 				window.location.reload();
 			} else {
 				console.error('le backend a rien renvoyer');
-				alert('erreur: token manquant');
+				alert('Error: Missing token');
 			}
 				// //verif du jwt
 				// const verifToken = await fetch('/api/auth/verif-token', {
@@ -237,7 +237,7 @@ export class AuthModal extends HTMLElement {
 		catch (error) {
             console.error('Login error:', error);
 		//	localStorage.removeItem('tokenJWT');
-            alert('Erreur de connexion. Veuillez réessayer.');
+            alert('Connexion error. Please try again.');
         }
     }
 
@@ -265,7 +265,7 @@ export class AuthModal extends HTMLElement {
         const confirmPassword = formData.get('confirmPassword') as string;
 
         if (password !== confirmPassword) {
-            alert('Les mots de passe ne correspondent pas');
+            alert('Passwords do not match.');
             return;
         }
 
@@ -289,15 +289,15 @@ export class AuthModal extends HTMLElement {
             if (response.ok) {
                 const result = await response.json();
                 console.log('Registration successful:', result);
-                alert('Inscription réussie ! Vous pouvez maintenant vous connecter.');
+                alert('Registration successful! You can now log in.');
                 this.switchTab('login');
             } else {
                 const error = await response.json();
-                alert('Erreur d\'inscription: ' + (error.message || error.error ? error.error : 'Erreur inconnue'));
+                alert('Registration error: ' + (error.message || error.error ? error.error : 'Unknow error'));
             }
         } catch (error) {
             console.error('Registration error:', error);
-            alert('Erreur d\'inscription. Veuillez réessayer.');
+            alert('Registration error. Please try again.');
         }
     }
 

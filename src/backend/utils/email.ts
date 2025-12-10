@@ -16,7 +16,7 @@ export async function sendMail(to: string, subject: string, html: string) {
 }
 
 export async function sendVerifEmail(user: { id_user: number; username: string; email: string }, token:string) {
-	const verifLink = `${process.env.FRONTEND_URL}/api/auth/verify-email?id_user=${user.id_user}&token=${token}`;
+	const verifLink = `${process.env.BACKEND_URL}/api/auth/verify-email?id_user=${user.id_user}&token=${token}`;
 
 	const html = `
 	<p>Hello ${user.username},</p>

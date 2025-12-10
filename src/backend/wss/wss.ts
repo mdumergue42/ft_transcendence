@@ -141,19 +141,6 @@ class WsServ
 		console.log("USER:", client.username, client.id, msg);
 		var arg;
 		arg = msg.name;
-		if (arg == "TD") //TODO supr ca xd
-		{
-			var x = ["bastien", "gaby", "maelys", "youenn"];
-			var y = 0;
-			for (let k = 0; k < 4; k++) {
-				if (!this.connectedClients[k + 1]) {
-					y = k;
-					break;
-				}
-			}
-			arg = x[y];
-			console.log("GETNAME:", arg, y)
-		}
 		if (!arg)
 			return ;
 		await client.user(arg, this.db);

@@ -34,22 +34,6 @@ class WsServ
 		this.db = SQLserver.db;
 	}
 
-	async tmp()
-	{
-		await insertUser('bastien','a@mail.com','123', this.db);
-		await insertUser('gaby','c@mail.com','123', this.db);
-		await insertUser('maelys','d@mail.com','123', this.db);
-		await insertUser('youenn','b@mail.com','123', this.db);
-
-		const idB = await getIdByName('bastien', this.db);
-		const idM = await getIdByName('maelys', this.db);
-
-		await insertMatchs("test",idB, idM,1,0, this.db);
-		await insertMatchs("pvp",idB, idM,10,8, this.db);
-		await insertMatchs("ia",idB, idM,6,9, this.db);
-		await insertMatchs("pvp",idB, idM,2,6, this.db);
-	}
-
 	connection(socket:WebSocket)
 	{
 		console.log('Client connected');

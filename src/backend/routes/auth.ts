@@ -136,8 +136,8 @@ export async function authRt(server: FastifyInstance) {
 			return reply.code(401).send({ success: false, error: formatDataError }); }
 
 		try {
-			const existingUser = getAllByNameOrMail(username, email, server.db);
-			if (existingUser != undefined) {
+			const existingUser = await getAllByNameOrMail(username, email, server.db);
+			if (existingUser) {
 				return reply.code(400).send({ success: false, error: 'Email or username already used'});
 			}
 
@@ -234,10 +234,10 @@ async function createUser(server: FastifyInstance, username: string, password: s
 	
 	try {
 		const existUser = await getAllByName(username, server.db);
-		if (existUser != undefined) { throw new Error('Username already used') }
+		if (existUser) { throw new Error('Username already used') }
 
 		const existMail = await getAllByMail(email, server.db);
-		if (existMail != undefined) { throw new Error('Email already used') }
+		if (existMail) { throw new Error('Email already used') }
 
 		const newUser = await insertUser(username, email, hashPass, server.db);
 	

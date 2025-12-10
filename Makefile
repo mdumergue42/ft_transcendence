@@ -11,8 +11,11 @@ up:
 down:
 	docker compose down -v
 
-fclean: down
-	rm -f data/*
+fclean:
+	#TODO sa clear pas la DB
+	docker exec -i app sh -c "rm -f /app/db.sqlite"
+	docker compose down -v
+	rm -rf data/db.sqlite
 	rm -rf public/image/avatar/user/*
 
 prune:

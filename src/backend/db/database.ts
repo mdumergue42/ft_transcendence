@@ -18,7 +18,7 @@ export async function initDb(server: FastifyInstance) {
 	email_verified INTEGER DEFAULT 0,
 	code_verif TEXT,
 	expire_code_verif DATETIME,
-	two_fa_enabled INTEGER DEFAULT 0,
+	two_fa_enabled INTEGER DEFAULT 1,
 	two_fa_secret TEXT,
 	two_fa_method TEXT);
 
@@ -62,16 +62,3 @@ export async function initDb(server: FastifyInstance) {
 
 	console.log('✅ Base de données créer avec succés !')
 }
-
-
-//friend.FLAG => 0:blocked 1:yes
-
-//memo
-
-// commande sql -> nameType | type | contraintes
-// PRIMARY KEY -> combinaison NOT NULL/UNIQUE
-// async -> asynchrone = bloque pas le prog pendant que la ft s'execute
-// await -> wait is not finish
-// ici on attend que la table soit faite avant de continuer
-// FOREIGN KEY relie une colonne de 2 tables
-// REFERENCES permet de verifier que les 2 users existe, ca evite les erreurs

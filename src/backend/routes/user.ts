@@ -17,7 +17,6 @@ async function saveAvatar(buffer: Buffer, path: string): Promise<string> {
 		return path;
 	}
 	catch (error) {
-		console.log(error);
 		return "";
 	}
 }
@@ -41,7 +40,6 @@ export async function userSettingsRt(server: FastifyInstance) {
 
 				const body = req.body as {avatar: {_buf: Buffer}};
 				const buf = body.avatar._buf;
-				console.log(buf);
 				path = await saveAvatar(buf, `/user/${name}.${avatar.type.split("/").pop()}`);
 			}
 

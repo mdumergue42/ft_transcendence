@@ -1,8 +1,8 @@
-import {Player} from './pongLib/player.js'
-import {Ball} from './pongLib/ball.js'
-import {Vector2} from './pongLib/vector2.js'
-import {draw, resetCanvas} from './pongLib/draw.js'
-import {CANVAS_WIDTH, CANVAS_HEIGHT} from './pongLib/global.js'
+import {Player} from '../pongLib/player.js'
+import {Ball} from '../pongLib/ball.js'
+import {Vector2} from '../pongLib/vector2.js'
+import {draw, resetCanvas} from '../pongLib/draw.js'
+import {CANVAS_WIDTH, CANVAS_HEIGHT} from '../pongLib/global.js'
 
 export class PongGame
 {

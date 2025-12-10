@@ -11,3 +11,4 @@ export interface FastifyJWT {
 	email: string;
 }
 
+export type Dbase = any;

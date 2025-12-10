@@ -8,7 +8,9 @@ import { FastifyJWT } from '@fastify/jwt';
 import { generateCode, saveCode, verifCode } from '../utils/2fa.js';
 import { request } from 'http';
 import { send2faCodeEmail, sendVerifEmail } from '../utils/email.js';
-
+import { getAllByName, getAllById, getAllByNameOrMail, getAllByMail} from '../db/get.js'
+import { updatetfa_enable, updateEmailVerif } from '../db/update.js'
+import { insertUser } from '../db/insert.js'
 
 export async function authRt(server: FastifyInstance) {
 	server.get('/api/auth/status', async () => ({ loggedIn: false }));
@@ -21,7 +23,7 @@ export async function authRt(server: FastifyInstance) {
 			return reply.code(400).send({ success: false, error: 'Invalid credentials' }); }
 
 		try {
-			const user = await server.db.get( 'SELECT * FROM users WHERE username = ?', username);
+			const user = await getAllByName(username, server.db);
 			if (!user) {
 				return reply.code(401).send({ success: false, error: 'User not found' }); }
 			
@@ -60,7 +62,8 @@ export async function authRt(server: FastifyInstance) {
 				success: true,
 				tokenJWT: tokenJWT,
 				user: {id: user.id_user, username: user.username, email: user.email}};
-		} catch (error: any) {
+		}
+		catch (error: any) {
 			return reply.code(401).send({ success: false, error: error.message }); }
 	});
 
@@ -75,9 +78,7 @@ export async function authRt(server: FastifyInstance) {
 			return reply.code(401).send({ success: false, error: 'Expire or invalid code'});
 		}
 
-		const user = await server.db.get(
-			'SELECT * FROM users WHERE id_user = ?', id_user
-		);
+		const user = await getAllById(id_user, server.db);
 
 		const tokenJWT = generateJWT(server, {
 			id_user: user.id_user,
@@ -95,9 +96,7 @@ export async function authRt(server: FastifyInstance) {
 	server.post('/api/enable-2fa', async(request, reply) => {
 		const { id_user } = request.body as any;
 
-		await server.db.run(
-			'UPDATE users SET two_fa_enabled = 1 WHERE id_user = ?', id_user
-		);
+		await updatetfa_enable(1, id_user, server.db);
 		return { success: true, message: '2FA enabled'}
 	});
 
@@ -112,10 +111,8 @@ export async function authRt(server: FastifyInstance) {
 			return reply.code(401).send({ success: false, error: formatDataError }); }
 
 		try {
-			const existingUser = await server.db.get(
-				'SELECT * FROM users WHERE email = ? OR username = ?', email, username
-			);
-			if (existingUser) {
+			const existingUser = getAllByNameOrMail(username, email, server.db);
+			if (existingUser != undefined) {
 				return reply.code(400).send({ success: false, error: 'Email or username already used'});
 			}
 
@@ -128,7 +125,8 @@ export async function authRt(server: FastifyInstance) {
 			await sendVerifEmail(user, tokentmp);
 
 			return {success: true, user, message: 'Check your email to complete your registration.'};
-		} catch (error: any) {
+		}
+		catch (error: any) {
 			console.error("erreur create user: ", error.message);
 			return reply.code(401).send({ success: false, error: error.message }); }
 	});
@@ -148,7 +146,7 @@ export async function authRt(server: FastifyInstance) {
 				return reply.code(400).send({ success: false, error: 'Invalid link'});
 			}
 
-			await server.db.run('UPDATE users SET email_verified = 1 WHERE id_user = ?', userId);
+			await updateEmailVerif(1, userId, server.db);
 			return reply.send('<h2>Email successfully verified !</h2>');
 		} catch (error) {
 			return reply.code(400).send({ success: false, error: 'Link expired or invalid'});
@@ -164,7 +162,7 @@ export async function authRt(server: FastifyInstance) {
 		}
 
 		try {
-			const user = await server.db.get('SELECT * FROM users WHERE email = ?', email);
+			const user = await getAllByMail(email, server.db);
 			if (!user) {
 				return reply.code(404).send({ success: false, error: 'User not found'});
 			}
@@ -177,7 +175,8 @@ export async function authRt(server: FastifyInstance) {
 			await sendVerifEmail(user, tokentmp);
 
 			return reply.send({ success: true, message: 'Email successfully resent'});
-		} catch (error: any) {
+		}
+		catch (error: any) {
 			return reply.code(500).send({ success: false, error: error.message});
 		}
 	});
@@ -211,21 +210,17 @@ async function createUser(server: FastifyInstance, username: string, password: s
 	//		return reply.code() }
 	
 	try {
-		// check if no duplicate
-		const existUser = await server.db.get ( 'SELECT * FROM users WHERE username = ?', username );
-		if (existUser) { throw new Error('Username already used') }
+		const existUser = await getAllByName(username, server.db);
+		if (existUser != undefined) { throw new Error('Username already used') }
 
-		const existMail = await server.db.get ( 'SELECT * FROM users WHERE email = ?', email );
-		if (existMail) { throw new Error('Email already used') }
+		const existMail = await getAllByMail(email, server.db);
+		if (existMail != undefined) { throw new Error('Email already used') }
 
-		// insert newUser
-		const newUser = await server.db.run( 'INSERT INTO users (username, email, password) VALUES (?, ?, ?)', username, email, hashPass );
-
-		// keep newUser without password for the frontend
-		const keepNewUser = await server.db.get ( 'SELECT id_user, username, email FROM users WHERE id_user = ?', newUser.lastID )
+		const newUser = await insertUser(username, email, hashPass, server.db);
 	
-		return keepNewUser;
-	} catch (error: any) {
+		return {id_user:newUser.lastID, username:username, email:email};
+	}
+	catch (error: any) {
 		throw new Error(error.message);
 	}
 }

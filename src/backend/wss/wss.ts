@@ -3,7 +3,9 @@ import {FastifyInstance} from 'fastify';
 import {Client} from './client.js';
 import {ARoom} from './Aroom.js';
 import {MMRoom} from './MMroom.js';
-import {getIdByName, getNameById, getFlagFriendShip, getHistoricById, getColorById, getAvatarByName, getDescByName ,insertUser, insertMatchs, insertMsg, insertFriend, updateFlagFriend, updateUser, getCountFriend} from './sqlGet.js'
+import {getIdByName, getNameById, getFlagFriendShip, getHistoricById, getColorById, getAvatarByName, getDescByName, getCountFriend} from '../db/get.js';
+import {insertUser, insertMatchs, insertMsg, insertFriend} from '../db/insert.js';
+import {updateFlagFriend, updateUser} from '../db/update.js'
 
 
 interface Dictionary<T> {

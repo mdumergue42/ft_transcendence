@@ -1,9 +1,10 @@
 import {Client} from './client.js';
 import {PongGame} from './backGame.js'
-import {Player} from './pongLib/player.js'
-import {Ball} from './pongLib/ball.js'
-import {Vector2} from './pongLib/vector2.js'
-import {ai} from './pongLib/ai.js'
+import {Player} from '../pongLib/player.js'
+import {Ball} from '../pongLib/ball.js'
+import {Vector2} from '../pongLib/vector2.js'
+import {ai} from '../pongLib/ai.js'
+import {Dbase} from '../types/index';
 
 export abstract class ARoom
 {
@@ -11,7 +12,7 @@ export abstract class ARoom
 	flag:number
 	intervals: {state: any; ai: any } = {state: null, ai:null};
 	game: PongGame
-	db: any
+	db: Dbase
 	inGame: number = 0;
 	p1: Client | null = null;
 	p2: Client | null = null;

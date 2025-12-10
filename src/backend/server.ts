@@ -4,7 +4,7 @@ import fastifyStatic from '@fastify/static';
 import fastifyCors from '@fastify/cors';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
-import { WSServInit } from './dev-chat/wss.js';
+import { WSServInit } from './wss/wss.js';
 import { initDb } from './db/database.js'
 import { authRt } from './routes/auth.js'
 import { userSettingsRt } from './routes/user.js'
@@ -96,7 +96,8 @@ async function findAvailablePort(startPort: number, maxAttempts: number = 10): P
 		try {
 			await server.listen({ port: testPort, host: HOST });
 			return testPort;
-		} catch (err: any) {
+		}
+		catch (err: any) {
 			if (err.code === 'EADDRINUSE') {
 				console.log(
 					`${colors.yellow}⚠️  Port ${testPort} already in use${colors.reset}, ` +
@@ -133,7 +134,8 @@ ${colors.bright}${colors.magenta}╚══════════════�
 
 		WSServInit(8080, server);
 
-	} catch (err: any) {
+	}
+	catch (err: any) {
 		if (err.code === 'EADDRINUSE') {
 			console.error(`\n${colors.red}❌ Error: Port ${PORT} is already in use!${colors.reset}`);
 			console.error(`${colors.yellow}💡 Try one of these solutions:${colors.reset}`);

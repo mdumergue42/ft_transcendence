@@ -1,5 +1,6 @@
 import {WebSocket} from 'ws';
-import {getIdByName, getColorById, getNameById, getDescByName, getAllMsg, getAllFriends, getAvatarByName} from './sqlGet.js'
+import {getIdByName, getColorById, getNameById, getDescByName, getAllMsg, getAllFriends, getAvatarByName} from '../db/get.js'
+import { Dbase } from '../types/index';
 
 export class Client
 {
@@ -19,7 +20,7 @@ export class Client
 		this.socket.send(JSON.stringify(obj));
 	}
 
-	async user(name: string, db:any)
+	async user(name: string, db:Dbase)
 	{
 		this.username = name;
 		this.id = await getIdByName(name, db);
@@ -31,13 +32,13 @@ export class Client
 		await this.userGetMsg(db);
 	}
 
-	async userGetFriends(db:any)
+	async userGetFriends(db:Dbase)
 	{
 		const friends = await getAllFriends(this.id, db);
 		for (let friend of friends)
 			this.addFriend(friend.username, friend.id, friend.flag);
 	}
-	async userGetMsg(db: any)
+	async userGetMsg(db:Dbase)
 	{
 		const msgs = await getAllMsg(this.id, db);
 		for (let msg of msgs)

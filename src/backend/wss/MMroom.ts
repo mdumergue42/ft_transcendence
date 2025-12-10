@@ -1,10 +1,10 @@
 import {Client} from './client.js';
 import {PongGame} from './backGame.js'
-import {Player} from './pongLib/player.js'
-import {Ball} from './pongLib/ball.js'
-import {Vector2} from './pongLib/vector2.js'
+import {Player} from '../pongLib/player.js'
+import {Ball} from '../pongLib/ball.js'
+import {Vector2} from '../pongLib/vector2.js'
 import {ARoom} from './Aroom.js'
-import {insertMatchs} from './sqlGet.js'
+import {insertMatchs} from '../db/insert.js'
 
 export class MMRoom extends ARoom {
 	sendStartInfo(user: Client | null, names:[string, string], def:string)

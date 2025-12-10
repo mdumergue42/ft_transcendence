@@ -1,6 +1,7 @@
 import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import multipart, {MultipartFile} from '@fastify/multipart';
-import {getIdByName, updateUser} from '../dev-chat/sqlGet.js';
+import {getIdByName} from '../db/get.js';
+import {updateUser} from '../db/update.js';
 import { promises as fs } from 'fs';
 
 interface UserRequestBody extends FormData {
@@ -46,7 +47,7 @@ export async function userSettingsRt(server: FastifyInstance) {
 
 			const id = await getIdByName(name, server.db);
 			if (!id)
-				return reply.status(400).send({ message: 'error id' });
+				return reply.status(401).send({ message: 'error id' });
 
 			await updateUser(path, desc, color, id, server.db);
 
@@ -59,8 +60,7 @@ export async function userSettingsRt(server: FastifyInstance) {
 			});
 		}
 		catch (err) {
-			reply.status(500).send({ error: 'error try' });
+			return reply.status(500).send({ error: 'error with the user settings' });
 		}
-		return { success: true, message: 'test ok'};
 	});
 }

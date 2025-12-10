@@ -1,32 +1,59 @@
-export async function getIdByName(name : string, db: any) {
+import { Dbase } from '../types/index';
+
+export async function getIdByName(name : string, db: Dbase) {
 	const stmt = await db.prepare(`SELECT id_user as id FROM users WHERE username = ?`);
 	let result = await stmt.get([name])
 	if (result)
 		result = result.id;
 	return result;
 }
-export async function getNameById(id : number, db: any) {
+
+export async function getAllByName(name : string, db: Dbase) {
+	const stmt = await db.prepare(`SELECT * FROM users WHERE username = ?`);
+	let result = await stmt.get([name])
+	return result;
+}
+export async function getAllByMail(mail : string, db: Dbase) {
+	const stmt = await db.prepare(`SELECT * FROM users WHERE email = ?`);
+	let result = await stmt.get([mail])
+	return result;
+}
+
+export async function getAllByNameOrMail(name : string, mail: string, db: Dbase) {
+	const stmt = await db.prepare(`SELECT * FROM users WHERE username = ? OR email = ?`);
+	let result = await stmt.get([name, mail])
+	return result;
+}
+
+export async function getNameById(id : number, db: Dbase) {
 	const stmt = await db.prepare(`SELECT username as name FROM users WHERE id_user = ?`);
 	let result = await stmt.get([id])
 	if (result)
 		result = result.name;
 	return result;
 }
-export async function getAvatarByName(name : string, db: any) {
+
+export async function getAllById(id : number, db: Dbase) {
+	const stmt = await db.prepare(`SELECT * FROM users WHERE id_user = ?`);
+	let result = await stmt.get([id])
+	return result;
+}
+
+export async function getAvatarByName(name : string, db: Dbase) {
 	const stmt = await db.prepare(`SELECT avatar as avatar FROM users WHERE username = ?`);
 	let result = await stmt.get([name])
 	if (result)
 		result = result.avatar;
 	return result;
 }
-export async function getDescByName(name: string, db:any) {
+export async function getDescByName(name: string, db:Dbase) {
 	const stmt = await db.prepare(`SELECT about_me as desc FROM users WHERE username = ?`);
 	let result = await stmt.get([name])
 	if (result)
 		result = result.desc;
 	return result;
 }
-export async function getColorById(id: number, db:any) {
+export async function getColorById(id: number, db:Dbase) {
 	const stmt = await db.prepare(`SELECT color as color FROM users WHERE id_user = ?`);
 	let result = await stmt.get([id])
 	if (result)
@@ -34,7 +61,7 @@ export async function getColorById(id: number, db:any) {
 	return result;
 }
 
-export async function getFlagFriendShip(friendId:number, selfId:number, db:any)
+export async function getFlagFriendShip(friendId:number, selfId:number, db:Dbase)
 {
 	const stmt = await db.prepare(`SELECT flag as flag FROM friends WHERE id_friend = ? AND id_self = ?`);
 	let result = await stmt.get([friendId, selfId]);
@@ -43,7 +70,7 @@ export async function getFlagFriendShip(friendId:number, selfId:number, db:any)
 	return result;
 }
 
-export async function getHistoricById(id:number, db:any, flag:any)
+export async function getHistoricById(id:number, db:Dbase, flag:Dbase)
 {
 	var stack = [id, id];
 
@@ -63,7 +90,7 @@ export async function getHistoricById(id:number, db:any, flag:any)
 	return result;
 }
 
-export async function getAllFriends(id:number, db:any)
+export async function getAllFriends(id:number, db:Dbase)
 {
 	const stmt = await db.prepare(`SELECT friends.id_friend, friends.flag, users.username FROM friends JOIN users ON users.id_user = friends.id_friend WHERE id_self = ?`);
 	let result = await stmt.all([id]);
@@ -72,7 +99,7 @@ export async function getAllFriends(id:number, db:any)
 	return result;
 }
 
-export async function getAllMsg(id: number, db:any)
+export async function getAllMsg(id: number, db:Dbase)
 {
 	const stmt = await db.prepare(`SELECT msg,id_from,id_to FROM msgs WHERE id_from = ? OR id_to = ? ORDER BY date`);
 	let result = await stmt.all([id, id]);
@@ -81,47 +108,8 @@ export async function getAllMsg(id: number, db:any)
 	return result;
 }
 
-export async function insertUser(name:string, email:string, pass:string, db:any)
-{
-	const stmt = await db.prepare(`INSERT INTO users(username, email, password, avatar, about_me, color) VALUES(?, ?, ?, ?, ?, ?)`);
-	await stmt.run([name, email, pass, '', '', 'green']);
-}
 
-export async function insertMatchs(type:string, id1:number, id2:number, s1:number, s2:number, db:any)
-{
-	const stmt = await db.prepare(`INSERT INTO matchs(match_type, id_p1, id_p2, score_p1, score_p2) VALUES (?, ?, ?, ?, ?)`);
-	await stmt.run([type, id1, id2, s1, s2]);
-
-}
-
-export async function insertFriend(idFrom:number, idTo:number, flag:number=1, db:any)
-{
-	const stmt = await db.prepare(`INSERT INTO friends(id_self, id_friend, flag) VALUES (?, ?, ?)`);
-	await stmt.run([idFrom, idTo, flag]);
-}
-
-export async function insertMsg(msg: string, idFrom:number, idTo:number, db:any)
-{
-	const stmt = await db.prepare(`INSERT INTO msgs(msg, id_from, id_to) VALUES (?, ?, ?)`);
-	await stmt.run([msg, idFrom, idTo]);
-}
-
-export async function updateFlagFriend(idFrom:number, idTo:number, flag:number, db:any)
-{
-
-	const stmt = await db.prepare(`UPDATE friends SET flag = ? WHERE id_self = ? AND id_friend = ?`);
-	await stmt.run([flag, idFrom, idTo]);
-}
-
-export async function updateUser(avatar:string | null, descr:string, color:string, id:number, db:any)
-{
-	if (!avatar)
-		avatar = "";
-	const stmt = await db.prepare(`UPDATE users SET avatar = ?, about_me = ?,color = ? WHERE id_user = ?`);
-	await stmt.run([avatar, descr, color,id]);
-}
-
-export async function getCountFriend(idFrom: number, idTo:number, db:any)
+export async function getCountFriend(idFrom: number, idTo:number, db:Dbase)
 {
 	const stmt = await db.prepare(`SELECT COUNT(1) AS nb FROM friends WHERE id_self = ? AND id_friend = ?`);
 	let result = await stmt.get([idFrom, idTo]);

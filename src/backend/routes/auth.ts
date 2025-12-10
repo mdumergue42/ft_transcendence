@@ -23,21 +23,6 @@ export async function authRt(server: FastifyInstance) {
 		};
 	});
 
-	// server.post('/api/auth/verif-token', async (req, reply) => {
-	// 	console.log('Verify token called with body:', req.body);
-	// 	const { tokenJWT } = req.body as any;
-	// 	if (!tokenJWT) {
-	// 		return reply.code(400).send({ valid: false });
-	// 	}
-
-	// 	try {
-	// 		server.jwt.verify(tokenJWT);
-	// 		return { valid: true };
-	// 	} catch {
-	// 		return { valid: false };
-	// 	}
-	// });
-
 	// login ------------------------
 	server.post('/api/auth/login', async (req, reply) => {
 		const { username, password } = req.body as any;
@@ -50,21 +35,29 @@ export async function authRt(server: FastifyInstance) {
 			if (!user) {
 				return reply.code(401).send({ success: false, error: 'User not found' }); }
 			
+			if (user.email_verified !== 1) {
+				return reply.code(403).send({ success: false, error: "Email not verified"});
+			}
+			
 			const validPass = await bcrypt.compare(password, user.password);
 			if (!validPass) {
 				return reply.code(401).send({ success: false, error: 'Invalid password' }); }
 			
-			if (user.two_fa_enabled) {
+			if (user.two_fa_enabled === 1) {
 				const code = generateCode();
 				await saveCode(server.db, user.id_user, code);
 
-				await send2faCodeEmail(
+				console.log('user.email = ', user.email);
+				console.log('code de 2fa = ', code);
+
+				const info = await send2faCodeEmail(
 					{
 						id_user: user.id_user,
 						username: user.username,
 						email:user.email
 					}, code
 				)
+				console.log("contenu du mail 2fa = ", info)
 
 				return {
 					success: true,
@@ -134,7 +127,7 @@ export async function authRt(server: FastifyInstance) {
 		const formatDataError = await verifDataUser(username, password, email);
 		console.log("resultat verifdatauser:", formatDataError);
 		if (formatDataError) {
-			return reply.code(401).send({ success: false, error: formatDataError }); }
+			return reply.code(400).send({ success: false, error: formatDataError }); }
 
 		try {
 			const existingUser = await server.db.get(
@@ -160,20 +153,31 @@ export async function authRt(server: FastifyInstance) {
 
 	// verif email ---------------------
 	server.get('/api/auth/verify-email', async(request: FastifyRequest, reply: FastifyReply) => {
-		const userId = Number((request.query as any).userId);
-		const token = (request.query as any).token;
+		const { id_user, token } = request.query as any;
+		const userId = Number(id_user);
 
 		if (!userId || !token) {
 			return reply.code(400).send({ success: false, error: 'Invalid link'});
 		}
 
 		try {
-			const payload = server.jwt.verify(token) as { userId: number };
-			if (payload.userId !== userId) {
+			const payload = server.jwt.verify(token) as { id_user: number };
+			if (payload.id_user !== userId) {
 				return reply.code(400).send({ success: false, error: 'Invalid link'});
 			}
 
+			const user = await server.db.get('SELECT email_verified FROM users WHERE id_user = ?', userId);
+			if (!user) {
+				return reply.code(404).send({ success: false, error: 'User not found'});
+			}
+			if (user.email_verified === 1) {
+				return reply.send('<h2>Email already verified !</h2>')
+			}
+
+
 			await server.db.run('UPDATE users SET email_verified = 1 WHERE id_user = ?', userId);
+			console.log('id_user email verified = ', user.email_verified);
+			
 			return reply.send('<h2>Email successfully verified !</h2>');
 		} catch (error) {
 			return reply.code(400).send({ success: false, error: 'Link expired or invalid'});

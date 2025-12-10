@@ -17,7 +17,7 @@ export async function initDb(server: FastifyInstance) {
 	email_verified INTEGER DEFAULT 0,
 	code_verif TEXT,
 	expire_code_verif DATETIME,
-	two_fa_enabled INTEGER DEFAULT 0,
+	two_fa_enabled INTEGER DEFAULT 1,
 	two_fa_secret TEXT,
 	two_fa_method TEXT);
 

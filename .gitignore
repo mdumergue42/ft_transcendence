@@ -142,4 +142,5 @@ data/*.sqlite
 dist/*
 public/*
 !public/image/*ico
-!public/image/avatar/default/*
+!public/image/avatar/default/default.jpg
+!public/image/avatar/default/404.png

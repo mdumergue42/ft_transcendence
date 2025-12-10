@@ -12,8 +12,11 @@ down:
 	docker compose down -v
 
 fclean: down
+	rm -f data/*
+	rm -rf public/image/avatar/user/*
+
+prune:
 	docker system prune -a --volumes
-	rm -rf ./data/*
-	rm -rf ./public/image/avatar/user/*
+
 
 .PHONY: all re up down fclean

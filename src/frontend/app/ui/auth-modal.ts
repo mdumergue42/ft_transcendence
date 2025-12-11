@@ -199,6 +199,8 @@ export class AuthModal extends HTMLElement {
         const tfaForm = this.querySelector('#2fa-form') as HTMLFormElement;
         const modalTitle = this.querySelector('#modal-title') as HTMLElement;
 
+		console.log("test1");
+
         const inactiveClass = 'auth-tab flex-1 py-2 px-4 rounded-lg font-mono text-sm font-semibold transition-all duration-300 PText border border-transparent';
         
         const activeClass = 'auth-tab flex-1 py-2 px-4 rounded-lg font-mono text-sm font-semibold transition-all duration-300 text-black PBoxBg border PBorder PLowShadow';
@@ -215,6 +217,7 @@ export class AuthModal extends HTMLElement {
 			tfaForm.classList.add('hidden');
         }
 		else if ( tab == '2fa') {
+			console.log("test2");
             modalTitle.textContent = '2FA';
 			tfaTab.className = activeClass
 			loginTab.style.display = "none";
@@ -235,6 +238,7 @@ export class AuthModal extends HTMLElement {
             loginForm.classList.add('hidden');
 			tfaForm.classList.add('hidden');
         }
+		console.log("test3");
     }
 
     async handleLogin(e: Event) {

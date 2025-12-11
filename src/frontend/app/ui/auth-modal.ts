@@ -216,11 +216,6 @@ export class AuthModal extends HTMLElement {
 				return;
 			}
 
-			if (result.two_fa_enabled === 1) {
-
-				//this.2fastifyReplyFrom;
-				return;
-			}
 
 			if (!response.ok) {
 				console.error('LE back a pas renvoyer le fucking token');
@@ -230,7 +225,14 @@ export class AuthModal extends HTMLElement {
 				localStorage.setItem('token', result.token);
 				this.close();
 				window.location.reload();
-			} else {
+			}
+			else if  (result.two_fa_enabled == true) {
+			{
+				console.error('need tfa');
+				return;
+			}
+			}
+			else {
 				console.error('le backend a rien renvoyer');
 				alert('Error: Missing token');
 			}

@@ -191,16 +191,12 @@ export class AuthModal extends HTMLElement {
         this.currentTab = tab;
         this.hideErrorAndResend(); //j\ai rejoute ici
 
-		console.log("test0");
         const loginTab = this.querySelector('#login-tab') as HTMLButtonElement;
         const registerTab = this.querySelector('#register-tab') as HTMLButtonElement;
         const loginForm = this.querySelector('#login-form') as HTMLFormElement;
 		const registerForm = this.querySelector('#register-form') as HTMLFormElement;
-		console.log("test0.0");
 		const tfaTab = this.querySelector('#tfa-tab') as HTMLButtonElement;
-		console.log("test0.1");
         const tfaForm = this.querySelector('#tfa-form') as HTMLFormElement;
-		console.log("test0.2");
         const modalTitle = this.querySelector('#modal-title') as HTMLElement;
 
 		console.log("test1");
@@ -242,7 +238,6 @@ export class AuthModal extends HTMLElement {
             loginForm.classList.add('hidden');
 			tfaForm.classList.add('hidden');
         }
-		console.log("test3");
     }
 
     async handleLogin(e: Event) {
@@ -290,7 +285,7 @@ export class AuthModal extends HTMLElement {
 			}
 			else if  (result.requiresTwoFactor == true) {
 			{
-                this.switchTab('login');
+                this.switchTab('2fa');
 				return;
 			}
 			}

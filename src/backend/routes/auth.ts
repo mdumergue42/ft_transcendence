@@ -89,7 +89,8 @@ export async function authRt(server: FastifyInstance) {
 	// verif 2fa -----------------------
 	server.post('/api/auth/verify-2fa', async (request, reply) => {
 		const { name, code } = request.body as any;
-		if (!await getIdByName(request.user, server.db)) {
+		const id_user = await getIdByName(name, server.db)
+		if (!id_user) {
 			return reply.code(400).send({ success: false, error: 'Error UserName' });
 		}
 		if (!code) {

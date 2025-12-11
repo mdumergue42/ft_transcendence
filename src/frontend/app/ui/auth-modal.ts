@@ -29,8 +29,8 @@ export class AuthModal extends HTMLElement {
                         <button id="register-tab" class="auth-tab flex-1 py-2 px-4 rounded-lg font-mono text-sm font-semibold transition-all duration-300 PText">
                             REGISTRATION
                         </button>
-                        <button id="2fa-tab" class="auth-tab flex-1 py-2 px-4 rounded-lg font-mono text-sm font-semibold transition-all duration-300 PText">
-                            REGISTRATION
+                        <button id="2fa-tab" style="visibility:collapse" class="auth-tab flex-1 py-2 px-4 rounded-lg font-mono text-sm font-semibold transition-all duration-300 PText">
+							2FA
                         </button>
                     </div>
                     <form id="login-form" class="auth-form space-y-4">
@@ -202,22 +202,23 @@ export class AuthModal extends HTMLElement {
         
         const activeClass = 'auth-tab flex-1 py-2 px-4 rounded-lg font-mono text-sm font-semibold transition-all duration-300 text-black PBoxBg border PBorder PLowShadow';
 
-		const hideClass = 'collapse';
-
         if (tab === 'login') {
             modalTitle.textContent = 'LOGIN';
             loginTab.className = activeClass;
             registerTab.className = inactiveClass;
-			tfaTab.className = hideClass;
+			loginTab.style.visibility = "";
+			registerTab.style.visibility = "";
+			tfaTab.style.visibility = "collapse";
             loginForm.classList.remove('hidden');
             registerForm.classList.add('hidden');
 			tfaForm.classList.add('hidden');
         }
 		else if ( tab == '2fa') {
             modalTitle.textContent = '2FA';
-            registerTab.className = hideClass;
-            loginTab.className = hideClass;
 			tfaTab.className = activeClass
+			loginTab.style.visibility = "collapse";
+			registerTab.style.visibility = "collapse";
+            loginTab.style.visibility = "";
             registerForm.classList.add('hidden');
             loginForm.classList.add('hidden');
 			tfaForm.classList.remove('hidden');
@@ -225,8 +226,10 @@ export class AuthModal extends HTMLElement {
 		else {
             modalTitle.textContent = 'REGISTER';
             registerTab.className = activeClass;
-			tfaTab.className = hideClass;
             loginTab.className = inactiveClass;
+			loginTab.style.visibility = "";
+			registerTab.style.visibility = "";
+			tfaTab.style.visibility = "collapse";
             registerForm.classList.remove('hidden');
             loginForm.classList.add('hidden');
 			tfaForm.classList.add('hidden');

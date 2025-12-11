@@ -250,14 +250,12 @@ export class AuthModal extends HTMLElement {
 				console.error('LE back a pas renvoyer le fucking token');
 				alert('Error' + (result.error || 'ID incorrects'));
 			}
-			console.log(response);
-			console.log(result);
 			if (result.token) {
 				localStorage.setItem('token', result.token);
 				this.close();
 				window.location.reload();
 			}
-			else if  (result.two_fa_enabled == true) {
+			else if  (result.requiresTwoFactor == true) {
 			{
 				console.error('need tfa');
 				return;

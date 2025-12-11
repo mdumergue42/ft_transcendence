@@ -419,6 +419,8 @@ class WsServ
 		if (flags[0] != 1)
 			return ;
 
+		if (client.inQ)
+			return ;
 		this.enterQ(client);
 
 		var roomIds;

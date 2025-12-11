@@ -54,9 +54,6 @@ export async function authRt(server: FastifyInstance) {
 				const code = generateCode();
 				await saveCode(server.db, user.id_user, code);
 
-				console.log('user.email = ', user.email);
-				console.log('code de 2fa = ', code);
-
 				const info = await send2faCodeEmail(
 					{
 						id_user: user.id_user,
@@ -64,7 +61,6 @@ export async function authRt(server: FastifyInstance) {
 						email:user.email
 					}, code
 				)
-				console.log("contenu du mail 2fa = ", info)
 
 				return {
 					success: true,
@@ -91,7 +87,7 @@ export async function authRt(server: FastifyInstance) {
 	});
 
 	// verif 2fa -----------------------
-	server.post('/api/verify-2fa', async (request, reply) => {
+	server.post('/api/auth/verify-2fa', async (request, reply) => {
 		const { id_user, code } = request.body as any;
 		if (!id_user || !code) {
 			return reply.code(400).send({ success: false, error: 'Missing data' });
@@ -113,6 +109,25 @@ export async function authRt(server: FastifyInstance) {
 			success: true,
 			token: token,
 			user: {id: user.id_user, username: user.username, email: user.email}};
+	});
+
+	//resend 2fa code email
+	server.post('/api/auth/resend-2fa-code', async (request, reply) => {
+		const { id_user } = request.body as any;
+
+		if (!id_user) {
+			return reply.code(400).send({ success: false, error: "Missing id_user" });
+		}
+
+		try {
+			const user = await getAllById(id_user, server.db);
+			if (!user) {
+				return reply.code(404).send({ success:false, error: "User not found" });
+			}
+		} catch (error) {
+
+		}
+		//a finir**************************
 	});
 
 	// enable 2fa --------------------
@@ -220,6 +235,20 @@ export async function authRt(server: FastifyInstance) {
 		catch (error: any) {
 			return reply.code(500).send({ success: false, error: error.message});
 		}
+	});
+
+	//get email by username
+	server.post('/api/auth/get-email-by-username', async (request, reply) => {
+		const { username } = request.body as any;
+
+		const user = await server.db.get(
+			'SELECT email FROM users WHERE username = ?', username
+		);
+
+		if (!user) {
+			return reply.code(404).send({ error: "User not found"});
+		}
+		return reply.send({ email: user.email });
 	});
 
 	// profile -------------------------

@@ -1,3 +1,5 @@
+import fastifyReplyFrom from "@fastify/reply-from";
+
 export class AuthModal extends HTMLElement {
     private isOpen = false;
     private currentTab: 'login' | 'register' = 'login';
@@ -147,6 +149,9 @@ export class AuthModal extends HTMLElement {
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape' && this.isOpen) this.close();
         });
+
+		const resendBtn = this.querySelector('#resend-email-btn') as HTMLButtonElement;
+		resendBtn?.addEventListener('click', (e) => this.handleResendEmail(e));
     }
 
     switchTab(tab: 'login' | 'register') {
@@ -199,7 +204,24 @@ export class AuthModal extends HTMLElement {
             });
 
 			const result = await response.json();
-			console.log('result de authmodal: ', result);
+			
+			if (response.status === 403 && result.error === "Email not verified") {
+				const errEmail = this.querySelector('#login-error') as HTMLElement;
+				if (errEmail) {
+					errEmail.textContent = "Please verify your email before logging in";
+					errEmail.classList.remove('hidden');
+				}
+
+				this.showResendButton();
+				return;
+			}
+
+			if (result.two_fa_enabled === 1) {
+
+				//this.2fastifyReplyFrom;
+				return;
+			}
+
 			if (!response.ok) {
 				console.error('LE back a pas renvoyer le fucking token');
 				alert('Error' + (result.error || 'ID incorrects'));
@@ -212,27 +234,6 @@ export class AuthModal extends HTMLElement {
 				console.error('le backend a rien renvoyer');
 				alert('Error: Missing token');
 			}
-				// //verif du jwt
-				// const verifToken = await fetch('/api/auth/verif-token', {
-				// 	method: 'POST',
-				// 	headers: {
-				// 		'Content-Type': 'application/json'
-				// 	},
-				// 	body: JSON.stringify({ token: result.token })
-				// });
-				// console.log('fetch de ses morts ok', verifToken.status)
-
-				// const verifJWT = await verifToken.json();
-				// if (verifJWT.valid) {
-				// 	console.log('Login successful:', result);
-                // 	this.close();
-                // 	window.location.reload();
-				// }
-				// else {
-				// 	console.log('Expired token or invalid, suppressed token');
-				// 	localStorage.removeItem('tokenJWT');
-				// 	alert('Invalid token, please try again');
-				// }
         }
 		catch (error) {
             console.error('Login error:', error);
@@ -300,6 +301,86 @@ export class AuthModal extends HTMLElement {
             alert('Registration error. Please try again.');
         }
     }
+
+	async handleResendEmail(e: Event) {
+		e.preventDefault();
+
+		const userInput = this.querySelector('#login-form input[name="username"]') as HTMLInputElement | null;
+		if (!userInput || !userInput.value) {
+			alert("Enter your username first");
+			return;
+		}
+
+		const username = userInput.value;
+
+		try {
+			const emailResult = await fetch('/api/auth/get-email-by-username', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json'},
+				body: JSON.stringify({ username })
+			});
+			const dataResult = await emailResult.json();
+
+			if (!emailResult.ok || !dataResult.email) {
+				alert("No email find for this user");
+				return;
+			}
+
+			const emailResend = await fetch ('/api/auth/resend-verification', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json'},
+				body: JSON.stringify({ email: dataResult.email })
+			});
+
+			const dataResend = await emailResend.json();
+
+			if (emailResend.ok) {
+				alert("Your verification email has been resent");
+			} else {
+				alert("Error: "+ dataResend.error);
+			}
+
+		} catch (error) {
+			console.error('Resend email error: ', error);
+			alert("Error while resending email");
+		}
+	}
+
+	async handleVerify2FA(e: Event) {
+		e.preventDefault();
+
+		const id_user = (this as any).wait2fa;
+		if (!id_user) {
+			alert("No pending 2fa at this moment for this user");
+			return;
+		}
+
+		const codeResult = this.querySelector('#twofa-code') as HTMLInputElement;
+		if (!codeResult || !codeResult.value) {
+			alert("Please enter your 2fa code");
+			return;
+		}
+
+		const code2fa = codeResult.value;
+
+		try {
+			const verif2fa = await fetch ('/api/auth/verify-2fa', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json'},
+				body: JSON.stringify({ id_user, code2fa })
+			});
+
+			const finalResult2fa = await verif2fa.json();
+
+			if (!finalResult2fa.success) {
+				alert(finalResult2fa.error || "invalid code 2fa");
+				return;
+			}
+		} catch (error) {
+			console.error('The 2fa verification failed: ', error);
+			alert('Error with the 2fa code');
+		}
+	}
 
 	async handleLogout(e: Event) {
 		localStorage.removeItem('token');

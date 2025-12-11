@@ -1,4 +1,4 @@
-import fastifyReplyFrom from "@fastify/reply-from";
+//import fastifyReplyFrom from "@fastify/reply-from";
 
 export class AuthModal extends HTMLElement {
     private isOpen = false;
@@ -111,6 +111,35 @@ export class AuthModal extends HTMLElement {
                             class="w-full bg-black border-2 PBorder PText PBoxHover hover:text-black font-mono font-bold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 PShadowHover uppercase tracking-wider"
                         >
                             Register
+                        </button>
+                    </form>
+                    </form>
+                    <form id="2fa-form" class="auth-form space-y-6 hidden animate-in fade-in zoom-in duration-300">
+                        <div class="text-center">
+                            <div class="mb-4">
+                                <span class="text-4xl animate-pulse">🔐</span>
+                            </div>
+                            <p class="PText font-mono text-xs mb-4 uppercase tracking-widest">Authentication code</p>
+                            <p class="text-[10px] PText opacity-50 mb-4">Please enter the 6-digit code from your application.</p>
+                            
+                            <input
+                                type="text"
+                                name="2fa_code"
+                                maxlength="6"
+                                required
+                                class="w-3/4 bg-black border-2 PBorder rounded-lg px-4 py-3 PText font-mono text-center text-3xl tracking-[0.5em] focus:PBorder focus:outline-none transition-colors duration-300 PLowShadowFocus placeholder-gray-800"
+                                placeholder="000000"
+                                autocomplete="off"
+                            >
+                        </div>
+
+                        <div id="2fa-error" class="hidden text-red-500 text-xs font-mono text-center">Incorrect code</div>
+
+                        <button
+                            type="submit"
+                            class="w-full bg-black border-2 PBorder PText PBoxHover hover:text-black font-mono font-bold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 uppercase tracking-wider"
+                        >
+                            CHECK
                         </button>
                     </form>
                     <div class="mt-6 text-center">

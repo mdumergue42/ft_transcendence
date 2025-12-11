@@ -29,7 +29,7 @@ export class AuthModal extends HTMLElement {
                         <button id="register-tab" class="auth-tab flex-1 py-2 px-4 rounded-lg font-mono text-sm font-semibold transition-all duration-300 PText">
                             REGISTRATION
                         </button>
-                        <button id="2fa-tab" style="display:none" class="auth-tab flex-1 py-2 px-4 rounded-lg font-mono text-sm font-semibold transition-all duration-300 PText">
+                        <button id="tfa-tab" style="display:none" class="auth-tab flex-1 py-2 px-4 rounded-lg font-mono text-sm font-semibold transition-all duration-300 PText">
 							2FA
                         </button>
                     </div>
@@ -117,7 +117,7 @@ export class AuthModal extends HTMLElement {
                         </button>
                     </form>
                     </form>
-                    <form id="2fa-form" class="auth-form space-y-6 hidden animate-in fade-in zoom-in duration-300">
+                    <form id="tfa-form" class="auth-form space-y-6 hidden animate-in fade-in zoom-in duration-300">
                         <div class="text-center">
                             <div class="mb-4">
                                 <span class="text-4xl animate-pulse">🔐</span>
@@ -197,9 +197,9 @@ export class AuthModal extends HTMLElement {
         const loginForm = this.querySelector('#login-form') as HTMLFormElement;
 		const registerForm = this.querySelector('#register-form') as HTMLFormElement;
 		console.log("test0.0");
-		const tfaTab = this.querySelector('#2fa-tab') as HTMLButtonElement;
+		const tfaTab = this.querySelector('#tfa-tab') as HTMLButtonElement;
 		console.log("test0.1");
-        const tfaForm = this.querySelector('#2fa-form') as HTMLFormElement;
+        const tfaForm = this.querySelector('#tfa-form') as HTMLFormElement;
 		console.log("test0.2");
         const modalTitle = this.querySelector('#modal-title') as HTMLElement;
 

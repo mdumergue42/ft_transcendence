@@ -172,10 +172,11 @@ export class AuthModal extends HTMLElement {
 
         const loginForm = this.querySelector('#login-form') as HTMLFormElement;
         const registerForm = this.querySelector('#register-form') as HTMLFormElement;
+        const tfaForm = this.querySelector('#tfa-form') as HTMLFormElement;
 
         loginForm?.addEventListener('submit', (e) => this.handleLogin(e));
         registerForm?.addEventListener('submit', (e) => this.handleRegister(e));
-        tfaForm?.addEventListener('submit', (e) => this.handleVerify(e));
+        tfaForm?.addEventListener('submit', (e) => this.handleVerify2FA(e));
 
         document.addEventListener('login', () => this.open());
 

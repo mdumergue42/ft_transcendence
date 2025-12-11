@@ -1,3 +1,4 @@
+import { Dbmode } from 'fastify-sqlite-typed';
 import { Dbase } from '../types/index';
 
 export async function getIdByName(name : string, db: Dbase) {
@@ -13,6 +14,7 @@ export async function getAllByName(name : string, db: Dbase) {
 	let result = await stmt.get([name])
 	return result;
 }
+
 export async function getAllByMail(mail : string, db: Dbase) {
 	const stmt = await db.prepare(`SELECT * FROM users WHERE email = ?`);
 	let result = await stmt.get([mail])
@@ -125,5 +127,19 @@ export async function getCodeStck(id_user:number, code:string, db:Dbase)
 		AND code_2fa = ?
 		AND expire_at > datetime('now')`);
 	let result = await stmt.get([id_user, code]);
+	return result;
+}
+
+export async function getEmailVerified(id_user : number, db: Dbase) {
+	const stmt = await db.prepare(`SELECT email_verified as email FROM users WHERE id_user = ?`);
+	let result = await stmt.get([id_user])
+	if (result)
+		result = result.email;
+	return result;
+}
+
+export async function getEmailByUsername(name : string, db: Dbase) {
+	const stmt = await db.prepare(`SELECT email FROM users WHERE username = ?`);
+	let result = await stmt.get([name])
 	return result;
 }

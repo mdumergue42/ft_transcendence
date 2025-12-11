@@ -32,3 +32,8 @@ export async function deleteUserWithName(name: string, db:Dbase)
 	const stmt = await db.prepare(`DELETE FROM users WHERE username = ?`);
 	await stmt.run([name]);
 }
+
+export async function deleteCode2fa(id_code: number, db: Dbase) {
+	const stmt = await db.prepare(`DELETE FROM two_fa_code WHERE id_code = ?`, id_code);
+	await stmt.run([id_code]);
+}

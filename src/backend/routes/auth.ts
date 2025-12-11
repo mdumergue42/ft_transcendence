@@ -8,7 +8,7 @@ import { FastifyJWT } from '@fastify/jwt';
 import { generateCode, saveCode, verifCode } from '../utils/2fa.js';
 import { request } from 'http';
 import { send2faCodeEmail, sendVerifEmail } from '../utils/email.js';
-import { getAllByName, getIdByName, getAllById, getAllByNameOrMail, getAllByMail} from '../db/get.js'
+import { getAllByName, getIdByName, getAllById, getAllByNameOrMail, getAllByMail, getEmailVerified} from '../db/get.js'
 import { updatetfa_enable, updateEmailVerif, deleteUserWithName } from '../db/update.js'
 import { insertUser } from '../db/insert.js'
 
@@ -191,16 +191,16 @@ export async function authRt(server: FastifyInstance) {
 				return reply.code(400).send({ success: false, error: 'Invalid link'});
 			}
 
-			const user = await server.db.get('SELECT email_verified FROM users WHERE id_user = ?', userId);
-			if (!user) {
+			const res = await getEmailVerified(userId, server.db);
+			if (res == undefined) {
 				return reply.code(404).send({ success: false, error: 'User not found'});
 			}
-			if (user.email_verified === 1) {
+			if (res === 1) {
 				return reply.send('<h2>Email already verified !</h2>')
 			}
 
 
-			await server.db.run('UPDATE users SET email_verified = 1 WHERE id_user = ?', userId);
+			await updateEmailVerif(1, userId, server.db);
 			return reply.send('<h2>Email successfully verified !</h2>');
 		} catch (error) {
 			return reply.code(400).send({ success: false, error: 'Link expired or invalid'});
@@ -239,9 +239,7 @@ export async function authRt(server: FastifyInstance) {
 	server.post('/api/auth/get-email-by-username', async (request, reply) => {
 		const { username } = request.body as any;
 
-		const user = await server.db.get(
-			'SELECT email FROM users WHERE username = ?', username
-		);
+		const user = await getAllByName(username, server.db);
 
 		if (!user) {
 			return reply.code(404).send({ error: "User not found"});

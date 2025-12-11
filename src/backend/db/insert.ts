@@ -24,3 +24,9 @@ export async function insertMsg(msg: string, idFrom:number, idTo:number, db:Dbas
 	const stmt = await db.prepare(`INSERT INTO msgs(msg, id_from, id_to) VALUES (?, ?, ?)`);
 	await stmt.run([msg, idFrom, idTo]);
 }
+
+export async function insertCodeTfa(id_user: number, code: string, db: Dbase) {
+	const stmt = await db.prepare(`INSERT INTO two_fa_code (id_user_2fa, code_2fa, expire_at)
+		VALUES (?, ?, datetime('now', '+5 minutes'))`, id_user, code);
+	await stmt.run([id_user, code]);
+}

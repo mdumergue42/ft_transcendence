@@ -18,7 +18,8 @@ export async function authRt(server: FastifyInstance) {
 	server.get('/api/auth/status', {
 		onRequest: [server.authenticate]
 	}, async (request: any, reply) => {
-		if (!await getIdByName(request.user, server.db))
+		const id = await getIdByName(request.user.username, server.db) 
+		if (id  == undefined)
 			return reply.code(401).send({
 				success: false,
 				loggedIn: false,
@@ -75,7 +76,6 @@ export async function authRt(server: FastifyInstance) {
 				email: user.email
 			});
 			
-			console.log(' Login succesfull: ', username);
 			//il faut tout return pour le frontend et l'API
 			return { 
 				success: true,
@@ -145,10 +145,8 @@ export async function authRt(server: FastifyInstance) {
 	// register ------------------------
 	server.post('/api/auth/register', async (req, reply) => {
 		const { username, password, email } = req.body as any;
-		console.log("recu du front:", { username, password, email });
 
 		const formatDataError = await verifDataUser(username, password, email);
-		console.log("resultat verifdatauser:", formatDataError);
 		if (formatDataError) {
 			return reply.code(400).send({ success: false, error: formatDataError }); }
 
@@ -161,7 +159,6 @@ export async function authRt(server: FastifyInstance) {
 
 			const user = await createUser(server, username, password, email);
 			const tokentmp = server.jwt.sign({ id_user: user.id_user }, { expiresIn: '24h' });
-			console.log("user creer: ", user);
 			
 			try {
 
@@ -170,13 +167,11 @@ export async function authRt(server: FastifyInstance) {
 				return {success: true, user, message: 'Check your email to complete your registration.'};
 			}
 			catch (error : any) {
-				console.error("erreur mail user: ", error.message);
 				await deleteUserWithName(username, server.db);
 				return reply.code(500).send({ success: false, error: error.message });
 			}
 		}
 		catch (error: any) {
-			console.error("erreur create user: ", error.message);
 			return reply.code(error.code ? error.code : 401).send({ success: false, error: error.message });
 		}
 	});
@@ -206,7 +201,6 @@ export async function authRt(server: FastifyInstance) {
 
 
 			await server.db.run('UPDATE users SET email_verified = 1 WHERE id_user = ?', userId);
-			console.log('id_user email verified = ', user.email_verified);
 			return reply.send('<h2>Email successfully verified !</h2>');
 		} catch (error) {
 			return reply.code(400).send({ success: false, error: 'Link expired or invalid'});

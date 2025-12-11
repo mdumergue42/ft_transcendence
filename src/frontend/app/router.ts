@@ -32,7 +32,6 @@ async function connection(logs: HTMLElement): Promise<[boolean, ChatUser | null]
 	let username = null;
 
 	const token = localStorage.getItem('token');
-	console.log("TOKEN:", token);
 	if (token) {
 		try {
 			const res = await fetch('/api/auth/status', {
@@ -43,13 +42,11 @@ async function connection(logs: HTMLElement): Promise<[boolean, ChatUser | null]
 			});
 			if (res.ok) {
 				const r = await res.json();
-				console.log('login successsfulllll');
 				isLoggedIn = r.loggedIn;
 				username = r.user.username;
 
 			}
 			else {
-				console.log('token invalideeee, suppressionnnn');
 				localStorage.removeItem('token');
 			}
 		}
@@ -66,7 +63,6 @@ async function connection(logs: HTMLElement): Promise<[boolean, ChatUser | null]
 		window.location.reload();
 		return [false, null];
 	}
-	console.log("USERNAME:", username);
 
 	const user = new ChatUser(username);
 	if (!await user._waitWs(user.ws))

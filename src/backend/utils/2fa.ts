@@ -1,13 +1,11 @@
+import {getCodeStck} from '../db/get.js';
+
 export function generateCode(): string {
 	return Math.floor(100000 + Math.random() * 900000).toString();
 }
 
 export async function verifCode(db: any, id_user: number, code: string): Promise<boolean> {
-	const codeStck = await db.get(
-		`SELECT * FROM two_fa_code
-		WHERE id_user_2fa = ?
-		AND code_2fa = ?
-		AND expire_at > datetime('now)`, id_user, code);
+	const codeStck = await getCodeStck(id_user, code, db);
 	if (!codeStck) { return false; }
 
 	if (codeStck.attempts >= 3) {

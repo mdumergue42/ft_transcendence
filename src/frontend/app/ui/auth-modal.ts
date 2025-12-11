@@ -3,6 +3,7 @@
 export class AuthModal extends HTMLElement {
     private isOpen = false;
     private name = "";
+	private tfaLoginPressed = false;
     private currentTab: 'login' | 'register' | '2fa' = 'login';
 
     constructor() {
@@ -190,7 +191,6 @@ export class AuthModal extends HTMLElement {
     }
 
     switchTab(tab: 'login' | 'register' | '2fa') {
-		console.log("switch Tab");
         this.currentTab = tab;
         this.hideErrorAndResend(); //j\ai rejoute ici
 
@@ -243,6 +243,9 @@ export class AuthModal extends HTMLElement {
 
     async handleLogin(e: Event) {
         e.preventDefault();
+		if (this.tfaLoginPressed == true)
+			return ;
+		this.tfaLoginPressed = true;
         this.hideErrorAndResend(); // la aussi
         const form = e.target as HTMLFormElement;
         const formData = new FormData(form);
@@ -271,16 +274,19 @@ export class AuthModal extends HTMLElement {
 				}
 
 				this.showResendButton();
+				this.tfaLoginPressed = false;
 				return;
 			}
 
 
 			if (!response.ok) {
 				alert('Error' + (result.error || 'ID incorrects'));
+				this.tfaLoginPressed = false;
 				return ;
 			}
 			if (result.token) {
 				localStorage.setItem('token', result.token);
+				this.tfaLoginPressed = false;
 				this.close();
 				window.location.reload();
 			}
@@ -288,15 +294,18 @@ export class AuthModal extends HTMLElement {
 			{
 				this.name = loginData.username;
                 this.switchTab('2fa');
+				this.tfaLoginPressed = false;
 				return;
 			}
 			}
 			else {
+				this.tfaLoginPressed = false;
 				alert('Error: Missing token');
 				return ;
 			}
         }
 		catch (error) {
+			this.tfaLoginPressed = false;
 			localStorage.removeItem('tokenJWT');
             alert('Connexion error. Please try again.');
         }
@@ -312,7 +321,6 @@ export class AuthModal extends HTMLElement {
     {
         const errorDiv = this.querySelector('#login-error') as HTMLElement;
         const resendBtn = this.querySelector('#resend-email-btn') as HTMLElement;
-        
         if (errorDiv) errorDiv.classList.add('hidden');
         if (resendBtn) resendBtn.classList.add('hidden');
     }
@@ -336,8 +344,6 @@ export class AuthModal extends HTMLElement {
             password: password
         };
 
-		console.log("donnees pour le backend", registerData);
-
         try {
             const response = await fetch('/api/auth/register', {
                 method: 'POST',
@@ -349,7 +355,6 @@ export class AuthModal extends HTMLElement {
 
             if (response.ok) {
                 const result = await response.json();
-                console.log('Registration successful:', result);
                 alert('Registration successful! You can now log in.');
                 this.switchTab('login');
             } else {
@@ -357,7 +362,6 @@ export class AuthModal extends HTMLElement {
                 alert('Registration error: ' + (error.message || error.error ? error.error : 'Unknow error'));
             }
         } catch (error) {
-            console.error('Registration error:', error);
             alert('Registration error. Please try again.');
         }
     }
@@ -401,7 +405,6 @@ export class AuthModal extends HTMLElement {
 			}
 
 		} catch (error) {
-			console.error('Resend email error: ', error);
 			alert("Error while resending email");
 		}
 	}
@@ -409,19 +412,20 @@ export class AuthModal extends HTMLElement {
 	async handleVerify2FA(e: Event) {
 		e.preventDefault();
 
-		const codeResult = this.querySelector('#twofa-code') as HTMLInputElement;
-		if (!codeResult || !codeResult.value) {
+		const form = this.querySelector('#tfa-form') as HTMLFormElement;
+        const formData = new FormData(form);
+        const code2fa = formData.get('2fa_code') as string;
+		if (!code2fa) {
 			alert("Please enter your 2fa code");
 			return;
 		}
 
-		const code2fa = codeResult.value;
 
 		try {
 			const verif2fa = await fetch ('/api/auth/verify-2fa', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json'},
-				body: JSON.stringify({ name: this.name , code2fa })
+				body: JSON.stringify({ name: this.name , code:code2fa })
 			});
 
 			const finalResult2fa = await verif2fa.json();
@@ -430,6 +434,9 @@ export class AuthModal extends HTMLElement {
 				alert(finalResult2fa.error || "invalid code 2fa");
 				return;
 			}
+			localStorage.setItem('token', finalResult2fa.token);
+			window.location.reload();
+			
 		}
 		catch (error) {
 			console.error('The 2fa verification failed: ', error);
@@ -439,7 +446,6 @@ export class AuthModal extends HTMLElement {
 
 	async handleLogout(e: Event) {
 		localStorage.removeItem('token');
-		console.log('User disconnect.');
 		window.location.reload();
 	}
 

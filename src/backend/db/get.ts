@@ -117,3 +117,13 @@ export async function getCountFriend(idFrom: number, idTo:number, db:Dbase)
 		result = result.nb;
 	return result;
 }
+
+export async function getCodeStck(id_user:number, code:string, db:Dbase)
+{
+	const stmt = await db.prepare(`SELECT * FROM two_fa_code
+		WHERE id_user_2fa = ?
+		AND code_2fa = ?
+		AND expire_at > datetime('now')`);
+	let result = await stmt.get([id_user, code]);
+	return result;
+}

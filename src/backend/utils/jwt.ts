@@ -4,9 +4,10 @@ import { FastifyJWT } from '../types/index';
 
 
 export function generateJWT(server: FastifyInstance, user: FastifyJWT): string {
-	return server.jwt.sign({id_user: user.id_user, username: user.username, email: user.email},
+	const token =  server.jwt.sign({id_user: user.id_user, username: user.username, email: user.email},
 		{expiresIn: '24h'}
 	);
+	return token;
 }
 
 export async function verifJWT(server: FastifyInstance, token: string): Promise<FastifyJWT | null> {

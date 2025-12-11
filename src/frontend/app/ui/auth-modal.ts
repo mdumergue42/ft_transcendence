@@ -2,6 +2,7 @@
 
 export class AuthModal extends HTMLElement {
     private isOpen = false;
+    private name = "";
     private currentTab: 'login' | 'register' | '2fa' = 'login';
 
     constructor() {
@@ -201,7 +202,6 @@ export class AuthModal extends HTMLElement {
         const tfaForm = this.querySelector('#tfa-form') as HTMLFormElement;
         const modalTitle = this.querySelector('#modal-title') as HTMLElement;
 
-		console.log("test1");
 
         const inactiveClass = 'auth-tab flex-1 py-2 px-4 rounded-lg font-mono text-sm font-semibold transition-all duration-300 PText border border-transparent';
         
@@ -219,7 +219,6 @@ export class AuthModal extends HTMLElement {
 			tfaForm.classList.add('hidden');
         }
 		else if ( tab == '2fa') {
-			console.log("test2");
             modalTitle.textContent = '2FA';
 			tfaTab.className = activeClass
 			loginTab.style.display = "none";
@@ -287,6 +286,7 @@ export class AuthModal extends HTMLElement {
 			}
 			else if  (result.requiresTwoFactor == true) {
 			{
+				this.name = loginData.username;
                 this.switchTab('2fa');
 				return;
 			}
@@ -409,12 +409,6 @@ export class AuthModal extends HTMLElement {
 	async handleVerify2FA(e: Event) {
 		e.preventDefault();
 
-		const id_user = (this as any).wait2fa;
-		if (!id_user) {
-			alert("No pending 2fa at this moment for this user");
-			return;
-		}
-
 		const codeResult = this.querySelector('#twofa-code') as HTMLInputElement;
 		if (!codeResult || !codeResult.value) {
 			alert("Please enter your 2fa code");
@@ -427,7 +421,7 @@ export class AuthModal extends HTMLElement {
 			const verif2fa = await fetch ('/api/auth/verify-2fa', {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json'},
-				body: JSON.stringify({ id_user, code2fa })
+				body: JSON.stringify({ name: this.name , code2fa })
 			});
 
 			const finalResult2fa = await verif2fa.json();
@@ -436,7 +430,8 @@ export class AuthModal extends HTMLElement {
 				alert(finalResult2fa.error || "invalid code 2fa");
 				return;
 			}
-		} catch (error) {
+		}
+		catch (error) {
 			console.error('The 2fa verification failed: ', error);
 			alert('Error with the 2fa code');
 		}

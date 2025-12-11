@@ -207,9 +207,9 @@ export class AuthModal extends HTMLElement {
             modalTitle.textContent = 'LOGIN';
             loginTab.className = activeClass;
             registerTab.className = inactiveClass;
-			loginTab.style.dispay = "";
-			registerTab.style.dispay = "";
-			tfaTab.style.dispay = "none";
+			loginTab.style.display = "";
+			registerTab.style.display = "";
+			tfaTab.style.display = "none";
             loginForm.classList.remove('hidden');
             registerForm.classList.add('hidden');
 			tfaForm.classList.add('hidden');
@@ -217,9 +217,9 @@ export class AuthModal extends HTMLElement {
 		else if ( tab == '2fa') {
             modalTitle.textContent = '2FA';
 			tfaTab.className = activeClass
-			loginTab.style.dispay = "none";
-			registerTab.style.dispay = "none";
-            loginTab.style.dispay = "";
+			loginTab.style.display = "none";
+			registerTab.style.display = "none";
+            loginTab.style.display = "";
             registerForm.classList.add('hidden');
             loginForm.classList.add('hidden');
 			tfaForm.classList.remove('hidden');
@@ -228,9 +228,9 @@ export class AuthModal extends HTMLElement {
             modalTitle.textContent = 'REGISTER';
             registerTab.className = activeClass;
             loginTab.className = inactiveClass;
-			loginTab.style.dispay = "";
-			registerTab.style.dispay = "";
-			tfaTab.style.dispay = "none";
+			loginTab.style.display = "";
+			registerTab.style.display = "";
+			tfaTab.style.display = "none";
             registerForm.classList.remove('hidden');
             loginForm.classList.add('hidden');
 			tfaForm.classList.add('hidden');

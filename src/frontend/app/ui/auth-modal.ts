@@ -278,7 +278,7 @@ export class AuthModal extends HTMLElement {
 			}
 			else if  (result.requiresTwoFactor == true) {
 			{
-				console.error('need tfa');
+                this.switchTab('login');
 				return;
 			}
 			}

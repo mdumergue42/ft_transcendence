@@ -2,7 +2,7 @@
 
 export class AuthModal extends HTMLElement {
     private isOpen = false;
-    private currentTab: 'login' | 'register' = 'login';
+    private currentTab: 'login' | 'register' | '2fa' = 'login';
 
     constructor() {
         super();
@@ -27,6 +27,9 @@ export class AuthModal extends HTMLElement {
                             LOGIN
                         </button>
                         <button id="register-tab" class="auth-tab flex-1 py-2 px-4 rounded-lg font-mono text-sm font-semibold transition-all duration-300 PText">
+                            REGISTRATION
+                        </button>
+                        <button id="2fa-tab" class="auth-tab flex-1 py-2 px-4 rounded-lg font-mono text-sm font-semibold transition-all duration-300 PText">
                             REGISTRATION
                         </button>
                     </div>
@@ -183,32 +186,50 @@ export class AuthModal extends HTMLElement {
 		resendBtn?.addEventListener('click', (e) => this.handleResendEmail(e));
     }
 
-    switchTab(tab: 'login' | 'register') {
+    switchTab(tab: 'login' | 'register' | '2fa') {
         this.currentTab = tab;
         this.hideErrorAndResend(); //j\ai rejoute ici
 
         const loginTab = this.querySelector('#login-tab') as HTMLButtonElement;
         const registerTab = this.querySelector('#register-tab') as HTMLButtonElement;
+        const tfaTab = this.querySelector('#2fa-tab') as HTMLButtonElement;
         const loginForm = this.querySelector('#login-form') as HTMLFormElement;
         const registerForm = this.querySelector('#register-form') as HTMLFormElement;
+        const tfaForm = this.querySelector('#2fa-form') as HTMLFormElement;
         const modalTitle = this.querySelector('#modal-title') as HTMLElement;
 
         const inactiveClass = 'auth-tab flex-1 py-2 px-4 rounded-lg font-mono text-sm font-semibold transition-all duration-300 PText border border-transparent';
         
         const activeClass = 'auth-tab flex-1 py-2 px-4 rounded-lg font-mono text-sm font-semibold transition-all duration-300 text-black PBoxBg border PBorder PLowShadow';
 
+		const hideClass = 'collapse';
+
         if (tab === 'login') {
             modalTitle.textContent = 'LOGIN';
             loginTab.className = activeClass;
             registerTab.className = inactiveClass;
+			tfaTab.className = hideClass;
             loginForm.classList.remove('hidden');
             registerForm.classList.add('hidden');
-        } else {
+			tfaForm.classList.add('hidden');
+        }
+		else if ( tab == '2fa') {
+            modalTitle.textContent = '2FA';
+            registerTab.className = hideClass;
+            loginTab.className = hideClass;
+			tfaTab.className = activeClass
+            registerForm.classList.add('hidden');
+            loginForm.classList.add('hidden');
+			tfaForm.classList.remove('hidden');
+		}
+		else {
             modalTitle.textContent = 'REGISTER';
             registerTab.className = activeClass;
+			tfaTab.className = hideClass;
             loginTab.className = inactiveClass;
             registerForm.classList.remove('hidden');
             loginForm.classList.add('hidden');
+			tfaForm.classList.add('hidden');
         }
     }
 
@@ -247,8 +268,8 @@ export class AuthModal extends HTMLElement {
 
 
 			if (!response.ok) {
-				console.error('LE back a pas renvoyer le fucking token');
 				alert('Error' + (result.error || 'ID incorrects'));
+				return ;
 			}
 			if (result.token) {
 				localStorage.setItem('token', result.token);
@@ -262,13 +283,12 @@ export class AuthModal extends HTMLElement {
 			}
 			}
 			else {
-				console.error('le backend a rien renvoyer');
 				alert('Error: Missing token');
+				return ;
 			}
         }
 		catch (error) {
-            console.error('Login error:', error);
-		//	localStorage.removeItem('tokenJWT');
+			localStorage.removeItem('tokenJWT');
             alert('Connexion error. Please try again.');
         }
     }

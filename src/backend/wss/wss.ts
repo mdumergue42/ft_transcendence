@@ -141,6 +141,7 @@ class WsServ
 			return ;
 		await client.user(arg, this.db);
 		await client.sendFriendList(this.connectedClients);
+		await client.userGetMsg(this.db);
 		this.moveArrayClient(client);
 
 		for (let roomIndx in this.rooms)

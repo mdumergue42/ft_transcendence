@@ -134,7 +134,7 @@ ${colors.bright}${colors.magenta}╔══════════════�
 ${colors.bright}${colors.magenta}║${colors.reset}  🚀 ${colors.bright}${colors.cyan}Transcendence Server${colors.reset}${colors.bright}${colors.magenta}		║${colors.reset}
 ${colors.bright}${colors.magenta}║${colors.reset}					${colors.bright}${colors.magenta}║${colors.reset}
 ${colors.bright}${colors.magenta}║${colors.reset}  💻 ${colors.bright}${colors.green}https://localhost${colors.reset}${actualPort >= 10000 ? '' : ' '}		${colors.bright}${colors.magenta}║${colors.reset}
-${colors.bright}${colors.magenta}║${colors.reset}  🌐 ${colors.bright}${colors.green}https://ip local${colors.reset}${actualPort >= 10000 ? '' : ' '}		${colors.bright}${colors.magenta}║${colors.reset}
+${colors.bright}${colors.magenta}║${colors.reset}  🌐 ${colors.bright}${colors.green}${process.env.BACKEND_URL}${colors.reset}${actualPort >= 10000 ? '' : ' '}		${colors.bright}${colors.magenta}║${colors.reset}
 ${colors.bright}${colors.magenta}║${colors.reset}  📁 ${colors.gray}Static files: /public${colors.reset}		${colors.bright}${colors.magenta}║${colors.reset}
 ${colors.bright}${colors.magenta}╚═════════════════════════════════════╝${colors.reset}
 `);

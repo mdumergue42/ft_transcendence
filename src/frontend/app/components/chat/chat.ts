@@ -111,7 +111,7 @@ export class ChatUser
 
 	receiveMsg(msg: any)
 	{
-		const other = msg.from;
+		const other = msg.from == this.username ? msg.to : msg.from;
 		var conv;
 		conv = this._getConv(other);
 		if (!conv)

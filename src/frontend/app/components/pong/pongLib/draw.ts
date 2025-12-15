@@ -19,8 +19,8 @@ export function draw(
     context.lineTo(canvas.width / 2, canvas.height);
     context.stroke();
 
-	p1.draw(context, "green");
-	p2.draw(context, "green");
+	p1.draw(context, "white");
+	p2.draw(context, "white");
 	ball.draw(context, "white");
 }
 

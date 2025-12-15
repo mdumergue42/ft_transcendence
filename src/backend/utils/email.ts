@@ -11,11 +11,8 @@ const transporter = nodemailer.createTransport({
 
 
 transporter.verify((error, success) => {
-	if (error) {
+	if (error)
 		console.error("SMTP error: ", error);
-	} else {
-		console.log("SMTP ok");
-	}
 })
 
 export async function sendMail(to: string, subject: string, html: string) {

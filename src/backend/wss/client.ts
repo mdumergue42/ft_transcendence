@@ -29,14 +29,13 @@ export class Client
 		const desc = await getDescByName(this.username, db);
 		this.send({type: "init", name:name, color:color, desc:desc, avatar:avatar});
 		await this.userGetFriends(db);
-		await this.userGetMsg(db);
 	}
 
 	async userGetFriends(db:Dbase)
 	{
 		const friends = await getAllFriends(this.id, db);
 		for (let friend of friends)
-			this.addFriend(friend.username, friend.id, friend.flag);
+			this.addFriend(friend.username, friend.id_friend, friend.flag);
 	}
 	async userGetMsg(db:Dbase)
 	{

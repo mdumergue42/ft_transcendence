@@ -127,7 +127,7 @@ export abstract class ARoom
 		this.intervals = {
 			state: setInterval(this.gameState, 32, this),
 			ai: this.flag == 2 ?
-				setInterval(ai, 100, this.game.ball!, this.game.p2!) : null
+				setInterval(ai, 1000, this.game.ball!, this.game.p2!) : null
 		};
 		var x = await this._waitGameStatus(1);
 		return 1;

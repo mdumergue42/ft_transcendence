@@ -139,6 +139,12 @@ class WsServ
 		arg = msg.name;
 		if (!arg)
 			return ;
+		const connected = this.getClientS(arg);
+		if (connected)
+		{
+			connected.socket.close();
+			this.deco(connected.socket);
+		}
 		await client.user(arg, this.db);
 		await client.sendFriendList(this.connectedClients);
 		await client.userGetMsg(this.db);
@@ -151,6 +157,7 @@ class WsServ
 				continue ;
 			if (room.reconnect(client))
 			{
+				this.enterQ(client);
 				client.setRoomId(room.id);
 				break ;
 			}
@@ -354,11 +361,13 @@ class WsServ
 		this.friendStatusUp(client, 1 + Qtype);
 	}
 	exitQ(client: Client) {
-		if (this.connectedClients[client.id] == client) {
-			client.inQ = 0;
-			client.send({type: "enterQ", flag: 0});
-			this.friendStatusUp(client, 1);
-		}
+		if (this.connectedClients[client.id] != client)
+			client = this.getClientN(client.id);
+		if (!client)
+			return ;
+		client.inQ = 0;
+		client.send({type: "enterQ", flag: 0});
+		this.friendStatusUp(client, 1);
 	}
 
 	async pvai(client: Client)

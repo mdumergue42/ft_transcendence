@@ -143,12 +143,13 @@ export class Historic
 			avatar.src = `/image/avatar/${this.avatar}`;
 		var about = <HTMLElement>document.getElementById("about-me");
 		if (about)
-			about.innerHTML = `${this.about}`;
+			about.textContent = `${this.about}`;
 
 
 		if (this.error)
 		{
-			matchList.innerHTML = this.error;
+			matchList.innerHTML = "";
+			matchList.textContent = `${this.error}`;
 			return ;
 		}
 

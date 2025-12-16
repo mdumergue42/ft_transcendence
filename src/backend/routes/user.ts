@@ -13,7 +13,9 @@ interface UserRequestBody extends FormData {
 
 async function saveAvatar(buffer: Buffer, path: string): Promise<string> {
 	try {
-		await fs.writeFile(`./public/image/avatar/${path}`, buffer);
+		const filePath = `./public/image/avatar${path}`;
+		await fs.mkdir("./public/image/avatar/user", { recursive: true });
+		await fs.writeFile(filePath, buffer);
 		return path;
 	}
 	catch (error) {

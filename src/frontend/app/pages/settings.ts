@@ -136,11 +136,12 @@ function importUserSettings(redBtn: HTMLButtonElement, greenBtn: HTMLButtonEleme
 function setAvatar(img: string, tmp :boolean = true)
 {
 	var avatar = <HTMLImageElement>document.getElementById("avatar-preview");
+
 	if (avatar)
 		if (tmp)
 			avatar.src = `${img}`;
 		else
-			avatar.src = `/image/avatar/${img}`;
+			avatar.src = `/image/avatar/${img}?v=${new Date().getTime()}`;
 }
 
 export function DevSettings(user: ChatUser)
@@ -148,6 +149,7 @@ export function DevSettings(user: ChatUser)
 	let saveBtn = <HTMLButtonElement>document.getElementById("save-btn");
 	if (!saveBtn)
 		return ;
+	let	dontChangeAvatar: boolean = true;
 	let avatar: File | null = null;
 
 	const input = <HTMLInputElement>document.getElementById("avatar-input")!;
@@ -159,6 +161,7 @@ export function DevSettings(user: ChatUser)
 		if (file) {
 			if (validFileType(file)) {
 				avatar = file;
+				dontChangeAvatar = false;
 				setAvatar(URL.createObjectURL(file));
 			}
 		}
@@ -171,6 +174,7 @@ export function DevSettings(user: ChatUser)
 	const del = document.getElementById("delete-avatar")!;
 	del.addEventListener("click", (e) => {
 		avatar = null;
+		dontChangeAvatar = false;
 		setAvatar("/image/avatar/default/default.jpg");
 	});
 
@@ -207,6 +211,7 @@ export function DevSettings(user: ChatUser)
 		user.updateDesc(txt);
 
 		formData.set('avatarNull', avatar == null ? "1" : "0");
+		formData.set('dontChangeAvatar', dontChangeAvatar ? "1" : "0");
 		if (avatar)
 			formData.set('avatar', avatar, avatar.name);
 		formData.set('color', color);

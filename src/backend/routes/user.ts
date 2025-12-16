@@ -1,6 +1,6 @@
 import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import multipart, {MultipartFile} from '@fastify/multipart';
-import {getIdByName} from '../db/get.js';
+import {getIdByName, getAvatarByName} from '../db/get.js';
 import {updateUser} from '../db/update.js';
 import { promises as fs } from 'fs';
 
@@ -13,9 +13,9 @@ interface UserRequestBody extends FormData {
 
 async function saveAvatar(buffer: Buffer, path: string): Promise<string> {
 	try {
-		const filePath = `./public/image/avatar${path}`;
+		const filePath = `./public/image/avatar/${path}`;
 		await fs.mkdir("./public/image/avatar/user", { recursive: true });
-		await fs.writeFile(filePath, buffer);
+		await fs.writeFile(filePath, buffer, {encoding:'utf8',flag:'w'});
 		return path;
 	}
 	catch (error) {
@@ -30,9 +30,15 @@ export async function userSettingsRt(server: FastifyInstance) {
 	server.post('/api/user/settings', async (req, reply) => {
 		try {
 			const formData = await req.formData() as UserRequestBody; 
+			const name = formData.get("name") as string;
+
+			const id = await getIdByName(name, server.db);
+			if (!id)
+				return reply.status(401).send({ message: 'error id' });
+
 			const color = formData.get("color") as string;
 			const desc = formData.get("desc") as string;
-			const name = formData.get("name") as string;
+			const dontChangeAvatar = formData.get("dontChangeAvatar") as string;
 			const avatarNull = formData.get("avatarNull") as string;
 
 			var avatar = null;
@@ -42,12 +48,14 @@ export async function userSettingsRt(server: FastifyInstance) {
 
 				const body = req.body as {avatar: {_buf: Buffer}};
 				const buf = body.avatar._buf;
-				path = await saveAvatar(buf, `/user/${name}.${avatar.type.split("/").pop()}`);
+				path = await saveAvatar(buf, `user/${name}.${avatar.type.split("/").pop()}`);
 			}
-
-			const id = await getIdByName(name, server.db);
-			if (!id)
-				return reply.status(401).send({ message: 'error id' });
+			else if (dontChangeAvatar == "1")
+			{
+				path = await getAvatarByName(name, server.db);
+				if (path == undefined)
+					path = "";
+			}
 
 			await updateUser(path, desc, color, id, server.db);
 

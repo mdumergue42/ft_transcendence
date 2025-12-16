@@ -140,7 +140,7 @@ export class Historic
 		}
 		var avatar = <HTMLImageElement>document.getElementById("avatar");
 		if (avatar)
-			avatar.src = `/image/avatar/${this.avatar}`;
+			avatar.src = `/image/avatar/${this.avatar}?v=${new Date().getTime()}`;
 		var about = <HTMLElement>document.getElementById("about-me");
 		if (about)
 			about.textContent = `${this.about}`;

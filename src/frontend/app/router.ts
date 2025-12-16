@@ -30,6 +30,8 @@ async function connection(logs: HTMLElement): Promise<[boolean, ChatUser | null]
 
 	let isLoggedIn = false;
 	let username = null;
+	if (window.location.protocol != 'https:')
+		return error("http");
 
 	const token = localStorage.getItem('token');
 	if (token) {

@@ -24,7 +24,7 @@ services:
       - /app/node_modules
       - /app/dist
       - /app/public/js
-      - ./public/image/avatar:/app/public/image/avatar
+      - ./public/image/avatar:/app/public/image/avatar/user
       - ./data:/app/data
     environment:
       - NODE_ENV=development
